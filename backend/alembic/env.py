@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 from dotenv import dotenv_values
-from database import AppModelBase
+from utils.database import AppModelBase
 
 # INFO: AppModelBase.metadata 자체적으로 모델에대해서는 모르기 때문에 생성한 models 파일들을 연결해줘야한다.
 import src.auth.models

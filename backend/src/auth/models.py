@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from datetime import datetime
 
-from database import AppModelBase
+from utils.database import AppModelBase
 
 class User(AppModelBase):
     __tablename__ = "users"
@@ -14,7 +14,7 @@ class User(AppModelBase):
 
     # is_del = Column(Boolean, default=False)
     # created_at = Column(DateTime, server_default=datetime.now(), nullable=False)
-    # updated_at = Column(DateTime, nullable=True)
+    # updated_at = Column(DateTime, server_default=datetime.now(), onupdate=datetime.now(),nullable=True)
 
     user_farm_house = relationship("FarmHouse", uselist=False, back_populates="farm_house_user")
 
@@ -38,4 +38,4 @@ class FarmHouse(AppModelBase):
     # updated_at = Column(DateTime, nullable=True)
 
     farm_house_user = relationship("User", back_populates="user_farm_house")
-    # farm_house_planter = relationship("Planter", uselist=False, back_populates="planter_farm_house")
+    farm_house_planter = relationship("Planter", uselist=False, back_populates="planter_farm_house")

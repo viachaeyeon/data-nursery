@@ -6,14 +6,15 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    code: str
     # code: str | None = "01"
+
+class UserLogin(UserBase):
+    password: str
 
 class User(UserBase):
     id: int
-    login_id: str
     code: str
-    farm_house: "FarmHouse"
+    # farm_house: Optional["FarmHouse"] = None
 
     class Config:
         from_attributes = True

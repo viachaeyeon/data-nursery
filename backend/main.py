@@ -2,12 +2,15 @@
 from fastapi import  FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-import src.auth.models as AuthModel
-import src.planter.models as PlanterModel
+# import src.auth.models as AuthModel
+from src.auth import models as AuthModel, router as AuthRouter
+from src.planter import  models as PlanterModel, router as PlanterRouter
+# import src.planter.models as PlanterModel
+
 
 from dotenv import load_dotenv
 
-from database import SessionLocal, engine
+from utils.database import SessionLocal, engine
 
 
 load_dotenv()
@@ -20,6 +23,9 @@ app = FastAPI(
     description="헬퍼로보텍 자동파종기 데이터 플랫폼",
     version="0.0.1"
 )
+
+app.include_router(AuthRouter.router, prefix="/api/auth", tags=["auth"])
+app.include_router(PlanterRouter.router, prefix="/api/planter", tags=["planter"])
 
 # CORS 설정
 origins = [
@@ -46,11 +52,11 @@ async def db_session_middleware(request: Request, call_next):
         request.state.db.close()
     return response
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# # Dependency
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
