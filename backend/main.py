@@ -5,7 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import src.auth.models as AuthModel
 import src.planter.models as PlanterModel
 
+from dotenv import load_dotenv
+
 from database import SessionLocal, engine
+
+
+load_dotenv()
 
 AuthModel.AppModelBase.metadata.create_all(bind=engine)
 PlanterModel.AppModelBase.metadata.create_all(bind=engine)

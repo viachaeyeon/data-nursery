@@ -7,7 +7,7 @@ from database import AppModelBase
 class Planter(AppModelBase):
     __tablename__ = "planters"
 
-    farm_house = Column(Integer, ForeignKey("farm_houses.id"))
+    farm_house_id = Column(Integer, ForeignKey("farm_houses.id"))
     id = Column(Integer, primary_key=True, index=True)
     serial_number = Column(String(length=255))
     is_register = Column(Boolean, default=False)
