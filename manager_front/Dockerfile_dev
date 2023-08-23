@@ -1,0 +1,13 @@
+FROM node:16.17.1-alpine3.15
+
+WORKDIR /manager_front
+
+COPY package.json /manager_front
+COPY yarn.lock /manager_front
+
+RUN yarn install --frozen-lockfile --production=false
+
+COPY . /manager_front
+
+ENV PORT 4000
+EXPOSE 4000
