@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 
 from utils.database import BaseModel, AppModelBase
+from src.planter.models import Planter
 
 
 class User(BaseModel):
@@ -13,7 +14,10 @@ class User(BaseModel):
     code = Column(String(length=2), default="01")
 
     user_farm_house = relationship(
-        "FarmHouse", uselist=False, back_populates="farm_house_user"
+        "FarmHouse",
+        uselist=False,
+        back_populates="farm_house_user",
+        primaryjoin="User.id == FarmHouse.owner_id",
     )
 
 
@@ -29,5 +33,8 @@ class FarmHouse(BaseModel):
 
     farm_house_user = relationship("User", back_populates="user_farm_house")
     farm_house_planter = relationship(
-        "Planter", uselist=False, back_populates="planter_farm_house"
+        "Planter",
+        uselist=False,
+        back_populates="planter_farm_house",
+        primaryjoin="FarmHouse.id == Planter.farm_house_id",
     )

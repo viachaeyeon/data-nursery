@@ -5,9 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import os
 
-from src.auth import models as AuthModel, router as AuthRouter
-from src.crops import models as CropModel, router as CropRouter
-from src.planter import models as PlanterModel, router as PlanterRouter
+from src.auth import router as AuthRouter
+from src.crops import router as CropRouter
+from src.planter import router as PlanterRouter
+
+# from src.auth import models as AuthModel, router as AuthRouter
+# from src.crops import models as CropModel, router as CropRouter
+# from src.planter import models as PlanterModel, router as PlanterRouter
 
 from settings import BASE_DIR
 
@@ -26,9 +30,9 @@ from utils.database import SessionLocal, engine
 load_dotenv()
 
 # AppModelBase.metadata.create_all(bind=engine)
-AuthModel.AppModelBase.metadata.create_all(bind=engine)
-CropModel.AppModelBase.metadata.create_all(bind=engine)
-PlanterModel.AppModelBase.metadata.create_all(bind=engine)
+# AuthModel.AppModelBase.metadata.create_all(bind=engine)
+# CropModel.AppModelBase.metadata.create_all(bind=engine)
+# PlanterModel.AppModelBase.metadata.create_all(bind=engine)
 
 app = FastAPI(title="data-nursery", description="헬퍼로보텍 자동파종기 데이터 플랫폼", version="0.0.1")
 

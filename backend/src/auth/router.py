@@ -27,7 +27,7 @@ def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         db.query(models.User).filter(models.User.login_id == user.login_id).first()
     )
     if db_user:
-        raise JSONResponse(
+        return JSONResponse(
             status_code=400, content=dict(msg="This ID is already taken")
         )
 
