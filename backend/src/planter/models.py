@@ -1,10 +1,10 @@
-from sqlalchemy import Column, String, Integer,Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
-from utils.database import AppModelBase
+from utils.database import BaseModel
 
-class Planter(AppModelBase):
+
+class Planter(BaseModel):
     __tablename__ = "planters"
 
     farm_house_id = Column(Integer, ForeignKey("farm_houses.id"))

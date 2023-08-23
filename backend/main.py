@@ -1,11 +1,10 @@
 # FastAPI 앱을 초기화하는 프로젝트의 루트
-from fastapi import  FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-# import src.auth.models as AuthModel
 from src.auth import models as AuthModel, router as AuthRouter
-from src.planter import  models as PlanterModel, router as PlanterRouter
-# import src.planter.models as PlanterModel
+from src.planter import models as PlanterModel, router as PlanterRouter
+from utils.database import AppModelBase
 
 
 from dotenv import load_dotenv
@@ -15,31 +14,26 @@ from utils.database import SessionLocal, engine
 
 load_dotenv()
 
-AuthModel.AppModelBase.metadata.create_all(bind=engine)
-PlanterModel.AppModelBase.metadata.create_all(bind=engine)
+AppModelBase.metadata.create_all(bind=engine)
+# AuthModel.AppModelBase.metadata.create_all(bind=engine)
+# PlanterModel.AppModelBase.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="data-nursery",
-    description="헬퍼로보텍 자동파종기 데이터 플랫폼",
-    version="0.0.1"
-)
+app = FastAPI(title="data-nursery", description="헬퍼로보텍 자동파종기 데이터 플랫폼", version="0.0.1")
 
 app.include_router(AuthRouter.router, prefix="/api/auth", tags=["auth"])
 app.include_router(PlanterRouter.router, prefix="/api/planter", tags=["planter"])
 
 # CORS 설정
-origins = [
-    "http://192.168.2.100:3000",
-    "http://localhost:3000"
-]
+origins = ["http://192.168.2.100:3000", "http://localhost:3000"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
+
 
 # 미들웨어
 @app.middleware("http")
@@ -51,12 +45,3 @@ async def db_session_middleware(request: Request, call_next):
     finally:
         request.state.db.close()
     return response
-
-# # Dependency
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
