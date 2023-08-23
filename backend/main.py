@@ -7,7 +7,7 @@ from src.planter import models as PlanterModel, router as PlanterRouter
 from utils.database import AppModelBase
 
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 
 from utils.database import SessionLocal, engine
 
@@ -24,7 +24,7 @@ app.include_router(AuthRouter.router, prefix="/api/auth", tags=["auth"])
 app.include_router(PlanterRouter.router, prefix="/api/planter", tags=["planter"])
 
 # CORS 설정
-origins = ["http://192.168.2.100:3000", "http://localhost:3000"]
+origins = dotenv_values(".env")["CORS_ORIGINS"].split(",")
 
 app.add_middleware(
     CORSMiddleware,
