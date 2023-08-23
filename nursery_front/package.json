@@ -6,13 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --ext .jsx --ext .js src/",
+    "format": "prettier --write ./src"
   },
   "dependencies": {
-    "eslint": "8.47.0",
+    "@babel/eslint-parser": "^7.22.10",
+    "babel-plugin-styled-components": "^2.1.4",
+    "eslint": "^8.47.0",
     "eslint-config-next": "13.4.19",
+    "eslint-plugin-prettier": "^5.0.0",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.10",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "^3.0.2"
   }
 }
