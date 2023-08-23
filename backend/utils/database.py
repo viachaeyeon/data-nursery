@@ -5,6 +5,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 from dotenv import dotenv_values
+from pydantic import BaseModel as BaseSchema
+from datetime import datetime
 
 SQLALCHEMY_DATABASE_URL = dotenv_values(".env")["DATABASE_URL"]
 
@@ -37,6 +39,13 @@ class BaseModel(AppModelBase):
         onupdate=func.now(),
         nullable=True,
     )
+
+
+class TimezoneSchema(BaseSchema):
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ") if dt else None
+        }
 
     # @classmethod
     # async def create(cls, db: AsyncSession, **kwargs):
