@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 
-from utils.database import BaseModel
+from utils.database import BaseModel, AppModelBase
 
 
 class User(BaseModel):

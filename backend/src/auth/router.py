@@ -16,11 +16,6 @@ from constant.cookie_set import AUTH_COOKIE_DOMAIN, AUTH_COOKIE_SECURE
 router = APIRouter()
 
 
-@router.get("/test", status_code=200)
-def get_auth():
-    return {"message": "Authentication endpoint"}
-
-
 @router.post("/sign-up", status_code=201, response_model=schemas.User)
 def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if not user.login_id or not user.password:

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from utils.database import BaseModel
+from utils.database import BaseModel, AppModelBase
 
 
 class Planter(BaseModel):
@@ -12,9 +12,5 @@ class Planter(BaseModel):
     serial_number = Column(String(length=255))
     is_register = Column(Boolean, default=False)
     register_date = Column(DateTime, nullable=True)
-
-    # is_del = Column(Boolean, default=False)
-    # created_at = Column(DateTime, server_default=datetime.now(), nullable=False)
-    # updated_at = Column(DateTime, nullable=False)
 
     planter_farm_house = relationship("FarmHouse", back_populates="farm_house_planter")
