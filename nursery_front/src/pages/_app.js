@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }) {
         <ThemeProvider theme={theme}>
           <GlobalStyle />
           <Head>
-            <title>농가용</title>
+            <title>자동파종기 - 농가용</title>
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <link rel="icon" href="/favicon.ico" />
           </Head>
