@@ -48,7 +48,7 @@ class PlanterStatus(BaseModel):
 
     id = Column(Integer, primary_key=True, index=True)
     planter_id = Column(Integer, ForeignKey("planters.id"))
-    status = Column(String(5))  # OFF, ON, PAUSE 중 하나 저장
+    status = Column(String(length=5))  # OFF, ON, PAUSE
 
     planter_status__planter = relationship(
         "Planter", back_populates="planter__planter_status"
@@ -62,7 +62,7 @@ class PlanterWork(BaseModel):
     planter_id = Column(Integer, ForeignKey("planters.id"))
     planter_tray_id = Column(Integer, ForeignKey("planter_trays.id"))
     crop_id = Column(Integer, ForeignKey("crops.id"))
-    crop_kind = Column(String(255))
+    crop_kind = Column(String(length=255), index=True)
     sowing_date = Column(DateTime)
     deadline = Column(DateTime)
     order_quantity = Column(Integer)
@@ -76,3 +76,37 @@ class PlanterWork(BaseModel):
         "PlanterTray", back_populates="planter_tray__planter_work"
     )
     planter_work__crop = relationship("Crop", back_populates="crop__planter_work")
+    planter_work__planter_work_status = relationship(
+        "PlanterWorkStatus",
+        back_populates="planter_work_status__planter_work",
+        primaryjoin="PlanterWork.id == PlanterWorkStatus.planter_work_id",
+    )
+    planter_works__planter_output = relationship(
+        "PlanterOutput",
+        back_populates="planter_output__planter_works",
+        primaryjoin="PlanterWork.id == PlanterOutput.planter_work_id",
+    )
+
+
+class PlanterWorkStatus(BaseModel):
+    __tablename__ = "planter_work_status"
+
+    id = Column(Integer, primary_key=True, index=True)
+    planter_work_id = Column(Integer, ForeignKey("planter_works.id"))
+    status = Column(String(length=7))  # WAIT, WORKING, DONE, PAUSE
+
+    planter_work_status__planter_work = relationship(
+        "PlanterWork", back_populates="planter_work__planter_work_status"
+    )
+
+
+class PlanterOutput(BaseModel):
+    __tablename__ = "planter_outputs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    planter_work_id = Column(Integer, ForeignKey("planter_works.id"))
+    output = Column(Integer)
+
+    planter_output__planter_works = relationship(
+        "PlanterWork", back_populates="planter_works__planter_output"
+    )

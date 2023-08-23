@@ -11,7 +11,7 @@ class Crop(BaseModel):
 
     id = Column(Integer, primary_key=True, index=True)
     # TODO: Unique True 추가?
-    name = Column(String(255), index=True)
+    name = Column(String(length=255), index=True)
     image = Column(String)
     color = Column(String(length=10))
 
