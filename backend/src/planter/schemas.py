@@ -54,3 +54,7 @@ class PlanterWorkResponse(BaseModel):
     planter_work_status: PlanterWorkStatusBase
     planter_tray: PlanterTray
     planter_work: PlanterWork
+
+
+class PlanterOutputCraete(BaseModel):
+    output: int

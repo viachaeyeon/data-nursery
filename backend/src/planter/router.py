@@ -6,6 +6,7 @@ import src.planter.models as models
 import src.planter.schemas as schemas
 
 from utils.database import get_db
+from utils.db_shortcuts import get_or_create
 
 router = APIRouter()
 
@@ -64,3 +65,21 @@ def get_lastest_work(planter_sn: str, db: Session = Depends(get_db)):
         "planter_tray": latest_on_work.planter_work__planter_tray,
         "planter_work": latest_on_work,
     }
+
+
+@router.post("/work/{planter_work_id}/output")
+def create_planter_output(
+    planter_work_id: int,
+    planter_work: schemas.PlanterOutputCraete,
+    db: Session = Depends(get_db),
+):
+    planter_work_output = get_or_create(
+        db,
+        models.PlanterOutput,
+        planter_work_id=planter_work_id,
+    )
+
+    planter_work_output.output = planter_work.output
+    db.commit()
+
+    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))

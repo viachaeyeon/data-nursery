@@ -1,4 +1,12 @@
-from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    BigInteger,
+)
 from sqlalchemy.orm import relationship
 
 from utils.database import BaseModel, AppModelBase
@@ -65,9 +73,9 @@ class PlanterWork(BaseModel):
     crop_kind = Column(String(length=255), index=True)
     sowing_date = Column(DateTime)
     deadline = Column(DateTime)
-    order_quantity = Column(Integer)
-    seed_quantity = Column(Integer)
-    operating_time = Column(Integer)
+    order_quantity = Column(BigInteger)
+    seed_quantity = Column(BigInteger)
+    operating_time = Column(BigInteger, nullable=True)
 
     planter_work__planter = relationship(
         "Planter", back_populates="planter__planter_work"
@@ -105,7 +113,7 @@ class PlanterOutput(BaseModel):
 
     id = Column(Integer, primary_key=True, index=True)
     planter_work_id = Column(Integer, ForeignKey("planter_works.id"))
-    output = Column(Integer)
+    output = Column(BigInteger)
 
     planter_output__planter_works = relationship(
         "PlanterWork", back_populates="planter_works__planter_output"
