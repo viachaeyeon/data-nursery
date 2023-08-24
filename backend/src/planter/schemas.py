@@ -56,5 +56,5 @@ class PlanterWorkResponse(BaseModel):
     planter_work: PlanterWork
 
 
-class PlanterOutputCraete(BaseModel):
-    output: int
+class PlanterOperatingDataCreate(BaseModel):
+    data: str
