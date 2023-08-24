@@ -63,14 +63,14 @@ function GraphTotalProduction() {
               backgroundColor: (context) => {
                 const index = context.dataIndex;
                 if (index > 0 && index % 5 === 4) {
-                  return "#B298FD"; // 5의 배수이면서 0이 아닐 때 빨간색으로
+                  return "#B298FD"; // 5의 배수이면서 0이 아닐 때
                 }
                 return "#C8B4F7";
               },
               hoverBackgroundColor: (context) => {
                 const index = context.dataIndex;
                 if (index > 0 && index % 5 === 4) {
-                  return "#B298FD"; // 5의 배수이면서 0이 아닐 때 빨간색으로
+                  return "#B298FD"; // 5의 배수이면서 0이 아닐 때
                 }
                 return "#C8B4F7";
               },
