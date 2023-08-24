@@ -60,7 +60,7 @@ const S = {
       flex-direction: column;
       gap: 8px;
       justify-content: center;
-      cursor:default;
+      cursor: default;
     }
     .block-count-wrap {
       display: flex;

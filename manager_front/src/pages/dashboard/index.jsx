@@ -3,14 +3,20 @@ import styled from "styled-components";
 
 import MainLayout from "../../components/layout/MainLayout";
 import MainHeader from "@components/layout/MainHeader";
-import OutlineBlock from "@components/dashboard/outline-block";
-import OperationStatus from "@components/dashboard/operation-status";
+import OutlineBlock from "@components/dashboard/OutlineBlock";
+import OperationStatus from "@components/dashboard/OperationStatus";
+import TotalProduction from "@components/dashboard/TotalProduction";
 
 const S = {
   Wrap: styled.div`
     margin-top: 24px;
     display: flex;
     flex-direction: column;
+    gap: 32px;
+  `,
+  Line: styled.div`
+    display: flex;
+    width: 100%;
     gap: 32px;
   `,
 };
@@ -57,6 +63,9 @@ function Dashboard() {
       <S.Wrap>
         <OutlineBlock />
         <OperationStatus currentDate={currentDate} />
+        <S.Line>
+          <TotalProduction currentDate={currentDate} />
+        </S.Line>
       </S.Wrap>
     </MainLayout>
   );
