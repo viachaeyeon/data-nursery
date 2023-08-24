@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import ManageSideMenu from "./MainSideMenu";
+import MainSideMenu from "@components/layout/MainSideMenu";
 
 const S = {
   Wrap: styled.div`
@@ -15,21 +15,20 @@ const S = {
     .main-children-section {
       flex: 1;
       padding: 64px 79px 112px 79px;
-      background-color: #F7F7FA;
-
+      background-color: #f7f7fa;
     }
   `,
 };
 
-function ManageLayout({ children }) {
+function MainLayout({ children }) {
   return (
     <S.Wrap>
       <S.MainContent>
-        <ManageSideMenu />
+        <MainSideMenu />
         <section className="main-children-section">{children}</section>
       </S.MainContent>
     </S.Wrap>
   );
 }
 
-export default ManageLayout;
+export default MainLayout;

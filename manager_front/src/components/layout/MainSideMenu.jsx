@@ -12,46 +12,46 @@ const S = {
   Wrap: styled.aside`
     display: grid;
 
-.sidebar{
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.sidebar-text{
-    color: #464F64;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 24px;
-}
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .sidebar-text {
+      color: #464f64;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 24px;
+    }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  cursor: pointer;
-  padding: 12px 32px;
-  gap:24px;
-  width: 198px;
-  height: 64px;
-}
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      cursor: pointer;
+      padding: 12px 32px;
+      gap: 24px;
+      width: 198px;
+      height: 64px;
+    }
 
-.menu-item.active {
-  background-color: #5899FB;
-  color: white;
-  width: 198px;
-  height: 64px;
-  border-radius:8px;
+    .menu-item.active {
+      background-color: #5899fb;
+      color: white;
+      width: 198px;
+      height: 64px;
+      border-radius: 8px;
 
-  p{
-    color: white;
-  }
-}
+      p {
+        color: white;
+      }
+    }
 
-.icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-}
+    .icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
   `,
   SideMenuInner: styled.div`
     padding: 64px 32px 0px 32px;
@@ -76,15 +76,14 @@ const S = {
   `,
 };
 
-function ManageSideMenu() {
+function MainSideMenu() {
   const router = useRouter();
 
-
   const menuItems = [
-    { path: '/dashboard', label: '개요', icon: <ListIcon /> },
-    { path: '/farm-management', label: '농가관리', icon: <HouseIcon /> },
-    { path: '/statistics', label: '통계현황', icon: <GraphIcon /> },
-    { path: '/setting', label: '설정', icon: <SettingIcon /> },
+    { path: "/dashboard", label: "개요", icon: <ListIcon /> },
+    { path: "/farm-management", label: "농가관리", icon: <HouseIcon /> },
+    { path: "/statistics", label: "통계현황", icon: <GraphIcon /> },
+    { path: "/setting", label: "설정", icon: <SettingIcon /> },
   ];
 
   return (
@@ -94,23 +93,29 @@ function ManageSideMenu() {
           <Image src={"/images/common/logo-data-nursery.svg"} layout="fill" />
         </li>
 
-<div className="sidebar">
-      {menuItems.map((item) => (
-        <div
-          key={item.path}
-          className={`menu-item ${
-            router.pathname === item.path ? 'active' : ''
-          }`}
-          onClick={() => router.push(item.path)}
-        >
-          <img src={`${item.icon}`} alt={item.label} className="icon" width={40} height={40} />
-          <p className="sidebar-text">{item.label}</p>
+        <div className="sidebar">
+          {menuItems.map((item) => (
+            <div
+              key={item.path}
+              className={`menu-item ${
+                router.pathname === item.path ? "active" : ""
+              }`}
+              onClick={() => router.push(item.path)}
+            >
+              <img
+                src={`${item.icon}`}
+                alt={item.label}
+                className="icon"
+                width={40}
+                height={40}
+              />
+              <p className="sidebar-text">{item.label}</p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
       </S.SideMenuInner>
     </S.Wrap>
   );
 }
 
-export default ManageSideMenu;
+export default MainSideMenu;

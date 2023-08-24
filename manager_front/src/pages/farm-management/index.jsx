@@ -6,7 +6,7 @@ import MainHeader from "@components/layout/MainHeader";
 
 const S = {
   Wrap: styled.div`
-  margin-top: 24px;
+    margin-top: 24px;
   `,
 };
 
@@ -14,7 +14,9 @@ function Dashboard() {
   return (
     <MainLayout>
       <MainHeader />
-      <S.Wrap><p>농가관리</p></S.Wrap>
+      <S.Wrap>
+        <p>농가관리</p>
+      </S.Wrap>
     </MainLayout>
   );
 }
