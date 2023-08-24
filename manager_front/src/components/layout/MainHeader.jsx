@@ -1,7 +1,9 @@
 import React,{useState,useEffect} from "react";
 import styled from "styled-components";
 
+// const NoSSR = dynamic(() => import('../components/no-ssr'), { ssr: false })
 import ProfileIcon from "../../../public/images/common/icon-profile.svg";
+
 
 const S = {
   Wrap: styled.div`
@@ -70,3 +72,10 @@ function MainHeader() {
 }
 
 export default MainHeader;
+// export default function Page(){
+//   return(
+//     <div>
+//       <NoSSR />
+//     </div>
+//   )
+// };

@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import MainLayout from "../../components/layout/MainLayout";
 import MainHeader from "@components/layout/MainHeader";
+import OutlineBlock from "@components/dashboard/outline-block";
 
 const S = {
   Wrap: styled.div`
@@ -14,7 +15,7 @@ function Dashboard() {
   return (
     <MainLayout>
       <MainHeader />
-      <S.Wrap></S.Wrap>
+      <S.Wrap><OutlineBlock /></S.Wrap>
     </MainLayout>
   );
 }
