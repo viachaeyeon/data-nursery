@@ -14,7 +14,7 @@ function Dashboard() {
   return (
     <MainLayout>
       <MainHeader />
-      <S.Wrap></S.Wrap>
+      <S.Wrap><p>설정</p></S.Wrap>
     </MainLayout>
   );
 }

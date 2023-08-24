@@ -14,7 +14,7 @@ function Dashboard() {
   return (
     <MainLayout>
       <MainHeader />
-      <S.Wrap></S.Wrap>
+      <S.Wrap><p>통계현황</p></S.Wrap>
     </MainLayout>
   );
 }

@@ -14,7 +14,7 @@ function Dashboard() {
   return (
     <MainLayout>
       <MainHeader />
-      <S.Wrap></S.Wrap>
+      <S.Wrap><p>농가관리</p></S.Wrap>
     </MainLayout>
   );
 }
