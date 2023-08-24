@@ -34,7 +34,14 @@ load_dotenv()
 # CropModel.AppModelBase.metadata.create_all(bind=engine)
 # PlanterModel.AppModelBase.metadata.create_all(bind=engine)
 
-app = FastAPI(title="data-nursery", description="헬퍼로보텍 자동파종기 데이터 플랫폼", version="0.0.1")
+app = FastAPI(
+    title="data-nursery",
+    description="헬퍼로보텍 자동파종기 데이터 플랫폼",
+    version="0.0.1",
+    # TODO: 배포시 해당 부분 주석 제거
+    # docs_url=None,
+    # redoc_url=None,
+)
 
 app.mount(
     "/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static"
