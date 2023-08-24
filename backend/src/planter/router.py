@@ -88,7 +88,7 @@ def create_planter_output(
     # status가 Off 될 경우 파종기 상태에 OFF 저장
     # status -> "1": 작업중("WORKING"), "0" : 작업완료("DONE")
     if status == "0" and planter_work.planter_work__planter_work_status[-1].status != "DONE":
-        save_planter_work_status = create_(db, models.PlanterWorkStatus, planter_work_id=planter_work_id, status="DONE", test="123")
+        save_planter_work_status = create_(db, models.PlanterWorkStatus, planter_work_id=planter_work_id, status="DONE")
 
         if not save_planter_work_status:
             return JSONResponse(status_code=400, content=dict(msg="ERROR_CREATE_PLANTER_WORK_STATUS"))
