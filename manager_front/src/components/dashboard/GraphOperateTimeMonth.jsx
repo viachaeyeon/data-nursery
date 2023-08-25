@@ -149,7 +149,7 @@ function GraphOperateTimeMonth() {
           <p className="info-name">김해고송육묘장</p>
         </S.InfoBlock>
         <S.InfoBlock>
-          <p className="info-title">최대 가동 시간</p>
+          <p className="info-title">최소 가동 시간</p>
           <p className="info-hour">10h</p>
           <p className="info-name">김해고송육묘장</p>
         </S.InfoBlock>

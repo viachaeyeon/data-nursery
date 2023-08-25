@@ -3,11 +3,6 @@ import Image from "next/image";
 import { styled } from "styled-components";
 import { useRouter } from "next/router";
 
-import ListIcon from "../../../public/images/common/icon-list.svg";
-import HouseIcon from "../../../public/images/common/icon-house.svg";
-import GraphIcon from "../../../public/images/common/w-icon-graph.svg";
-import SettingIcon from "../../../public/images/common/w-icon-setting.svg";
-
 const S = {
   Wrap: styled.aside`
     display: grid;
@@ -80,17 +75,33 @@ function MainSideMenu() {
   const router = useRouter();
 
   const menuItems = [
-    { path: "/dashboard", label: "개요", icon: <ListIcon /> },
-    { path: "/farm-management", label: "농가관리", icon: <HouseIcon /> },
-    { path: "/statistics", label: "통계현황", icon: <GraphIcon /> },
-    { path: "/setting", label: "설정", icon: <SettingIcon /> },
+    { path: "/dashboard", label: "개요", icon: "/images/common/icon-list.svg" },
+    {
+      path: "/farm-management",
+      label: "농가관리",
+      icon: "/images/common/icon-house.svg",
+    },
+    {
+      path: "/statistics",
+      label: "통계현황",
+      icon: "/images/common/w-icon-graph.svg",
+    },
+    {
+      path: "/setting",
+      label: "설정",
+      icon: "/images/common/w-icon-setting.svg",
+    },
   ];
 
   return (
     <S.Wrap>
       <S.SideMenuInner>
         <li className="main-logo">
-          <Image src={"/images/common/logo-data-nursery.svg"} layout="fill" />
+          <Image
+            src={"/images/common/logo-data-nursery.svg"}
+            fill
+            alt="main-logo"
+          />
         </li>
 
         <div className="sidebar">
@@ -103,7 +114,7 @@ function MainSideMenu() {
               onClick={() => router.push(item.path)}
             >
               <img
-                src={`${item.icon}`}
+                src={item.icon}
                 alt={item.label}
                 className="icon"
                 width={40}

@@ -91,7 +91,7 @@ function GraphFarmHouseProductionMonth() {
         },
         plugins: [horizontalBackgroundPlugin],
         options: {
-          maintainAspectRatio: false, //왼쪽 막힌거 false
+          maintainAspectRatio: false,
           indexAxis: "y", // 그래프 가로형
           interaction: {
             intersect: false, // 툴팁 데이터위에 hover했을때만 나오게 하는것 false
