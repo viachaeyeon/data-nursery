@@ -145,7 +145,6 @@ function GraphFarmHouseProductionDay() {
             x: {
               beginAtZero: true,
               afterFit: (context) => {
-                console.log(context);
                 context.height += 23;
               },
               title: {

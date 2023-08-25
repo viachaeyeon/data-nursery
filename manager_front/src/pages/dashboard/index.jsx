@@ -8,6 +8,7 @@ import OperationStatus from "@components/dashboard/OperationStatus";
 import TotalProduction from "@components/dashboard/TotalProduction";
 import GraphCropProduction from "@components/dashboard/CropProduction";
 import FarmHouseProduction from "@components/dashboard/FarmHouseProduction";
+import OperateTime from "@components/dashboard/OperateTime";
 
 const S = {
   Wrap: styled.div`
@@ -71,6 +72,7 @@ function Dashboard() {
         </S.Line>
         <S.Line>
           <FarmHouseProduction currentDate={currentDate} />
+          <OperateTime currentDate={currentDate} />
         </S.Line>
       </S.Wrap>
     </MainLayout>
