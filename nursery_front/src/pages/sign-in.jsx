@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { styled } from "styled-components";
-// import secureLocalStorage from "react-secure-storage";
+import secureLocalStorage from "react-secure-storage";
 
 // import useAllCacheClear from "@src/hooks/queries/common/useAllCacheClear";
 
@@ -12,6 +12,7 @@ import OnCheckBoxIcon from "@images/sign-in/on-check-box.svg";
 import OffCheckBoxIcon from "@images/sign-in/off-check-box.svg";
 import DefaultButton from "@components/common/button/DefaultButton";
 import { defaultButtonColor } from "@src/utils/ButtonColor";
+import { loginAPI } from "@src/apis/authAPIs";
 
 const S = {
   Wrap: styled.div`
@@ -75,7 +76,7 @@ function SignInPage() {
   // const clearQueries = useAllCacheClear();
 
   const [loginInfo, setLoginInfo] = useState({
-    email: "",
+    id: "",
     password: "",
     isStayLogin: false,
   });
@@ -91,52 +92,50 @@ function SignInPage() {
   );
 
   // 이메일 저장했는지 확인
-  // useEffect(() => {
-  //   clearQueries();
+  useEffect(() => {
+    // clearQueries();
 
-  //   const saveEmail = secureLocalStorage.getItem("email");
+    const saveId = secureLocalStorage.getItem("id");
 
-  //   if (saveEmail) {
-  //     setLoginInfo({
-  //       email: saveEmail,
-  //       password: "",
-  //       isStayLogin: true,
-  //     });
-  //   }
-  // }, []);
+    if (saveId) {
+      setLoginInfo({
+        id: saveId,
+        password: "",
+        isStayLogin: true,
+      });
+    }
+  }, []);
 
   const stayLoginCheckBoxClick = useCallback(() => {
     handleInputChange("isStayLogin", !loginInfo.isStayLogin);
   }, [loginInfo.isStayLogin]);
 
-  // const tempLoginCheck = useCallback(async () => {
-  //   try {
-  //     const res = await storeLoginAPI(loginInfo);
+  const tempLoginCheck = useCallback(async () => {
+    try {
+      const res = await loginAPI(loginInfo);
 
-  //     // 이메일 저장 시 실행
-  //     if (loginInfo.isStayLogin) {
-  //       // 이메일 로컬스토리지에 저장
-  //       secureLocalStorage.setItem("email", loginInfo.email);
-  //     } else {
-  //       // 이메일 로컬스토리지에서 삭제
-  //       secureLocalStorage.removeItem("email");
-  //     }
+      // 아이디 저장 시 실행
+      if (loginInfo.isStayLogin) {
+        // 아이디 로컬스토리지에 저장
+        secureLocalStorage.setItem("id", loginInfo.id);
+      } else {
+        // 아이디 로컬스토리지에서 삭제
+        secureLocalStorage.removeItem("id");
+      }
 
-  //     if (res.data.is_store) {
-  //       router.push("/");
-  //     } else {
-  //       router.push("/store/info?type=create");
-  //     }
-  //   } catch (e) {
-  //     alert("로그인에 실패하였습니다. 이메일 및 비밀번호를 확인해주세요.");
-  //   }
-  // }, [loginInfo]);
+      console.log(res);
+      alert("성공");
+    } catch (e) {
+      console.log(e);
+      alert("로그인에 실패하였습니다. 아이디 및 비밀번호를 확인해주세요.");
+    }
+  }, [loginInfo]);
 
   // enter 키 입력 시 실행
   const enterKeyUp = useCallback(() => {
     if (window.event.keyCode === 13) {
-      if (loginInfo.email === "") {
-        alert("이메일을 입력해주세요.");
+      if (loginInfo.id === "") {
+        alert("아이디를 입력해주세요.");
         return;
       }
 
@@ -145,7 +144,7 @@ function SignInPage() {
         return;
       }
 
-      // tempLoginCheck();
+      tempLoginCheck();
     }
   }, [loginInfo]);
 
@@ -160,9 +159,9 @@ function SignInPage() {
         <S.LoginInputWrap>
           <PrefixInput
             placeholder="아이디를 입력해주세요"
-            text={loginInfo.email}
+            text={loginInfo.id}
             setText={(e) => {
-              handleInputChange("email", e.target.value);
+              handleInputChange("id", e.target.value);
             }}
             enterKeyUpFn={() => {
               enterKeyUp();
@@ -185,7 +184,7 @@ function SignInPage() {
           {loginInfo.isStayLogin ? <OnCheckBoxIcon /> : <OffCheckBoxIcon />}
           <p>이메일 저장</p>
         </S.StayLoginWrap>
-        <DefaultButton text={"로그인"} onClick={null} customStyle={defaultButtonColor} />
+        <DefaultButton text={"로그인"} onClick={tempLoginCheck} customStyle={defaultButtonColor} />
       </S.Wrap>
     </MainLayout>
   );

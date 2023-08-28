@@ -5,8 +5,8 @@ services:
     build:
       context: ./nursery_front
       dockerfile: Dockerfile_dev
-    # environment:
-    #   - NEXT_PUBLIC_END_POINT=http://192.168.2.102:8000
+    environment:
+      - NEXT_PUBLIC_END_POINT=http://192.168.2.102:8000
     command: yarn dev
     volumes:
       - ./nursery_front:/nursery_front

@@ -26,9 +26,10 @@ const S = {
   CustomInput: styled.input`
     width: 100%;
     flex: 1;
-    font-size: 18px;
-    line-height: 20px;
-    letter-spacing: -0.36px;
+    font-size: 16px;
+    line-height: 18px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.basic.grey60};
     outline: none;
     border: none;
     box-shadow: none !important;
@@ -40,6 +41,9 @@ const S = {
 
     &::placeholder {
       color: ${({ theme }) => theme.basic.grey40} !important;
+      font-size: 18px;
+      line-height: 24px;
+      font-weight: 400;
     }
   `,
 };
