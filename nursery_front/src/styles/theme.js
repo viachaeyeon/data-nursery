@@ -36,19 +36,19 @@ const textStyle = {
 
 const basic = {
   whiteGrey: "#F7F7FA",
-  lightSky: "F0F5FC",
+  lightSky: "#F0F5FC",
   recOutline: "#DCDCF0",
-  grey20: "F0F0F5",
-  grey30: "C2D6E1",
-  grey40: "929FA6",
-  grey50: "737F8F",
-  grey60: "4F5B6C",
-  darkBlue: "405F8D",
-  deepBlue: "16335F",
-  secondary: "7B97A3",
-  warning: "FF7C8C",
-  positive: "00B071",
-  btnAction: "357AE1",
+  grey20: "#F0F0F5",
+  grey30: "#C2D6E1",
+  grey40: "#929FA6",
+  grey50: "#737F8F",
+  grey60: "#4F5B6C",
+  darkBlue: "#405F8D",
+  deepBlue: "#16335F",
+  secondary: "#7B97A3",
+  warning: "#FF7C8C",
+  positive: "#00B071",
+  btnAction: "#357AE1",
 };
 
 const mobile = {

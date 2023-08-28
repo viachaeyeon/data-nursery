@@ -185,11 +185,11 @@ function MainLayout({ children, pageName, isBackIcon = true, backIconClickFn, is
           {pageName === "main" && (
             <S.PageNameWrap className="main-page-name">
               <p className="main-title">FOOD trailer</p>
-              <SettingIcon
+              {/* <SettingIcon
                 onClick={() => {
                   router.push("/my-page");
                 }}
-              />
+              /> */}
             </S.PageNameWrap>
           )}
           {!!pageName && pageName !== "main" && (

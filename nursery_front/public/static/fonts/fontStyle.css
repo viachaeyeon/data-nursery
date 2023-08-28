@@ -60,3 +60,10 @@
   font-style: normal;
   src: url("Pretendard-Black.ttf");
 }
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 700;
+  font-style: normal;
+  src: url("Ubuntu-Bold.ttf");
+}
