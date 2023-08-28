@@ -18,20 +18,20 @@ services:
       - 3000
     restart: always
 
-  manager_nextjs:
-    container_name: manager_nextjs
-    build:
-      context: ./manager_front
-      dockerfile: Dockerfile_dev
-    # environment:
-    #   - NEXT_PUBLIC_END_POINT=http://192.168.2.102:8000
-    command: yarn dev
-    volumes:
-      - ./manager_front:/manager_front
-      - /manager_front/node_modules
-      - /manager_front/.next
-    ports:
-      - "4000:4000"
-    expose:
-      - 4000
-    restart: always
+  # manager_nextjs:
+  #   container_name: manager_nextjs
+  #   build:
+  #     context: ./manager_front
+  #     dockerfile: Dockerfile_dev
+  #   # environment:
+  #   #   - NEXT_PUBLIC_END_POINT=http://192.168.2.102:8000
+  #   command: yarn dev
+  #   volumes:
+  #     - ./manager_front:/manager_front
+  #     - /manager_front/node_modules
+  #     - /manager_front/.next
+  #   ports:
+  #     - "4000:4000"
+  #   expose:
+  #     - 4000
+  #   restart: always

@@ -21,10 +21,11 @@
     "react-bootstrap": "^2.8.0",
     "react-dom": "18.2.0",
     "styled-components": "^6.0.7",
-    "styled-reset": "^4.5.1"
+    "styled-reset": "^4.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.22.10",
+    "@svgr/webpack": "^8.1.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-react": "^7.33.2",

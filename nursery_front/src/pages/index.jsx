@@ -1,7 +1,19 @@
 import React from "react";
 
+import MainLayout from "@components/layout/MainLayout";
+
 function MainPage() {
-  return <p>농가용 프론트</p>;
+  return <MainLayout></MainLayout>;
 }
+
+// 로그인 안되어 있을 경우 로그인 페이지로 이동
+// export const getServerSideProps = requireAuthentication((context) => {
+//   return {
+//     redirect: {
+//       destination: "/sign-in",
+//       statusCode: 302,
+//     },
+//   };
+// });
 
 export default MainPage;

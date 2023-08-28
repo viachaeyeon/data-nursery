@@ -18,9 +18,9 @@ const headerHeights = {
 
 const textStyle = {
   h1Bold: "font-weight: 700; font-size: 32px; line-height: 28px;",
-  h1BoldThin: "font-weight: 700; font-size: 32px; line-height: 28px; letter-spacing: -4%;",
+  h1BoldThin: "font-weight: 700; font-size: 32px; line-height: 28px; letter-spacing: -0.36px;",
   h2Bold: "font-weight: 700; font-size: 28px; line-height: 28px;",
-  h2BoldThin: "font-weight: 700; font-size: 28px; line-height: 28px; letter-spacing: -4%;",
+  h2BoldThin: "font-weight: 700; font-size: 28px; line-height: 28px; letter-spacing: -0.36px;",
   h3Bold: "font-weight: 700; font-size: 24px; line-height: 28px;",
   h3Regular: "font-weight: 400; font-size: 24px; line-height: 28px;",
   h4Bold: "font-weight: 700; font-size: 22px; line-height: 26px;",
