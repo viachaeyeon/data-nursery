@@ -53,7 +53,7 @@ const basic = {
 
 const mobile = {
   inputOutline: "#B0CDF4",
-  dashboadFont: "#D8CEFF",
+  dashboardFont: "#D8CEFF",
   sky: "#C0D9FF",
   secondary: "#97CDFF",
   secondary2: "#8D78E2",
