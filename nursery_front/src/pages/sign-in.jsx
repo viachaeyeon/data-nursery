@@ -4,6 +4,7 @@ import { styled } from "styled-components";
 import secureLocalStorage from "react-secure-storage";
 
 // import useAllCacheClear from "@src/hooks/queries/common/useAllCacheClear";
+import { loginAPI } from "@src/apis/authAPIs";
 
 import MainLayout from "@components/layout/MainLayout";
 import PrefixInput from "@components/common/input/PrefixInput";
@@ -12,7 +13,6 @@ import OnCheckBoxIcon from "@images/sign-in/on-check-box.svg";
 import OffCheckBoxIcon from "@images/sign-in/off-check-box.svg";
 import DefaultButton from "@components/common/button/DefaultButton";
 import { defaultButtonColor } from "@src/utils/ButtonColor";
-import { loginAPI } from "@src/apis/authAPIs";
 
 const S = {
   Wrap: styled.div`
@@ -76,7 +76,7 @@ function SignInPage() {
   // const clearQueries = useAllCacheClear();
 
   const [loginInfo, setLoginInfo] = useState({
-    id: "",
+    login_id: "",
     password: "",
     isStayLogin: false,
   });
@@ -95,11 +95,11 @@ function SignInPage() {
   useEffect(() => {
     // clearQueries();
 
-    const saveId = secureLocalStorage.getItem("id");
+    const saveId = secureLocalStorage.getItem("login_id");
 
     if (saveId) {
       setLoginInfo({
-        id: saveId,
+        login_id: saveId,
         password: "",
         isStayLogin: true,
       });
@@ -113,17 +113,17 @@ function SignInPage() {
   const tempLoginCheck = useCallback(async () => {
     try {
       const res = await loginAPI(loginInfo);
+      console.log("res : ", res);
 
       // 아이디 저장 시 실행
       if (loginInfo.isStayLogin) {
         // 아이디 로컬스토리지에 저장
-        secureLocalStorage.setItem("id", loginInfo.id);
+        secureLocalStorage.setItem("login_id", loginInfo.login_id);
       } else {
         // 아이디 로컬스토리지에서 삭제
-        secureLocalStorage.removeItem("id");
+        secureLocalStorage.removeItem("login_id");
       }
 
-      console.log(res);
       alert("성공");
     } catch (e) {
       console.log(e);
@@ -134,7 +134,7 @@ function SignInPage() {
   // enter 키 입력 시 실행
   const enterKeyUp = useCallback(() => {
     if (window.event.keyCode === 13) {
-      if (loginInfo.id === "") {
+      if (loginInfo.login_id === "") {
         alert("아이디를 입력해주세요.");
         return;
       }
@@ -159,9 +159,9 @@ function SignInPage() {
         <S.LoginInputWrap>
           <PrefixInput
             placeholder="아이디를 입력해주세요"
-            text={loginInfo.id}
+            text={loginInfo.login_id}
             setText={(e) => {
-              handleInputChange("id", e.target.value);
+              handleInputChange("login_id", e.target.value);
             }}
             enterKeyUpFn={() => {
               enterKeyUp();
