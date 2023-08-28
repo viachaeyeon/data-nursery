@@ -16,11 +16,6 @@ from constant.cookie_set import AUTH_COOKIE_DOMAIN, AUTH_COOKIE_SECURE
 router = APIRouter()
 
 
-@router.get("/test", status_code=200)
-def get_auth():
-    return {"message": "Authentication endpoint"}
-
-
 @router.post("/sign-up", status_code=201, response_model=schemas.User)
 def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if not user.login_id or not user.password:
@@ -32,7 +27,7 @@ def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         db.query(models.User).filter(models.User.login_id == user.login_id).first()
     )
     if db_user:
-        raise JSONResponse(
+        return JSONResponse(
             status_code=400, content=dict(msg="This ID is already taken")
         )
 
