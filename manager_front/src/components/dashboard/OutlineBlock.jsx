@@ -6,10 +6,10 @@ import {
   NumberCommaFormatting,
   NumberUnitFormatting,
 } from "@src/utils/Formatting";
-import FarmHouseIcon from "@images/common/dashboard/farm-house-icon.svg";
-import CropsIcon from "@images/common/dashboard/crops-icon.svg";
-import PlanterIcon from "@images/common/dashboard/planter-icon.svg";
-import AmountIcon from "@images/common/dashboard/amount-icon.svg";
+import FarmHouseIcon from "@images/dashboard/farm-house-icon.svg";
+import CropsIcon from "@images/dashboard/crops-icon.svg";
+import PlanterIcon from "@images/dashboard/planter-icon.svg";
+import AmountIcon from "@images/dashboard/amount-icon.svg";
 
 const S = {
   Wrap: styled.div`

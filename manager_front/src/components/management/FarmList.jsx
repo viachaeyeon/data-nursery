@@ -208,24 +208,24 @@ function FarmList() {
   const [isNameOrderBy, setIsNameOrderBy] = useState(true);
   const [isStateOrderBy, setIsStateOrderBy] = useState(true);
 
-  const nameOrderByToggle = () => {
-    setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
-  };
-  const stateOrderByToggle = () => {
-    setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
-  };
+  //   const nameOrderByToggle = () => {
+  //     setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
+  //   };
+  //   const stateOrderByToggle = () => {
+  //     setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
+  //   };
   const AllCheckBoxToggle = () => {
     setIsAllCheckBox((prevIs) => !prevIs);
   };
 
-  const listData = [
+  const [listData, setListData] = useState([
     {
       serial_number: "KN001DS0958",
       farm_id: "PF_0021350",
       farm_name: "하나공정육묘장영농조합법인",
       name: "이형채",
       farm_number: "제 13-부산-2018-06-01",
-      address: "경상남도 밀양시 부북면 감운로 256 256",
+      address: "전라북도 전주시 완산구 123456454",
       address_code: "50402",
       phone: "010-1234-1234",
       status: "ON",
@@ -239,7 +239,7 @@ function FarmList() {
       address: "경상남도 밀양시 부북면 감운로 256 256",
       address_code: "50402",
       phone: "010-1234-1234",
-      status: "ON",
+      status: "OFF",
     },
     {
       serial_number: "KN001DS0958 ",
@@ -250,9 +250,31 @@ function FarmList() {
       address: "경상남도 밀양시 부북면 감운로 256 256",
       address_code: "50402",
       phone: "010-1234-1234",
-      status: "ON",
+      status: "OFF",
     },
-  ];
+  ]);
+
+  //정렬 토글
+  const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
+  const [isStatusAscending, setIsStatusAscending] = useState(true);
+
+  const sortByFarmName = () => {
+    setIsFarmNameAscending(!isFarmNameAscending);
+    setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
+    listData.sort((a, b) => {
+      const compareResult = a.farm_name.localeCompare(b.farm_name);
+      return isFarmNameAscending ? compareResult : -compareResult;
+    });
+  };
+
+  const sortByStatus = () => {
+    setIsStatusAscending(!isStatusAscending);
+    setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
+    listData.sort((a, b) => {
+      const compareResult = a.status.localeCompare(b.status);
+      return isStatusAscending ? compareResult : -compareResult;
+    });
+  };
 
   return (
     <S.Wrap>
@@ -287,7 +309,7 @@ function FarmList() {
           <p>농가 ID</p>
           <div className="arrow-wrap">
             <p>농가명</p>
-            <div className="icon-wrap" onClick={nameOrderByToggle}>
+            <div className="icon-wrap" onClick={sortByFarmName}>
               {isNameOrderBy ? (
                 <UpArrow width={24} height={24} />
               ) : (
@@ -301,7 +323,7 @@ function FarmList() {
           <p>연락처</p>
           <div className="arrow-wrap">
             <p>상태</p>
-            <div className="icon-wrap" onClick={stateOrderByToggle}>
+            <div className="icon-wrap" onClick={sortByStatus}>
               {isStateOrderBy ? (
                 <UpArrow width={24} height={24} />
               ) : (

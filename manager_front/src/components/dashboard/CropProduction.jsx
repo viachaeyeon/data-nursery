@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Toggle from "./Toggle";
 import GraphCropProductionMonth from "./GraphCropProductionMonth";
 import GraphCropProductionDay from "./GraphCropProductionDay";
-import BarIcon from "@images/common/dashboard/icon-bar.svg";
+import BarIcon from "@images/dashboard/icon-bar.svg";
 
 const S = {
   Wrap: styled.div`

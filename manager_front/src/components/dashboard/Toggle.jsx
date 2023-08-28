@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import CheckIcon from "@images/common/dashboard/icon-check.svg";
+import CheckIcon from "@images/dashboard/icon-check.svg";
 
 const S = {
   Wrap: styled.div`

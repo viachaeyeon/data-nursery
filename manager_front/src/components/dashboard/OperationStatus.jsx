@@ -6,8 +6,8 @@ import {
   NumberCommaFormatting,
   CountPlusFormatting,
 } from "@src/utils/Formatting";
-import BarIcon from "@images/common/dashboard/icon-bar.svg";
-import StatusOnIcon from "@images/common/dashboard/operation_status_on.svg";
+import BarIcon from "@images/dashboard/icon-bar.svg";
+import StatusOnIcon from "@images/dashboard/operation_status_on.svg";
 // import StatusOffIcon from "@images/common/dashboard/operation_status_off.svg";
 
 const S = {

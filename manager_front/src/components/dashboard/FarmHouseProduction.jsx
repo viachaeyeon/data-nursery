@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 import Toggle from "./Toggle";
-import BarIcon from "@images/common/dashboard/icon-bar.svg";
+import BarIcon from "@images/dashboard/icon-bar.svg";
 import GraphFarmHouseProductionMonth from "./GraphFarmHouseProductionMonth";
 import GraphFarmHouseProductionDay from "./GraphFarmHouseProductionDay";
 
