@@ -19,7 +19,8 @@ const S = {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 126px 16px 16px 16px;
+    padding: 126px 24px 24px 24px;
+    overflow-y: auto;
   `,
   LogoWrap: styled.div`
     display: flex;

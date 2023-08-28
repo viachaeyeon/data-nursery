@@ -43,7 +43,6 @@ const S = {
     }
   `,
   MainContent: styled.div`
-    overflow-y: auto;
     position: relative;
     width: 100%;
     height: 100%;
@@ -54,7 +53,6 @@ const S = {
 
     .content {
       height: ${(props) => props.height};
-      overflow-y: auto;
     }
 
     ${({ theme }) => theme.media.max_mobile} {
@@ -78,6 +76,7 @@ const S = {
     top: 0px;
     padding: 16px 24px;
     z-index: 99;
+    background-color: #ffffff;
 
     svg {
       cursor: pointer;
@@ -148,25 +147,20 @@ function MainLayout({ children, pageName, isBackIcon = true, backIconClickFn, is
   const [mainContentHeight, setMainContentHeight] = useState("100%");
 
   // 헤더 및 하단 버튼 유무에 따라 내부 콘텐츠 height 지정
-  // useEffect(() => {
-  //   if (!!pageName && !!buttonType) {
-  //     if (isMobile) {
-  //       setMainContentHeight("calc(100% - 168px)");
-  //     } else {
-  //       setMainContentHeight("calc(100% - 178px)");
-  //     }
-  //   } else if (!!pageName) {
-  //     if (isMobile) {
-  //       setMainContentHeight("calc(100% - 64px)");
-  //     } else {
-  //       setMainContentHeight("calc(100% - 74px)");
-  //     }
-  //   } else if (!!buttonType) {
-  //     setMainContentHeight(`calc(100% - 104px)`);
-  //   } else {
-  //     setMainContentHeight("100%");
-  //   }
-  // }, [pageName, buttonType, isMobile]);
+  useEffect(() => {
+    // if (!!pageName && !!buttonType) {
+    //     setMainContentHeight("calc(100% - 178px)");
+    // } else
+    if (!!pageName) {
+      setMainContentHeight("calc(100% - 72px)");
+    }
+    // else if (!!buttonType) {
+    //   setMainContentHeight(`calc(100% - 104px)`);
+    // }
+    else {
+      setMainContentHeight("100%");
+    }
+  }, [pageName, buttonType]);
 
   return (
     <S.Wrap>

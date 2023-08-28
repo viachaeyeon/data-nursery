@@ -9,3 +9,13 @@ export const defaultButtonColor = {
   focusBorderColor: theme.basic.btnAction,
   fontColor: "#FFFFFF",
 };
+
+export const borderButtonColor = {
+  backgroundColor: "#FFFFFF",
+  borderColor: "#5899FB",
+  hoverBackgroundColor: "#FFFFFF",
+  hoverBorderColor: theme.basic.btnAction,
+  focusBackgroundColor: theme.mobile.sky,
+  focusBorderColor: theme.basic.btnAction,
+  fontColor: "#5899FB",
+};

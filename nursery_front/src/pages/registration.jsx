@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import styled from "styled-components";
 
 import MainLayout from "@components/layout/MainLayout";
-import styled from "styled-components";
 import DefaultButton from "@components/common/button/DefaultButton";
+
 import { defaultButtonColor } from "@src/utils/ButtonColor";
 
 const S = {
@@ -10,7 +11,8 @@ const S = {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 102px 16px 16px 16px;
+    padding: 102px 24px 24px 24px;
+    overflow-y: auto;
 
     .description-text {
       ${({ theme }) => theme.textStyle.h3Bold};
@@ -50,6 +52,7 @@ const S = {
 
 function RegistrationPage() {
   const [serialNumber, setSerialNumber] = useState("");
+
   return (
     <MainLayout pageName={"파종기 등록"}>
       <S.Wrap>
