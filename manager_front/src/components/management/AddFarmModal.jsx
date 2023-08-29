@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import styled from "styled-components";
 
 import XIcon from "@images/common/icon-x.svg";
+import Refresh from "@images/management/refresh.svg";
 
 const S = {
   Wrap: styled.div`
@@ -13,7 +14,7 @@ const S = {
   `,
   WrapInner: styled.div`
     width: 616px;
-    height: 354px;
+    min-height: 354px;
     background-color: #fff;
     border-radius: 8px;
     padding: 40px;
@@ -48,6 +49,24 @@ const S = {
     flex-direction: column;
     gap: 8px;
 
+    .input-wrap-off {
+      width: 100%;
+      background-color: ${({ theme }) => theme.blackWhite.white};
+      padding: 6px 8px 6px 16px;
+      justify-content: start;
+      align-items: center;
+      height: 52px;
+      display: flex;
+      border-radius: 8px;
+      border: 1px solid ${({ theme }) => theme.basic.lightSky};
+
+      input {
+        background-color: ${({ theme }) => theme.blackWhite.white};
+        border: 1px solid ${({ theme }) => theme.blackWhite.white};
+        width: 100%;
+        ${({ theme }) => theme.textStyle.h6Bold};
+      }
+    }
     .input-wrap {
       width: 100%;
       background-color: ${({ theme }) => theme.basic.lightSky};
@@ -56,11 +75,13 @@ const S = {
       align-items: center;
       height: 52px;
       display: flex;
+      border-radius: 8px;
 
       input {
         background-color: ${({ theme }) => theme.basic.lightSky};
         border: 1px solid ${({ theme }) => theme.basic.lightSky};
         width: 100%;
+        ${({ theme }) => theme.textStyle.h6Bold};
       }
       input::placeholder {
         color: ${({ theme }) => theme.basic.gray50};
@@ -112,19 +133,76 @@ const S = {
       ${({ theme }) => theme.textStyle.h5Bold}
     }
   `,
+  QrCodeWrap: styled.div`
+    margin-top: 16px;
+    padding: 24px 0px;
+    display: flex;
+    flex-direction: column;
+    background-color: ${({ theme }) => theme.basic.whiteGray};
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+
+    .qr-inner {
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      padding: 11.49px;
+      gap: 8.61px;
+      background-color: ${({ theme }) => theme.blackWhite.white};
+
+      p {
+        color: ${({ theme }) => theme.basic.gray40};
+        font-size: 22.972px;
+        font-weight: 600;
+        line-height: normal;
+      }
+    }
+
+    .reset-button {
+      cursor: pointer;
+      width: fit-content;
+      display: flex;
+      gap: 16px;
+      padding: 8px 32px;
+      background-color: ${({ theme }) => theme.basic.whiteGray};
+      box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+      border-radius: 8px;
+      border: 1px solid ${({ theme }) => theme.basic.recOutline};
+      justify-content: center;
+      align-items: center;
+
+      p {
+        color: ${({ theme }) => theme.basic.gray60};
+        ${({ theme }) => theme.textStyle.h6Bold}
+      }
+    }
+  `,
 };
 
 function AddFarmModal({
   setAddFarmModalOpen,
   addFarmSerialNumber,
   setAddFarmSerialNumber,
+  createQrcode,
+  setCreateQrcode,
+  setAddFarmSaveModalOpen,
 }) {
+  console.log("addFarmSerialNumber", addFarmSerialNumber);
   const closeModal = useCallback(() => {
     setAddFarmModalOpen(false);
-  }, []);
+    setCreateQrcode(false);
+    setAddFarmSerialNumber("");
+  }, [createQrcode]);
 
   const addQrCodeClick = useCallback(() => {
-    alert("qr 코드 생성 클릭");
+    setCreateQrcode(true);
+  }, [createQrcode]);
+
+  const qrCodeNextClick = useCallback(() => {
+    setAddFarmModalOpen(false);
+    setAddFarmSaveModalOpen({ open: true, serialNumber: addFarmSerialNumber });
   }, []);
 
   return (
@@ -143,22 +221,57 @@ function AddFarmModal({
           <p className="title-info">
             파종기 시리얼번호를 입력하여 <b>QR 코드를 생성하세요</b>
           </p>
-          <div className="input-wrap">
-            <input
-              placeholder="시리얼번호를 입력하세요"
-              value={addFarmSerialNumber}
-              onChange={(e) => setAddFarmSerialNumber(e.target.value)}
-            />
-          </div>
+          {createQrcode ? (
+            <>
+              <div className="input-wrap-off">
+                <input value={addFarmSerialNumber} disabled />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="input-wrap">
+                <input
+                  placeholder="시리얼번호를 입력하세요"
+                  value={addFarmSerialNumber}
+                  onChange={(e) => setAddFarmSerialNumber(e.target.value)}
+                />
+              </div>
+            </>
+          )}
         </S.InputWrap>
-        {addFarmSerialNumber.length !== 0 ? (
-          <S.ButtonWrap onClick={addQrCodeClick}>
-            <p>QR 코드 생성</p>
-          </S.ButtonWrap>
+        {createQrcode && (
+          <S.QrCodeWrap>
+            <div className="qr-inner">
+              큐알코드
+              <p>SCAN ME!</p>
+            </div>
+            <div className="reset-button">
+              <div className="img">
+                <Refresh width={24} height={24} />
+              </div>
+              <p>초기화</p>
+            </div>
+          </S.QrCodeWrap>
+        )}
+
+        {createQrcode ? (
+          <>
+            <S.ButtonWrap onClick={qrCodeNextClick}>
+              <p>다음</p>
+            </S.ButtonWrap>
+          </>
         ) : (
-          <S.ButtonWrapOff>
-            <p>QR 코드 생성</p>
-          </S.ButtonWrapOff>
+          <>
+            {addFarmSerialNumber.length !== 0 ? (
+              <S.ButtonWrap onClick={addQrCodeClick}>
+                <p>QR 코드 생성</p>
+              </S.ButtonWrap>
+            ) : (
+              <S.ButtonWrapOff>
+                <p>QR 코드 생성</p>
+              </S.ButtonWrapOff>
+            )}
+          </>
         )}
       </S.WrapInner>
     </S.Wrap>

@@ -41,7 +41,7 @@ const S = {
     margin-top: 40px;
     display: flex;
     flex-direction: column;
-    gap:16px;
+    gap: 16px;
 
     .input-wrap {
       width: 100%;
@@ -83,7 +83,7 @@ const S = {
       b {
         ${({ theme }) => theme.textStyle.h6Bold}
       }
-      margin-bottom:8px;
+      margin-bottom: 8px;
     }
   `,
   ButtonWrap: styled.div`
@@ -98,26 +98,24 @@ const S = {
     cursor: pointer;
 
     p {
-      color: ${({theme})=>theme.blackWhite.white} !important;
+      color: ${({ theme }) => theme.blackWhite.white} !important;
       ${({ theme }) => theme.textStyle.h5Bold};
     }
   `,
-  QrCodWrap:styled.div`
+  QrCodWrap: styled.div`
     padding: 24px 0px;
     display: flex;
-    background-color: ${({theme})=>theme.basic.whiteGray};
+    background-color: ${({ theme }) => theme.basic.whiteGray};
     border-radius: 8px;
     align-items: center;
     justify-content: center;
     margin-top: 16px;
-
   `,
 };
 
-function QrDownloadModal({qrDownloadModalOpen, setQrDownloadModalOpen }) {
-
+function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
   const closeModal = useCallback(() => {
-    setQrDownloadModalOpen({open:false,data:undefined});
+    setQrDownloadModalOpen({ open: false, data: undefined });
   }, []);
 
   const qrCodeDownloadClick = useCallback(() => {
@@ -151,9 +149,7 @@ function QrDownloadModal({qrDownloadModalOpen, setQrDownloadModalOpen }) {
             </div>
           </div>
         </S.InputWrap>
-        <S.QrCodWrap>
-
-        </S.QrCodWrap>
+        <S.QrCodWrap></S.QrCodWrap>
         <S.ButtonWrap onClick={qrCodeDownloadClick}>
           <p>다운로드</p>
         </S.ButtonWrap>

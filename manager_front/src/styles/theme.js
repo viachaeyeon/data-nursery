@@ -6,7 +6,6 @@
 //     in_tablet: "@media screen and (min-width: 900px) and (max-width: 1500px)",
 //   };
 
-
 const textStyle = {
   h1Bold:
     "font-size: 56px; font-style: normal; font-weight: 700; line-height:64",
@@ -31,10 +30,9 @@ const textStyle = {
 };
 
 const blackWhite = {
-  black:"#000",
-  white:"#fff"
-}
-
+  black: "#000",
+  white: "#fff",
+};
 
 const infobox = {
   color1: "#FFB78E",

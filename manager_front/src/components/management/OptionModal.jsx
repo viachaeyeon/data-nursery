@@ -74,16 +74,14 @@ function OptionModal({
     if (qrDownloadModalOpen.open === true) {
       setQrDownloadModalOpen({ open: false, data: undefined });
     } else if (qrDownloadModalOpen.open === false) {
-        setQrDownloadModalOpen({ open: true, data: qrDownloadModalOpen });
-        setOptionModalOpen({open:false,index: undefined, data: undefined})
+      setQrDownloadModalOpen({ open: true, data: qrDownloadModalOpen });
+      setOptionModalOpen({ open: false, index: undefined, data: undefined });
     }
-  },[qrDownloadModalOpen]);
+  }, [qrDownloadModalOpen]);
 
   return (
     <S.Wrap>
-      <div className="line" 
-      onClick={handleQrDownloadModalClick}
-      >
+      <div className="line" onClick={handleQrDownloadModalClick}>
         <div className="icon">
           <QRIcon width={16} height={16} />
         </div>
