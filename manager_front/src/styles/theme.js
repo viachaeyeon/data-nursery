@@ -6,14 +6,17 @@
 //     in_tablet: "@media screen and (min-width: 900px) and (max-width: 1500px)",
 //   };
 
+
 const textStyle = {
   h1Bold:
     "font-size: 56px; font-style: normal; font-weight: 700; line-height:64",
   h2Bold: "",
-  h3Bold: "",
+  h3Bold:
+    "font-size:32px; font-style:normal; font-weight:700; line-height:36px",
   h4Bold:
     "font-size:24px; font-style:normal; font-weight:700; line-height:28px;",
-  h5Bold: "",
+  h5Bold:
+    "font-size:20px; font-style:normal; font-weight:700; line-height:24px",
   h6Bold:
     "font-size:16px; font-style:normal; font-weight:700; line-height:20px",
   h7Bold:
@@ -26,6 +29,12 @@ const textStyle = {
   h8Reguler: "",
   h7Semibold: "",
 };
+
+const blackWhite = {
+  black:"#000",
+  white:"#fff"
+}
+
 
 const infobox = {
   color1: "#FFB78E",
@@ -80,12 +89,18 @@ const graph = {
   color02: "#B298FD",
 };
 
+const primery = {
+  primery: "#5899FB",
+};
+
 const theme = {
   textStyle,
+  blackWhite,
   infobox,
   basic,
   farmFrontName,
   graph,
+  primery,
 };
 
 export default theme;

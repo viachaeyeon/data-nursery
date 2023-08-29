@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
+
+import OptionModal from "./OptionModal";
+import AddFarmModal from "./AddFarmModal";
+import QrDownloadModal from "./QrDownloadModal";
 
 import ExcelIcon from "@images/management/excel-icon.svg";
 import AddIcon from "@images/management/add-icon.svg";
@@ -15,6 +19,16 @@ const S = {
     display: flex;
     flex-direction: column;
     gap: 40px;
+
+    .modal-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #00000040;
+      z-index: 1;
+    }
   `,
   InfoBlock: styled.div`
     background-color: #fff;
@@ -65,6 +79,14 @@ const S = {
       color: #5899fb;
       ${({ theme }) => theme.textStyle.h6Bold}
     }
+
+    &:hover {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+    }
+    &:active {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+      background-color: ${({ theme }) => theme.basic.lightSky};
+    }
   `,
   AddButton: styled.div`
     cursor: pointer;
@@ -81,6 +103,14 @@ const S = {
     p {
       color: #fff;
       ${({ theme }) => theme.textStyle.h6Bold}
+    }
+
+    &:hover {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+    }
+    &:active {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+      background-color: ${({ theme }) => theme.basic.btnAction};
     }
   `,
   ContentList: styled.div`
@@ -166,6 +196,12 @@ const S = {
     .option-dot {
       cursor: pointer;
     }
+    .status-on{
+      color:${({theme})=>theme.primery.primery}
+    }
+    .status-off{
+      color:${({theme})=>theme.basic.gray30}
+    }
   `,
 
   ButtonWrap: styled.div`
@@ -189,6 +225,14 @@ const S = {
       ${({ theme }) => theme.textStyle.h6Reguler}
       color:${({ theme }) => theme.basic.gray60}
     }
+
+    &:hover {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+    }
+    &:active {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+      background-color: ${({ theme }) => theme.basic.recOutline};
+    }
   `,
   AddressTooltip: styled(Tooltip)`
     border-radius: 8px !important;
@@ -205,19 +249,64 @@ const S = {
 
 function FarmList() {
   const [isAllCheckBox, setIsAllCheckBox] = useState(false);
+  const [isOneCheckBox, setIsOneCheckBox] = useState(false);
   const [isNameOrderBy, setIsNameOrderBy] = useState(true);
   const [isStateOrderBy, setIsStateOrderBy] = useState(true);
+  const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
+  // ...클릭시 나오는 모달
+  const [optionModalOpen, setOptionModalOpen] = useState({
+    open: false,
+    index: undefined,
+    data: undefined,
+  });
+  //농가 추가 모달
+  const [addFarmModalOpen, setAddFarmModalOpen] = useState(false);
 
-  //   const nameOrderByToggle = () => {
-  //     setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
-  //   };
-  //   const stateOrderByToggle = () => {
-  //     setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
-  //   };
-  const AllCheckBoxToggle = () => {
+  //QR 다운로드 모달
+  const [qrDownloadModalOpen, setQrDownloadModalOpen] = useState({
+    open: false,
+    data:undefined
+  });
+
+
+  // 전체선택 토글
+  const AllCheckBoxToggle = useCallback(() => {
     setIsAllCheckBox((prevIs) => !prevIs);
-  };
+  }, [isAllCheckBox]);
 
+  // 개별선택 토글
+  const OneCheckBoxToggle = useCallback(() => {
+    setIsOneCheckBox((prevIs) => !prevIs);
+  }, [isOneCheckBox]);
+
+  // : 눌렀을때 나오는 모달
+  const handleOptionModalClick = useCallback((index, data) => {    
+    if (optionModalOpen.open === true) {
+      setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    } else if (optionModalOpen.open === false) {
+      setOptionModalOpen({ open: true, index: index, data: data });
+      // handleQrDownloadModalClick(data)
+    }
+  },[optionModalOpen]);
+
+  // 농가추가 모달
+  const handleAddFarmModalClick = () => {
+    if (addFarmModalOpen === true) {
+      setAddFarmModalOpen(false);
+    } else if (addFarmModalOpen === false) {
+      setAddFarmModalOpen(true);
+    }
+  };
+  // // QR 다운로드 모달
+  // const handleQrDownloadModalClick = (data) => {
+  //   if (qrDownloadModalOpen === true) {
+  //     setQrDownloadModalOpen({open:false,serial_number:undefined});
+  //   } else if (qrDownloadModalOpen === false) {
+  //     setQrDownloadModalOpen({open:true,serial_number:data.serial_number});
+  //   }
+  // };
+
+  // 농가목록 데이터
   const [listData, setListData] = useState([
     {
       serial_number: "KN001DS0958",
@@ -258,6 +347,7 @@ function FarmList() {
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
   const [isStatusAscending, setIsStatusAscending] = useState(true);
 
+  // 농가명 정렬
   const sortByFarmName = () => {
     setIsFarmNameAscending(!isFarmNameAscending);
     setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
@@ -267,6 +357,7 @@ function FarmList() {
     });
   };
 
+  // 상태 정렬
   const sortByStatus = () => {
     setIsStatusAscending(!isStatusAscending);
     setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
@@ -289,7 +380,7 @@ function FarmList() {
               <ExcelIcon width={20} height={25} />
               <p>엑셀 내려받기</p>
             </S.ExcelButton>
-            <S.AddButton>
+            <S.AddButton onClick={handleAddFarmModalClick}>
               <AddIcon width={24} height={24} />
               <p>농가 추가</p>
             </S.AddButton>
@@ -336,7 +427,18 @@ function FarmList() {
         {listData.map((data, index) => {
           return (
             <S.ListBlock key={`map${index}`}>
-              <CheckBoxOff width={24} height={24} />
+              <div
+                className="check-box-one"
+                onClick={() => {
+                  OneCheckBoxToggle(index);
+                }}
+              >
+                {isOneCheckBox ? (
+                  <CheckBoxOn width={24} height={24} />
+                ) : (
+                  <CheckBoxOff width={24} height={24} />
+                )}
+              </div>
               <p className="serial_number">{data.serial_number}</p>
               <p className="farm_id">{data.farm_id}</p>
               <div className="farm_name_wrap">
@@ -351,10 +453,24 @@ function FarmList() {
                 {data.address}
               </p>
               <p className="phone">{data.phone}</p>
-              <p className="status">{data.status}</p>
-              <div className="option-dot">
+              {data.status === "ON" ? (
+                <p className="status-on">{data.status}</p>
+              ): 
+              (
+                <p className="status-off">{data.status}</p>
+              )}
+              <div
+                className="option-dot"
+                onClick={() => {
+                  handleOptionModalClick(index, data);
+                  setQrDownloadModalOpen({
+                    open: false,
+                    data: data})
+                }}
+              >
                 <OptionDot width={40} height={32} />
               </div>
+
               <S.AddressTooltip
                 anchorId={`address${index}`}
                 place="bottom"
@@ -367,6 +483,14 @@ function FarmList() {
                   </div>
                 }
               />
+              {index === optionModalOpen.index && (
+                <OptionModal
+                  optionModalOpen={optionModalOpen}
+                  setOptionModalOpen={setOptionModalOpen}
+                  qrDownloadModalOpen={qrDownloadModalOpen}
+                  setQrDownloadModalOpen={setQrDownloadModalOpen}
+                />
+              )}
             </S.ListBlock>
           );
         })}
@@ -376,6 +500,26 @@ function FarmList() {
           </S.MoreButton>
         </S.ButtonWrap>
       </S.ContentList>
+      {/* 농가추가 모달 */}
+      {addFarmModalOpen && (
+        <div className="modal-wrap">
+          <AddFarmModal
+            setAddFarmModalOpen={setAddFarmModalOpen}
+            addFarmSerialNumber={addFarmSerialNumber}
+            setAddFarmSerialNumber={setAddFarmSerialNumber}
+          />
+        </div>
+      )}
+      {/* QR 다운로드 모달 */}
+      {qrDownloadModalOpen.open && (
+        <div className="modal-wrap">
+          <QrDownloadModal
+            qrDownloadModalOpen={qrDownloadModalOpen}
+            setQrDownloadModalOpen={setQrDownloadModalOpen}
+            optionModalOpen={optionModalOpen}
+          />
+      </div>
+    )}
     </S.Wrap>
   );
 }

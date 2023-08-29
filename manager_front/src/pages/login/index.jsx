@@ -72,6 +72,13 @@ const S = {
       letter-spacing: -0.32px;
       color: #929fa6;
     }
+    input:focus-visible {
+      outline: none;
+    }
+
+    input {
+      width: 100%;
+    }
   `,
   IdSaveWrap: styled.div`
     display: flex;
@@ -115,7 +122,7 @@ const S = {
 function Login() {
   const [inputId, setInputId] = useState("");
   const [inputPw, setInputPw] = useState("");
-  const [isSaveId, setIsSaveId] = useState(true);
+  const [isSaveId, setIsSaveId] = useState(false);
 
   const toggleSaveId = () => {
     setIsSaveId((prevState) => !prevState);
@@ -145,6 +152,7 @@ function Login() {
             <PwIcon width={20} height={20} />
             <input
               className="input-style"
+              type="password"
               value={inputPw}
               onChange={(e) => setInputPw(e.target.value)}
               placeholder="비밀번호를 입력해주세요"
