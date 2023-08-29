@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, UploadFile, File, Form
 from starlette.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -22,7 +22,12 @@ from constant.cookie_set import (
 router = APIRouter()
 
 
-@router.post("/test/sign-up", status_code=201, response_model=schemas.User)
+@router.post(
+    "/test/sign-up",
+    description="test 유저 생성용입니다.<br/>파종기 정보가 같이 생성되지 않습니다.",
+    status_code=201,
+    response_model=schemas.User,
+)
 def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if not user.login_id or not user.password:
         return JSONResponse(
@@ -48,7 +53,12 @@ def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.post("/login", status_code=200, response_model=schemas.UserToken)
+@router.post(
+    "/login",
+    description="유저 로그인시 사용합니다.<br/>일반유저(농가)와 관리자유저의 로그인 구분을 l_type의 값으로 판단합니다.<br/>01: 일반유저, 99: 관리자",
+    status_code=200,
+    response_model=schemas.UserToken,
+)
 def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     if not user_data.login_id or not user_data.password:
         return JSONResponse(
@@ -73,9 +83,7 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
         return JSONResponse(status_code=400, content=dict(msg="DELETED_USER"))
 
     access_token = create_access_token(login_user.login_id)
-    # response = JSONResponse(status_code=200, content=dict(msg="LOGIN_SUCCESS"))
 
-    # response = JSONResponse(status_code=200, content=dict(msg="LOGIN_SUCCESS"))
     # l_type == "01" 농가, l_type == "99" 관리자
     if user_data.l_type != login_user.code:
         # 로그인 요청 타입과 유저 타입이 맞지 않는 경우 오류 리턴
@@ -96,6 +104,8 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
                 "farm_house": {
                     "id": farm_house.id,
                     "name": farm_house.name,
+                    "farm_house_id": farm_house.farm_house_id,
+                    "producer_name": farm_house.producer_name,
                     "nursery_number": farm_house.nursery_number,
                     "phone": farm_house.phone,
                 },
@@ -143,32 +153,18 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
             samesite="lax",
         )
 
-    # refresh_token = create_refresh_token(login_user.login_id)
-
-    # response.set_cookie(
-    #     key="_tr",
-    #     value=refresh_token,
-    #     httponly=True,
-    #     expires=(
-    #         datetime.utcnow() + timedelta(days=JWT_REFRESH_TOKEN_EXPIRE_DAY)
-    #     ).strftime("%a, %d %b %Y %H:%M:%S GMT"),
-    #     domain=AUTH_COOKIE_DOMAIN if AUTH_COOKIE_DOMAIN != "None" else None,
-    #     secure=True if AUTH_COOKIE_SECURE != "False" else False,
-    #     samesite="lax",
-    # )
-
     return response
 
 
 @router.get(
     "/common/user",
+    description="일반유저 로그인 시 사용합니다.<br/>로그인 요청 시 _ta 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
     status_code=200,
 )
 def get_user(request: Request, db: Session = Depends(get_db)):
     user = get_current_user("01", request.cookies, db)
 
     access_token = create_access_token(user.login_id)
-    # refresh_token = create_refresh_token(user.login_id)
 
     farm_house = user.user_farm_house
     planter = user.user_farm_house.farm_house_planter
@@ -183,6 +179,8 @@ def get_user(request: Request, db: Session = Depends(get_db)):
             "farm_house": {
                 "id": farm_house.id,
                 "name": farm_house.name,
+                "farm_house_id": farm_house.farm_house_id,
+                "producer_name": farm_house.producer_name,
                 "nursery_number": farm_house.nursery_number,
                 "phone": farm_house.phone,
             },
@@ -205,30 +203,21 @@ def get_user(request: Request, db: Session = Depends(get_db)):
         secure=True if AUTH_COOKIE_SECURE != "False" else False,
         samesite="lax",
     )
-    # response.set_cookie(
-    #     key="_tr",
-    #     value=refresh_token,
-    #     httponly=True,
-    #     expires=(
-    #         datetime.utcnow() + timedelta(days=JWT_REFRESH_TOKEN_EXPIRE_DAY)
-    #     ).strftime("%a, %d %b %Y %H:%M:%S GMT"),
-    #     domain=AUTH_COOKIE_DOMAIN if AUTH_COOKIE_DOMAIN != "None" else None,
-    #     secure=True if AUTH_COOKIE_SECURE != "False" else False,
-    #     samesite="lax",
-    # )
 
     return response
 
 
 @router.get(
     "/admin/user",
+    description="관리자 유저 로그인 시 사용합니다.<br/>로그인 요청 시 _taa 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
     status_code=200,
+    # openapi_extra="?"
+    # include_in_schema=False,
 )
 def get_user(request: Request, db: Session = Depends(get_db)):
     user = get_current_user("99", request.cookies, db)
 
     access_token = create_access_token(user.login_id)
-    # refresh_token = create_refresh_token(user.login_id)
 
     response = JSONResponse(
         status_code=200,
@@ -251,28 +240,17 @@ def get_user(request: Request, db: Session = Depends(get_db)):
         secure=True if AUTH_COOKIE_SECURE != "False" else False,
         samesite="lax",
     )
-    # response.set_cookie(
-    #     key="_tra",
-    #     value=refresh_token,
-    #     httponly=True,
-    #     expires=(
-    #         datetime.utcnow() + timedelta(days=JWT_REFRESH_TOKEN_EXPIRE_DAY)
-    #     ).strftime("%a, %d %b %Y %H:%M:%S GMT"),
-    #     domain=AUTH_COOKIE_DOMAIN if AUTH_COOKIE_DOMAIN != "None" else None,
-    #     secure=True if AUTH_COOKIE_SECURE != "False" else False,
-    #     samesite="lax",
-    # )
 
     return response
 
 
-# @router.post("/test/jwt-validate")
-# def test_jwt_validate(token: schemas.UserToken, db: Session = Depends(get_db)):
-#     valided_jwt = validate_token(token.access)
+# @router.post(
+#     "/create/farmhouse",
+#     description="관리자페이지에서 농가를 추가할때 사용"
+#     status_code=200,
+# )
+# def create_farm_house(
+#     serial_number: str = Form(...),
+#     nursery_number: str = Form(...),
 
-#     if not valided_jwt:
-#         return JSONResponse(
-#             status_code=401, content=dict(msg="USER_CERTIFICATION_EXPIRED")
-#         )
-
-#     return {"test": "test"}
+# )

@@ -28,6 +28,8 @@ class FarmHouse(BaseModel):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(length=255), unique=True, index=True)
     nursery_number = Column(String(length=244), unique=True, index=True)
+    farm_house_id = Column(String(length=20), unique=True, index=True)
+    producer_name = Column(String(length=20), index=True)
     address = Column(Text)
     owner_id = Column(Integer, ForeignKey("users.id"))
     phone = Column(String(length=20))
