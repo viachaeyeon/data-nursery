@@ -72,14 +72,41 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     if login_user.is_del:
         return JSONResponse(status_code=400, content=dict(msg="DELETED_USER"))
 
-    # l_type == "01" 농가, l_type == "99" 관리자
     access_token = create_access_token(login_user.login_id)
-    response = JSONResponse(status_code=200, content=dict(msg="LOGIN_SUCCESS"))
+    # response = JSONResponse(status_code=200, content=dict(msg="LOGIN_SUCCESS"))
 
-    if user_data.l_type == "01" and not login_user.code == "01":
-        # 농가인지 판단
+    # response = JSONResponse(status_code=200, content=dict(msg="LOGIN_SUCCESS"))
+    # l_type == "01" 농가, l_type == "99" 관리자
+    if user_data.l_type != login_user.code:
+        # 로그인 요청 타입과 유저 타입이 맞지 않는 경우 오류 리턴
         return JSONResponse(status_code=400, content=dict(msg="LOGIN_FAILED"))
-    else:
+
+    # 농가일 경우 쿠키 설정
+    if user_data.l_type == "01":
+        farm_house = login_user.user_farm_house
+        planter = login_user.user_farm_house.farm_house_planter
+
+        response = JSONResponse(
+            status_code=200,
+            content={
+                "user": {
+                    "id": login_user.id,
+                    "name": login_user.name,
+                },
+                "farm_house": {
+                    "id": farm_house.id,
+                    "name": farm_house.name,
+                    "nursery_number": farm_house.nursery_number,
+                    "phone": farm_house.phone,
+                },
+                "planter": {
+                    "id": planter.id,
+                    "serial_number": planter.serial_number,
+                    "is_register": planter.is_register,
+                },
+            },
+        )
+
         response.set_cookie(
             key=AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN,
             value=access_token,
@@ -91,10 +118,19 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
             secure=True if AUTH_COOKIE_SECURE != "False" else False,
             samesite="lax",
         )
-    if user_data.l_type == "99" and not login_user.code == "99":
-        # 관리자인지 판단
-        return JSONResponse(status_code=400, content=dict(msg="LOGIN_FAILED"))
-    else:
+
+    # 관리자일 경우 쿠키 설정
+    if user_data.l_type == "99":
+        response = JSONResponse(
+            status_code=200,
+            content={
+                "user": {
+                    "id": login_user.id,
+                    "name": login_user.name,
+                }
+            },
+        )
+
         response.set_cookie(
             key=AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN,
             value=access_token,
@@ -134,6 +170,9 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     access_token = create_access_token(user.login_id)
     # refresh_token = create_refresh_token(user.login_id)
 
+    farm_house = user.user_farm_house
+    planter = user.user_farm_house.farm_house_planter
+
     response = JSONResponse(
         status_code=200,
         content={
@@ -142,15 +181,15 @@ def get_user(request: Request, db: Session = Depends(get_db)):
                 "name": user.name,
             },
             "farm_house": {
-                "id": user.user_farm_house.id,
-                "name": user.user_farm_house.name,
-                "nursery_number": user.user_farm_house.nursery_number,
-                "phone": user.user_farm_house.phone,
+                "id": farm_house.id,
+                "name": farm_house.name,
+                "nursery_number": farm_house.nursery_number,
+                "phone": farm_house.phone,
             },
             "planter": {
-                "id": user.user_farm_house.farm_house_planter.id,
-                "serial_number": user.user_farm_house.farm_house_planter.serial_number,
-                "is_register": user.user_farm_house.farm_house_planter.is_register,
+                "id": planter.id,
+                "serial_number": planter.serial_number,
+                "is_register": planter.is_register,
             },
         },
     )
@@ -202,7 +241,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     )
 
     response.set_cookie(
-        key="_taa",
+        key=AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN,
         value=access_token,
         httponly=True,
         expires=(
