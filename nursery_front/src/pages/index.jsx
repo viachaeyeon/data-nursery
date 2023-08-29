@@ -8,6 +8,7 @@ import MainLayout from "@components/layout/MainLayout";
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 import TodayOutputIcon from "@images/dashboard/icon-output.svg";
 import UseTimeIcon from "@images/dashboard/icon-time.svg";
+import NoneIcon from "@images/dashboard/none-icon.svg";
 import { NumberFormatting } from "@src/utils/Formatting";
 
 const S = {
@@ -123,6 +124,25 @@ const S = {
       }
     }
   `,
+  WorkWrap: styled.div`
+    padding: 0px 24px;
+    width: 100%;
+    height: 100%;
+
+    .no-work {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        ${({ theme }) => theme.textStyle.h5Bold}
+        color: ${({ theme }) => theme.basic.grey50};
+      }
+    }
+  `,
 };
 
 function MainPage() {
@@ -169,6 +189,12 @@ function MainPage() {
             </S.CardWrap>
           </ScrollContainer>
         </S.ScrollWrap>
+        <S.WorkWrap>
+          <div className="no-work">
+            <NoneIcon />
+            <p>새 작업을 등록하세요!</p>
+          </div>
+        </S.WorkWrap>
       </S.Wrap>
     </MainLayout>
   );
