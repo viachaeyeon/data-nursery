@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-import IdIcon from "@images/sign-in/id-icon.svg";
-import PasswordIcon from "@images/sign-in/password-icon.svg";
+import IdIcon from "@images/login/id-icon.svg";
+import PasswordIcon from "@images/login/password-icon.svg";
 
 const S = {
   InputWrap: styled.div`

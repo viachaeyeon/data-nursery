@@ -2,7 +2,7 @@
 export function loginCheckAuthentication(gssp) {
   return async (context) => {
     const { req, res } = context;
-    const token = req.cookies._iu;
+    const token = req.cookies._tr;
     if (!!token) {
       return {
         redirect: {
@@ -20,12 +20,12 @@ export function loginCheckAuthentication(gssp) {
 export function requireAuthentication(gssp) {
   return async (context) => {
     const { req, res } = context;
-    const token = req.cookies._iu;
+    const token = req.cookies._tr;
 
     if (!token) {
       return {
         redirect: {
-          destination: "/sign-in",
+          destination: "/login",
           statusCode: 302,
         },
       };
