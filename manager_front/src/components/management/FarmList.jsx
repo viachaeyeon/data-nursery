@@ -126,7 +126,8 @@ const S = {
       padding: 6px 32px 6px 24px;
     }
     p {
-      ${({ theme }) => theme.textStyle.h7Reguler}
+      ${({ theme }) => theme.textStyle.h7Reguler};
+      color: ${({theme})=>theme.basic.gray60};
     }
 
     .arrow-wrap {
@@ -357,24 +358,34 @@ function FarmList() {
   const [isStatusAscending, setIsStatusAscending] = useState(true);
 
   // 농가명 정렬
-  const sortByFarmName = () => {
+  const sortByFarmName = useCallback(() => {
     setIsFarmNameAscending(!isFarmNameAscending);
     setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
     listData.sort((a, b) => {
       const compareResult = a.farm_name.localeCompare(b.farm_name);
       return isFarmNameAscending ? compareResult : -compareResult;
     });
-  };
+  },[isFarmNameAscending,isNameOrderBy]);
 
   // 상태 정렬
-  const sortByStatus = () => {
+  const sortByStatus = useCallback(() => {
     setIsStatusAscending(!isStatusAscending);
     setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
     listData.sort((a, b) => {
       const compareResult = a.status.localeCompare(b.status);
       return isStatusAscending ? compareResult : -compareResult;
     });
-  };
+  },[isStatusAscending,isStateOrderBy]);
+
+  // 엑셀 다운로드 버튼
+  const handleExcelClick = useCallback(()=>{
+    alert("엑셀 다운로드 클릭")
+  },[])
+
+  // 농가목록 더보기
+  const listMoreView = useCallback(()=>{
+    alert("더보기 버튼 구현중")
+  },[]);
 
   return (
     <S.Wrap>
@@ -385,7 +396,7 @@ function FarmList() {
             <p className="info-sub">농가 목록 추가, 수정, 삭제, QR코드 관리</p>
           </div>
           <div className="button-wrap">
-            <S.ExcelButton>
+            <S.ExcelButton onClick={handleExcelClick}>
               <ExcelIcon width={20} height={25} />
               <p>엑셀 내려받기</p>
             </S.ExcelButton>
@@ -503,12 +514,13 @@ function FarmList() {
             </S.ListBlock>
           );
         })}
-        <S.ButtonWrap>
+        <S.ButtonWrap onClick={listMoreView}>
           <S.MoreButton>
             <p>더보기</p>
           </S.MoreButton>
         </S.ButtonWrap>
       </S.ContentList>
+
       {/* 농가추가 모달 */}
       {addFarmModalOpen && (
         <div className="modal-wrap">

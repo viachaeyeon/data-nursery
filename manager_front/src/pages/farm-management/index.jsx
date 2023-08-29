@@ -23,25 +23,13 @@ function getCurrentDateTime() {
   return `${year}.${month}.${day} ${hours}:${minutes}`;
 }
 
-// 현재날짜
-function getCurrentDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-
-  return `${year}.${month}.${day}`;
-}
-
 function Dashboard() {
   // 현재시간
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
-  const [currentDate, setCurrentDate] = useState(getCurrentDate());
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDateTime(getCurrentDateTime());
-      setCurrentDate(getCurrentDate());
     }, 60000); // 1분마다 업데이트
 
     return () => clearInterval(intervalId);
@@ -49,7 +37,7 @@ function Dashboard() {
 
   return (
     <MainLayout>
-      <MainHeader currentDateTime={currentDateTime} />
+      {/* <MainHeader currentDateTime={currentDateTime} /> */}
       <S.Wrap>
         <FarmList />
       </S.Wrap>

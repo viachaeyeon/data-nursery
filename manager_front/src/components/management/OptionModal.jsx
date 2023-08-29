@@ -4,20 +4,25 @@ import styled from "styled-components";
 import QRIcon from "@images/management/qr-icon.svg";
 import EditIcon from "@images/common/edit-icon.svg";
 import DeleteIcon from "@images/common/delete-icon.svg";
-import QrDownloadModal from "./QrDownloadModal";
 
 const S = {
   Wrap: styled.div`
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 8px;
-    width: fit-content;
-    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
-    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    display: flex;
+    justify-content: end;
     position: absolute;
-    /* top:344px; */
-    right: 33px;
-
+    
+    .wrap-inner{
+      align-items: center;
+      position: absolute;
+      top: 10px;
+      left: 1004px;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 8px;
+      width: 111px;
+      box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+      border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    }
     .line {
       background-color: #fff;
       border-radius: 4px;
@@ -77,15 +82,22 @@ function OptionModal({
     }
   }, [qrDownloadModalOpen]);
 
+  // 농가수정
+  const handelEditClick = useCallback(()=>{
+    alert(qrDownloadModalOpen.data.serial_number)
+  },[])
+
   return (
     <S.Wrap>
+      <div className="wrap-inner">
+
       <div className="line" onClick={handleQrDownloadModalClick}>
         <div className="icon">
           <QRIcon width={16} height={16} />
         </div>
         <p>QR다운</p>
       </div>
-      <div className="line">
+      <div className="line" onClick={handelEditClick}>
         <div className="icon">
           <EditIcon width={16} height={16} />
         </div>
@@ -97,14 +109,8 @@ function OptionModal({
         </div>
         <p>삭제</p>
       </div>
-      {/* {qrDownloadModalOpen && (
-        <div className="modal-wrap">
-          <QrDownloadModal
-            setQrDownloadModalOpen={setQrDownloadModalOpen}
-            optionModalOpen={optionModalOpen}
-          />
-        </div>
-      )} */}
+      </div>
+
     </S.Wrap>
   );
 }
