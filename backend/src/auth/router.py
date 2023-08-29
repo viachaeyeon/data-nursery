@@ -244,13 +244,28 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     return response
 
 
-# @router.post(
-#     "/create/farmhouse",
-#     description="관리자페이지에서 농가를 추가할때 사용"
-#     status_code=200,
-# )
-# def create_farm_house(
-#     serial_number: str = Form(...),
-#     nursery_number: str = Form(...),
+@router.post("create/harmhouse", description="관리자페이지에서 농가 추가할때 사용", status_code=201)
+def create_farm_house(
+    serial_number: str = Form(...),
+    nursery_number: str = Form(...),
+    farm_house_id: str = Form(...),
+    name: str = Form(...),
+    producer_name: str = Form(...),
+    phone: str = Form(...),
+    address: str = Form(...),
+    qrcode: UploadFile = File(...),
+):
+    print("==================================")
+    print("==================================")
 
-# )
+    print(serial_number)
+    print(nursery_number)
+    print(farm_house_id)
+    print(name)
+    print(producer_name)
+    print(phone)
+    print(address)
+    print(qrcode)
+    print("==================================")
+    print("==================================")
+    return JSONResponse(status_code=201, content=dict(msg="CREATED_SUCCESS"))

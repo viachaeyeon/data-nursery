@@ -22,6 +22,7 @@ class Planter(BaseModel):
     serial_number = Column(String(length=255))
     is_register = Column(Boolean, default=False)
     register_date = Column(DateTime, nullable=True)
+    qrcode = Column(String)
 
     planter_farm_house = relationship("FarmHouse", back_populates="farm_house_planter")
     planter__planter_status = relationship(
