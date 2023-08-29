@@ -4,7 +4,7 @@ import { Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
 
 import MainLayout from "@components/layout/MainLayout";
 
-import QRCodeImage from "@images/sign-in/img-qrcode.svg";
+import QRCodeImage from "@images/login/img-qrcode.svg";
 import DefaultButton from "@components/common/button/DefaultButton";
 import { defaultButtonColor } from "@src/utils/ButtonColor";
 

@@ -9,10 +9,11 @@ import { loginAPI } from "@src/apis/authAPIs";
 import MainLayout from "@components/layout/MainLayout";
 import PrefixInput from "@components/common/input/PrefixInput";
 
-import OnCheckBoxIcon from "@images/sign-in/on-check-box.svg";
-import OffCheckBoxIcon from "@images/sign-in/off-check-box.svg";
+import OnCheckBoxIcon from "@images/login/on-check-box.svg";
+import OffCheckBoxIcon from "@images/login/off-check-box.svg";
 import DefaultButton from "@components/common/button/DefaultButton";
 import { defaultButtonColor } from "@src/utils/ButtonColor";
+import { loginCheckAuthentication } from "@src/utils/LoginCheckAuthentication";
 
 const S = {
   Wrap: styled.div`
@@ -72,7 +73,7 @@ const S = {
   `,
 };
 
-function SignInPage() {
+function LogInPage() {
   const router = useRouter();
   // const clearQueries = useAllCacheClear();
 
@@ -115,7 +116,6 @@ function SignInPage() {
   const tempLoginCheck = useCallback(async () => {
     try {
       const res = await loginAPI(loginInfo);
-      console.log("res : ", res);
 
       // 아이디 저장 시 실행
       if (loginInfo.isStayLogin) {
@@ -126,9 +126,8 @@ function SignInPage() {
         secureLocalStorage.removeItem("login_id");
       }
 
-      alert("성공");
+      router.push("/");
     } catch (e) {
-      console.log(e);
       alert("로그인에 실패하였습니다. 아이디 및 비밀번호를 확인해주세요.");
     }
   }, [loginInfo]);
@@ -193,8 +192,8 @@ function SignInPage() {
 }
 
 // 로그인 되어있을 경우 메인페이지로 이동
-// export const getServerSideProps = loginCheckAuthentication((context) => {
-//   return { props: {} };
-// });
+export const getServerSideProps = loginCheckAuthentication((context) => {
+  return { props: {} };
+});
 
-export default SignInPage;
+export default LogInPage;
