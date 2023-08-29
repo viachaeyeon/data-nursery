@@ -56,6 +56,10 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     if not login_user:
         return JSONResponse(status_code=400, content=dict(msg="NO_MATCH_USER"))
 
+    # 삭제된 유저인지 판단
+    if login_user.is_del:
+        return JSONResponse(status_code=400, content=dict(msg="DELETED_USER"))
+
     # l_type == "01" 농가, l_type == "99" 관리자
     if user_data.l_type == "01" and not login_user.code == "01":
         # 농가인지 판단
