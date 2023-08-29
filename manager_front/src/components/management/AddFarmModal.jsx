@@ -189,7 +189,6 @@ function AddFarmModal({
   setCreateQrcode,
   setAddFarmSaveModalOpen,
 }) {
-  console.log("addFarmSerialNumber", addFarmSerialNumber);
   const closeModal = useCallback(() => {
     setAddFarmModalOpen(false);
     setCreateQrcode(false);

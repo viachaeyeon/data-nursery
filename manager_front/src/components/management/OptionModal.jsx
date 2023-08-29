@@ -66,8 +66,6 @@ function OptionModal({
   qrDownloadModalOpen,
   setQrDownloadModalOpen,
 }) {
-  console.log(" 옵션 안 optionModalOpen", optionModalOpen);
-  console.log(" 옵션 안 qrDownloadModalOpen", qrDownloadModalOpen);
 
   // QR 다운로드 모달
   const handleQrDownloadModalClick = useCallback(() => {

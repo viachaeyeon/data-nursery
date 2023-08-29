@@ -147,6 +147,7 @@ const S = {
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
     margin-top: 32px;
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    cursor: default;
 
     p {
       color: ${({ theme }) => theme.basic.gray30};
@@ -184,27 +185,8 @@ function AddFarmSaveModal({
   }, []);
 
   const FarmInfoSave = useCallback(() => {
-    if (
-      nurseryRegNumber.length === 0 ||
-      farmId.length === 0 ||
-      farmName.length === 0 ||
-      producerName.length === 0 ||
-      phoneNumber.length === 0 ||
-      addressData.length === 0 ||
-      setAddressDetailData === 0
-    ) {
-      alert("정보를 입력해주세요.");
-      return;
-    }
-  }, [
-    nurseryRegNumber,
-    farmId,
-    farmName,
-    producerName,
-    phoneNumber,
-    addressData,
-    setAddressDetailData,
-  ]);
+    alert("저장 클릭");
+  }, []);
 
   const [address, setAddress] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -327,9 +309,26 @@ function AddFarmSaveModal({
                 autoClose
                 onComplete={complete} /> */}
         {/* <div onComplete={handleComplete} className="post-code" /> */}
-        <S.ButtonWrap onClick={FarmInfoSave}>
-          <p>저장</p>
-        </S.ButtonWrap>
+
+        {nurseryRegNumber.length === 0 ||
+        farmId.length === 0 ||
+        farmName.length === 0 ||
+        producerName.length === 0 ||
+        phoneNumber.length === 0 ||
+        addressData.length === 0 ||
+        setAddressDetailData === 0 ? (
+          <>
+            <S.ButtonWrapOff>
+              <p>저장</p>
+            </S.ButtonWrapOff>
+          </>
+        ) : (
+          <>
+            <S.ButtonWrap onClick={FarmInfoSave}>
+              <p>저장</p>
+            </S.ButtonWrap>
+          </>
+        )}
       </S.WrapInner>
     </S.Wrap>
   );

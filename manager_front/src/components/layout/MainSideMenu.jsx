@@ -3,6 +3,11 @@ import Image from "next/image";
 import { styled } from "styled-components";
 import { useRouter } from "next/router";
 
+import ListIcon from "@images/common/icon-list.svg";
+import FarmIcon from "@images/common/icon-house.svg";
+import GraphIcon from "@images/common/w-icon-graph.svg";
+import SettingIcon from "@images/common/w-icon-setting.svg";
+
 const S = {
   Wrap: styled.aside`
     display: grid;
@@ -40,12 +45,17 @@ const S = {
       p {
         color: white;
       }
+
+      svg {
+        fill: #fff;
+      }
     }
 
     .icon {
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
+      width: 40px;
+      height: 40px;
+      stroke: #6ca7ff;
+      fill: #6ca7ff;
     }
   `,
   SideMenuInner: styled.div`
@@ -75,21 +85,21 @@ function MainSideMenu() {
   const router = useRouter();
 
   const menuItems = [
-    { path: "/dashboard", label: "개요", icon: "/images/common/icon-list.svg" },
+    { path: "/dashboard", label: "개요", icon: ListIcon },
     {
       path: "/farm-management",
       label: "농가관리",
-      icon: "/images/common/icon-house.svg",
+      icon: FarmIcon,
     },
     {
       path: "/statistics",
       label: "통계현황",
-      icon: "/images/common/w-icon-graph.svg",
+      icon: GraphIcon,
     },
     {
       path: "/setting",
       label: "설정",
-      icon: "/images/common/w-icon-setting.svg",
+      icon: SettingIcon,
     },
   ];
 
@@ -113,13 +123,7 @@ function MainSideMenu() {
               }`}
               onClick={() => router.push(item.path)}
             >
-              <img
-                src={item.icon}
-                alt={item.label}
-                className="icon"
-                width={40}
-                height={40}
-              />
+              <item.icon width={40} height={40} fill={"#6CA7FF"} />
               <p className="sidebar-text">{item.label}</p>
             </div>
           ))}
