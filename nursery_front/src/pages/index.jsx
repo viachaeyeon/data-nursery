@@ -5,7 +5,7 @@ import MainLayout from "@components/layout/MainLayout";
 // import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 
 function MainPage() {
-  return <MainLayout></MainLayout>;
+  return <MainLayout pageName={"main"}></MainLayout>;
 }
 
 // 로그인 안되어 있을 경우 로그인 페이지로 이동

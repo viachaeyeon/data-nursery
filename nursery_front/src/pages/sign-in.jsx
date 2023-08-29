@@ -80,6 +80,7 @@ function SignInPage() {
     login_id: "",
     password: "",
     isStayLogin: false,
+    l_type: "01",
   });
 
   const handleInputChange = useCallback(

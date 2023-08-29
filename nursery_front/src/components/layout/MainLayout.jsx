@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 // import { useMediaQuery } from "react-responsive";
 import styled, { css } from "styled-components";
+import Image from "next/image";
 
 import theme from "@src/styles/theme";
 import BackIcon from "@images/common/arrow-left.svg";
 import MoreIcon from "@images/common/more-icon.svg";
+import MyInfoIcon from "@images/common/my-info-icon.svg";
+// import BottomBackgrounImage from "@images/common/bottom-background-image.svg";
 
 const S = {
   Wrap: styled.div`
@@ -48,22 +51,12 @@ const S = {
     height: 100%;
 
     .main-page-name {
-      padding: 26px 16px 16px 16px;
+      padding: 16px 24px 0px 24px;
+      align-items: flex-start;
     }
 
     .content {
       height: ${(props) => props.height};
-    }
-
-    ${({ theme }) => theme.media.max_mobile} {
-      width: 100%;
-      height: 100%;
-      margin: 0px;
-      border-radius: 0px;
-
-      .main-page-name {
-        padding: 16px;
-      }
     }
   `,
   PageNameWrap: styled.div`
@@ -92,6 +85,30 @@ const S = {
       overflow: hidden;
       text-align: center;
       text-overflow: ellipsis;
+    }
+
+    .text-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    .date-text {
+      width: fit-content;
+      ${({ theme }) => theme.textStyle.h7Bold}
+      color: ${({ theme }) => theme.basic.grey50};
+    }
+
+    .logo-text {
+      width: fit-content;
+      color: #4b86dd;
+      font-family: Ubuntu;
+      font-size: 24.804px;
+      font-weight: 700;
+      letter-spacing: -0.496px;
+      margin-top: 1px;
     }
 
     ${(props) =>
@@ -123,12 +140,22 @@ const S = {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
     position: sticky;
     bottom: 0px;
-    box-shadow: 0px -4px 20px rgba(0, 0, 0, 0.08);
-    border-radius: 16px 16px 0px 0px;
-    padding: 24px 16px;
+  `,
+  BottomBackgroundImage: styled.div`
+    bottom: 0px;
+    position: absolute;
+
+    background-image: url("/images/common/bottom-background-image.svg");
+    width: 100%;
+    height: 88px;
+    /* right: calc(50% - 233px); */
+    bottom: 0px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 25% 50%;
+    flex: 1;
   `,
 };
 
@@ -140,6 +167,22 @@ const S = {
 // mainBackgroundColor : 메인콘텐츠의 배경 색상 (메인화면의 하단 버튼의 radius의 뒷 배경 색 변경 위해 필요)
 function MainLayout({ children, pageName, isBackIcon = true, backIconClickFn, isMoreIcon = false, buttonType }) {
   const router = useRouter();
+
+  // 오늘 날짜
+  const today = useMemo(() => {
+    const date = new Date();
+
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "short",
+      timeZone: "Asia/Seoul",
+      calendar: "korean",
+    };
+
+    return new Intl.DateTimeFormat("ko-KR", options).format(date).split(" ");
+  }, []);
 
   // const isMobile = useMediaQuery({
   //   query: `(max-width: ${theme.contentWidths.mobile})`,
@@ -166,7 +209,19 @@ function MainLayout({ children, pageName, isBackIcon = true, backIconClickFn, is
     <S.Wrap>
       <S.MainLayout isMain={pageName === "main"}>
         <S.MainContent height={mainContentHeight}>
-          {pageName === "main" && <S.PageNameWrap className="main-page-name"></S.PageNameWrap>}
+          {pageName === "main" && (
+            <S.PageNameWrap className="main-page-name">
+              <div className="text-wrap">
+                <p className="date-text">{today[0] + today[1] + today[2].replace(".", " ") + today[3]}</p>
+                <p className="logo-text">Data Nursery</p>
+              </div>
+              <MyInfoIcon
+                onClick={() => {
+                  alert("준비중입니다.");
+                }}
+              />
+            </S.PageNameWrap>
+          )}
           {!!pageName && pageName !== "main" && (
             <S.PageNameWrap isBackIcon={isBackIcon} isMoreIcon={isMoreIcon}>
               <BackIcon className="back-icon-wrap" onClick={backIconClickFn} />
@@ -180,13 +235,19 @@ function MainLayout({ children, pageName, isBackIcon = true, backIconClickFn, is
             </S.PageNameWrap>
           )}
           <div className="content">{children}</div>
-          {/* <S.BottomWrap>
-              <DefaultButton
+          {pageName === "main" && (
+            <S.BottomWrap>
+              {/* <DefaultButton
                   customStyle={buttonSetting.color}
                   text={buttonSetting.text}
                   onClick={buttonSetting.onClickEvent}
-                />
-            </S.BottomWrap> */}
+                /> */}
+              {/* <BottomBackgrounImage className="bottom-background" /> */}
+              <S.BottomBackgroundImage>
+                {/* <Image src={"/images/common/bottom-background-image.svg"} layout="fill" alt="menu image" /> */}
+              </S.BottomBackgroundImage>
+            </S.BottomWrap>
+          )}
         </S.MainContent>
       </S.MainLayout>
     </S.Wrap>
