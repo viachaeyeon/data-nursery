@@ -1,7 +1,5 @@
 from pydantic import BaseModel
 
-# from typing import Optional
-
 
 class UserBase(BaseModel):
     login_id: str

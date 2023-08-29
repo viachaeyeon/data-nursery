@@ -2,12 +2,18 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 import os
 
 from src.auth import router as AuthRouter
 from src.crops import router as CropRouter
 from src.planter import router as PlanterRouter
+from utils.exceptions import AuthenticationException
+from constant.cookie_set import (
+    AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN,
+    AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN,
+)
 
 # from src.auth import models as AuthModel, router as AuthRouter
 # from src.crops import models as CropModel, router as CropRouter
@@ -34,6 +40,7 @@ load_dotenv()
 # CropModel.AppModelBase.metadata.create_all(bind=engine)
 # PlanterModel.AppModelBase.metadata.create_all(bind=engine)
 
+
 app = FastAPI(
     title="data-nursery",
     description="헬퍼로보텍 자동파종기 데이터 플랫폼",
@@ -42,6 +49,18 @@ app = FastAPI(
     # docs_url=None,
     # redoc_url=None,
 )
+
+
+@app.exception_handler(AuthenticationException)
+async def api_authentication_exception_handler(
+    request: Request, exc: AuthenticationException
+):
+    response = JSONResponse(status_code=401, content=dict(msg=exc.name))
+    response.delete_cookie(AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN)
+    response.delete_cookie(AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN)
+    # response.delete_cookie("_tr")
+    return response
+
 
 app.mount(
     "/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static"

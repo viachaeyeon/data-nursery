@@ -4,6 +4,18 @@ from datetime import datetime
 from utils.database import TimezoneSchema
 
 
+class PlanterBase(BaseModel):
+    pass
+
+
+class PlanterCreate(PlanterBase):
+    pass
+
+
+class Planter(PlanterBase):
+    id: int
+
+
 class PlanterWorkStatusBase(BaseModel):
     id: int
     status: str

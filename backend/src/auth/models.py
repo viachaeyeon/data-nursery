@@ -11,6 +11,7 @@ class User(BaseModel):
     id = Column(Integer, primary_key=True, index=True)
     login_id = Column(String(length=20), unique=True, index=True)
     password = Column(String)
+    name = Column(String(length=20))
     code = Column(String(length=2), default="01")
 
     user_farm_house = relationship(
