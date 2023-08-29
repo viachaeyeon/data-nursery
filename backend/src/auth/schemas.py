@@ -9,11 +9,12 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    # code: str | None = "01"
+    code: str | None = "01"
 
 
 class UserLogin(UserBase):
     password: str
+    l_type: str
 
 
 class User(UserBase):

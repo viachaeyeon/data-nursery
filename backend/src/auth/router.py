@@ -33,7 +33,9 @@ def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     # TODO: 실제 회원가입 시 FarmHouse도 같이 생성
     hash_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
-    new_user = models.User(login_id=user.login_id, password=hash_pw.decode("utf-8"))
+    new_user = models.User(
+        login_id=user.login_id, password=hash_pw.decode("utf-8"), code=user.code
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -53,6 +55,14 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
 
     if not login_user:
         return JSONResponse(status_code=400, content=dict(msg="NO_MATCH_USER"))
+
+    # l_type == "01" 농가, l_type == "99" 관리자
+    if user_data.l_type == "01" and not login_user.code == "01":
+        # 농가인지 판단
+        return JSONResponse(status_code=400, content=dict(msg="LOGIN_FAILED"))
+    elif user_data.l_type == "99" and not login_user.code == "99":
+        # 관리자인지 판단
+        return JSONResponse(status_code=400, content=dict(msg="LOGIN_FAILED"))
 
     is_verified = bcrypt.checkpw(
         user_data.password.encode("utf-8"), login_user.password.encode("utf-8")
@@ -90,13 +100,17 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     return response
 
 
-@router.post("/test/jwt-validate")
-def test_jwt_validate(token: schemas.UserToken, db: Session = Depends(get_db)):
-    valided_jwt = validate_token(token.access)
+# @router.get("//latest-work",
+#     status_code=200,
+#     response_model=schemas.PlanterWorkResponse,)
 
-    if not valided_jwt:
-        return JSONResponse(
-            status_code=401, content=dict(msg="USER_CERTIFICATION_EXPIRED")
-        )
+# @router.post("/test/jwt-validate")
+# def test_jwt_validate(token: schemas.UserToken, db: Session = Depends(get_db)):
+#     valided_jwt = validate_token(token.access)
 
-    return {"test": "test"}
+#     if not valided_jwt:
+#         return JSONResponse(
+#             status_code=401, content=dict(msg="USER_CERTIFICATION_EXPIRED")
+#         )
+
+#     return {"test": "test"}
