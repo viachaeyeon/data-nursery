@@ -19,7 +19,7 @@
     "next/core-web-vitals",
     "prettier"
   ],
-  "plugins": ["react", "react-hook", "prettier"],
+  "plugins": ["react", "react-hooks", "prettier"],
   "rules": {
     "prettier/prettier": ["error", { "endOfLine": "auto" }, { "usePrettierrc": true }],
     "react/prop-types": "off",
