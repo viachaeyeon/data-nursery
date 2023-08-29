@@ -19,7 +19,7 @@ class Planter(BaseModel):
 
     farm_house_id = Column(Integer, ForeignKey("farm_houses.id"))
     id = Column(Integer, primary_key=True, index=True)
-    serial_number = Column(String(length=255))
+    serial_number = Column(String(length=255), unique=True)
     is_register = Column(Boolean, default=False)
     register_date = Column(DateTime, nullable=True)
     qrcode = Column(String)

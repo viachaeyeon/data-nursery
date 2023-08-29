@@ -7,9 +7,12 @@ from datetime import datetime, timedelta
 
 import src.auth.schemas as schemas
 import src.auth.models as models
+import src.planter.models as planterModels
 from utils.db_shortcuts import get_current_user
 from utils.database import get_db
+from utils.file_upload import single_file_uploader, delete_file
 from utils.jwt_utils import create_access_token
+from utils.db_shortcuts import get_, create_
 from constant.jwt_set import JWT_ACCESS_TOKEN_EXPIRE_DAY
 from constant.cookie_set import (
     AUTH_COOKIE_DOMAIN,
@@ -245,7 +248,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("create/harmhouse", description="관리자페이지에서 농가 추가할때 사용", status_code=201)
-def create_farm_house(
+async def create_farm_house(
     serial_number: str = Form(...),
     nursery_number: str = Form(...),
     farm_house_id: str = Form(...),
@@ -254,18 +257,83 @@ def create_farm_house(
     phone: str = Form(...),
     address: str = Form(...),
     qrcode: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
-    print("==================================")
-    print("==================================")
+    dup_check_user = get_(db, models.User, login_id=serial_number)
+    if dup_check_user != None:
+        return JSONResponse(status_code=404, content=dict(msg="DUPLICATED_LOGIN_ID"))
 
-    print(serial_number)
-    print(nursery_number)
-    print(farm_house_id)
-    print(name)
-    print(producer_name)
-    print(phone)
-    print(address)
-    print(qrcode)
-    print("==================================")
-    print("==================================")
+    dup_check_farm_house_name = get_(db, models.FarmHouse, name=name)
+    if dup_check_farm_house_name != None:
+        return JSONResponse(
+            status_code=404, content=dict(msg="DUPLICATED_FARM_HOUSE_NAME")
+        )
+    dup_check_farm_house_nursery_number = get_(
+        db, models.FarmHouse, nursery_number=nursery_number
+    )
+    if dup_check_farm_house_nursery_number != None:
+        return JSONResponse(
+            status_code=404, content=dict(msg="DUPLICATED_FARM_HOUSE_NURSERY_NUMBER")
+        )
+    dup_check_farm_house_id = get_(db, models.FarmHouse, farm_house_id=farm_house_id)
+    if dup_check_farm_house_id != None:
+        return JSONResponse(
+            status_code=404, content=dict(msg="DUPLICATED_FARM_HOUSE_ID")
+        )
+
+    dup_check_planter_serial_number = get_(
+        db, planterModels.Planter, serial_number=serial_number
+    )
+    if dup_check_planter_serial_number != None:
+        return JSONResponse(
+            status_code=404, content=dict(msg="DUPLICATED_PLANTER_SERIAL_NUMBER")
+        )
+
+    hash_pw = bcrypt.hashpw(phone.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    new_user = create_(
+        db,
+        models.User,
+        login_id=serial_number,
+        name=producer_name,
+        password=hash_pw,
+        code="01",
+    )
+    new_farm_house = create_(
+        db,
+        models.FarmHouse,
+        farm_house_user=new_user,
+        name=name,
+        nursery_number=nursery_number,
+        farm_house_id=farm_house_id,
+        producer_name=producer_name,
+        address=address,
+        phone=phone,
+    )
+
+    saved_qrcode = await single_file_uploader(qrcode)
+
+    if not saved_qrcode["is_success"]:
+        return JSONResponse(status_code=400, content=dict(msg="FAIL_SAVE_QRCODE"))
+
+    new_planter = create_(
+        db,
+        models.Planter,
+        planter_farm_house=new_farm_house,
+        serial_number=serial_number,
+        qrcode=saved_qrcode["url"],
+    )
+    try:
+        db.add(new_user)
+        db.add(new_farm_house)
+        db.add(new_planter)
+        db.commit()
+        db.refresh(new_user)
+        db.refresh(new_farm_house)
+        db.refresh(new_planter)
+    except Exception as e:
+        if saved_qrcode["is_success"]:
+            await delete_file(saved_qrcode["url"])
+        return JSONResponse(status_code=400, content=dict(msg="CREATED_FAILED"))
+
     return JSONResponse(status_code=201, content=dict(msg="CREATED_SUCCESS"))
