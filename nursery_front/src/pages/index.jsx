@@ -1,13 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import ScrollContainer from "react-indiana-drag-scroll";
+import Image from "next/image";
 
 import MainLayout from "@components/layout/MainLayout";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 import TodayOutputIcon from "@images/dashboard/icon-output.svg";
-import BestIcon from "@images/dashboard/icon-best.svg";
 import UseTimeIcon from "@images/dashboard/icon-time.svg";
+import { NumberFormatting } from "@src/utils/Formatting";
 
 const S = {
   Wrap: styled.div`
@@ -23,9 +24,11 @@ const S = {
   `,
   ScrollWrap: styled.div`
     width: 100%;
-    height: fit-content;
-    margin-bottom: 24px;
+    height: 135px;
+    margin-bottom: 5px;
+
     .scroll-container {
+      height: 100%;
       display: flex;
       overflow-x: auto;
       gap: 16px;
@@ -109,6 +112,16 @@ const S = {
         ${({ theme }) => theme.textStyle.h5Regular}
       }
     }
+
+    .time-wrap {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+
+      .data-wrap {
+        gap: 2px;
+      }
+    }
   `,
 };
 
@@ -124,28 +137,34 @@ function MainPage() {
                 <p>오늘의 생산량</p>
               </div>
               <div className="data-wrap">
-                <p className="bold-text">485000</p>
+                <p className="bold-text">{NumberFormatting(485000)}</p>
                 <p className="suffix-text">개</p>
               </div>
             </S.CardWrap>
             <S.CardWrap className="best-kind">
               <div className="row-layout">
-                <BestIcon />
+                <Image src={"/images/dashboard/icon-best.png"} width={24} height={24} alt="menu image" />
                 <p>BEST품종</p>
               </div>
               <div className="data-wrap">
-                <p className="bold-text">485000</p>
+                <p className="bold-text">{NumberFormatting(485000)}</p>
                 <p className="suffix-text">개</p>
               </div>
             </S.CardWrap>
             <S.CardWrap className="use-time">
               <div className="row-layout">
                 <UseTimeIcon />
-                <p>사용시간 - </p>
+                <p>사용시간 - 3회</p>
               </div>
-              <div className="data-wrap">
-                <p className="bold-text">485000</p>
-                <p className="suffix-text">개</p>
+              <div className="time-wrap">
+                <div className="data-wrap">
+                  <p className="bold-text">6</p>
+                  <p className="suffix-text">시간</p>
+                </div>
+                <div className="data-wrap">
+                  <p className="bold-text">20</p>
+                  <p className="suffix-text">분</p>
+                </div>
               </div>
             </S.CardWrap>
           </ScrollContainer>
