@@ -92,6 +92,7 @@ const S = {
 
 function WorkTab() {
   const [selectTab, setSelectTab] = useState("working");
+  const [isWork, setIsWork] = useState(true);
 
   return (
     <S.Wrap>
@@ -101,7 +102,7 @@ function WorkTab() {
           onClick={() => {
             setSelectTab("working");
           }}>
-          <Image src={"/images/dashboard/working-ani.gif"} width={31} height={16} alt="working gif" />
+          {isWork && <Image src={"/images/dashboard/working-ani.gif"} width={31} height={16} alt="working gif" />}
           <p className="tab-text">작업중</p>
           <div className="tab-bar" />
         </S.TabContent>
@@ -124,7 +125,7 @@ function WorkTab() {
         {selectTab === "working" && <p>진행중인 작업이 없습니다</p>}
         {selectTab === "waiting" && <p>대기중인 작업이 없습니다</p>}
     </div> */}
-      {selectTab === "working" && <WorkContent />}
+      {selectTab === "working" && <WorkContent isWork={isWork} setIsWork={setIsWork} />}
       {selectTab === "waiting" && <WaitContent />}
     </S.Wrap>
   );

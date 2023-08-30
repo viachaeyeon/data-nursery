@@ -1,12 +1,13 @@
 import { NumberFormatting } from "@src/utils/Formatting";
-import React from "react";
+import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
 import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
+import DefaultModal from "@components/common/modal/DefaultModal";
 
+import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@src/utils/ButtonColor";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
-import { borderButtonColor, whiteButtonColor } from "@src/utils/ButtonColor";
 
 const S = {
   Wrap: styled.div`
@@ -110,7 +111,15 @@ const S = {
   `,
 };
 
-function WorkContent() {
+function WorkContent({ isWork, setIsWork }) {
+  const [modalOpen, setModalOpen] = useState({
+    open: false,
+    title: "",
+    description: "",
+    btnType: "",
+    afterFn: null,
+  });
+
   return (
     <S.Wrap>
       <S.WorkInfo>
@@ -132,19 +141,46 @@ function WorkContent() {
       <S.ButtonWrap>
         <S.ButtonWrap className="row-layout">
           <div className="flex-one">
-            <FontSmallDefaultButton
-              type={"pause"}
-              onClick={() => {
-                alert("준비중입니다.");
-              }}
-              customStyle={whiteButtonColor}
-            />
+            {isWork ? (
+              <FontSmallDefaultButton
+                type={"pause"}
+                onClick={() => {
+                  setIsWork(false);
+                }}
+                customStyle={whiteButtonColor}
+              />
+            ) : (
+              <FontSmallDefaultButton
+                type={"play"}
+                onClick={() => {
+                  setIsWork(true);
+                }}
+                customStyle={purpleButtonColor}
+              />
+            )}
           </div>
           <div className="flex-two">
             <FontSmallDefaultButton
               text={"작업정보"}
               onClick={() => {
-                alert("준비중입니다.");
+                if (isWork) {
+                  setModalOpen({
+                    open: true,
+                    title: "작업정보 확인",
+                    description: (
+                      <>
+                        작업상태가 <span>일시정지 상태</span>로{"\n"}변경됩니다. 진행할까요?
+                      </>
+                    ),
+                    btnType: "two",
+                    afterFn: () => {
+                      setIsWork(false);
+                      alert("작업정보 페이지로 이동 예정");
+                    },
+                  });
+                } else {
+                  alert("작업정보 페이지로 이동 예정");
+                }
               }}
               customStyle={whiteButtonColor}
             />
@@ -153,11 +189,21 @@ function WorkContent() {
         <FontSmallDefaultButton
           text={"작업완료"}
           onClick={() => {
-            alert("준비중입니다.");
+            setModalOpen({
+              open: true,
+              type: "success",
+              title: "작업완료",
+              description: "완료된 작업은 이력조회에서\n확인 할 수 있습니다.",
+              btnType: "one",
+              afterFn: () => {
+                alert("준비중입니다.");
+              },
+            });
           }}
           customStyle={borderButtonColor}
         />
       </S.ButtonWrap>
+      <DefaultModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </S.Wrap>
   );
 }

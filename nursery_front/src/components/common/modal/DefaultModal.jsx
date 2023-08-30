@@ -55,6 +55,7 @@ const S = {
 
     p {
       white-space: pre-line;
+      text-align: center;
     }
 
     .modal-title-text {
@@ -64,10 +65,13 @@ const S = {
     }
 
     .modal-content-text {
-      font-size: 18px;
-      line-height: 20px;
-      letter-spacing: -0.36px;
+      ${({ theme }) => theme.textStyle.h6Regular}
       color: ${({ theme }) => theme.basic.grey40};
+
+      span {
+        ${({ theme }) => theme.textStyle.h6Bold}
+        color: ${({ theme }) => theme.basic.warning};
+      }
     }
 
     .button-wrap {
@@ -83,12 +87,12 @@ const S = {
 function DefaultModal({ modalOpen, setModalOpen }) {
   const closeModal = useCallback(() => {
     setModalOpen({
-      open: false,
-      type: "",
-      title: "",
-      description: "",
-      btnType: "",
-      afterFn: null,
+      open: false, // 오픈 여부
+      type: "", // success, error, 빈값
+      title: "", // 타이틀 명
+      description: "", // 추가 설명
+      btnType: "", // one, two
+      afterFn: null, // 확인 버튼 클릭 시 실행
     });
   }, []);
 
@@ -105,8 +109,8 @@ function DefaultModal({ modalOpen, setModalOpen }) {
       <S.BackGroundWrap>
         <S.Wrap>
           <S.ModalWrap>
-            {modalOpen.type === "error" && <WarningIcon />}
-            {modalOpen.type === "success" && <PositiveIcon />}
+            {modalOpen?.type === "error" && <WarningIcon />}
+            {modalOpen?.type === "success" && <PositiveIcon />}
             <p className="modal-title-text">{modalOpen.title}</p>
             <p className="modal-content-text">{modalOpen.description}</p>
             <div className="button-wrap">
