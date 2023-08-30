@@ -49,6 +49,19 @@ def get_(session, model, **kwargs):
         return None
 
 
+def get_list_(session, model, **kwargs):
+    try:
+        instance = (
+            session.query(model)
+            .filter_by(**kwargs)
+            .order_by(model.created_at.desc())
+            .all()
+        )
+        return instance
+    except:
+        return None
+
+
 # def get_or_create_(session, model, **kwargs):
 #     try:
 #         instance = (

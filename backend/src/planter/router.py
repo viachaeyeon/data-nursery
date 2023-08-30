@@ -6,7 +6,7 @@ import src.planter.models as models
 import src.planter.schemas as schemas
 
 from utils.database import get_db
-from utils.db_shortcuts import get_, create_
+from utils.db_shortcuts import get_, create_, get_list_
 
 router = APIRouter()
 
@@ -90,12 +90,25 @@ def create_planter_output(
             models.PlanterOutput,
             planter_work_id=planter_work_id,
         )
-
+    # TODO: PlanterStatus도 저장이 필요함!!
     status, output, operating_time = planter_data.data.split("||")
 
     # status가 Off 될 경우 파종기 상태에 OFF 저장
     # status -> "1": 작업중("WORKING"), "0" : 작업완료("DONE")
     save_planter_work_status = None
+    # if status == "0":
+    #     if planter_work.planter_work__planter_work_status[-1].status != "DONE":
+    #         save_planter_work_status = create_(
+    #             db, models.PlanterWorkStatus, planter_work_id=planter_work_id, status="DONE"
+    #         )
+
+    #         if not save_planter_work_status:
+    #             return JSONResponse(
+    #                 status_code=400, content=dict(msg="ERROR_CREATE_PLANTER_WORK_STATUS")
+    #             )
+
+    #         db.add(save_planter_work_status)
+
     if (
         status == "0"
         and planter_work.planter_work__planter_work_status[-1].status != "DONE"
@@ -124,5 +137,50 @@ def create_planter_output(
     db.refresh(planter_work_output)
     if save_planter_work_status != None:
         db.refresh(save_planter_work_status)
+
+    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+# TODO: 테스트 끝났을때 삭제하기
+@router.post(
+    "/test/planter/status/change",
+    status_code=200,
+    description="파종기 시리얼번호로 해당 api 요청 시 작업 상태가 WORKING으로 변경됩니다.\n테스트 종료 시 제거 예정",
+)
+def test_planter_status_change(serial_number: str, db: Session = Depends(get_db)):
+    planter_work_status = (
+        db.query(models.PlanterWorkStatus)
+        .join(models.PlanterWorkStatus.planter_work_status__planter_work)
+        .join(models.PlanterWork.planter_work__planter)
+        .filter(
+            models.Planter.is_del == False,
+            models.Planter.serial_number == serial_number,
+            models.PlanterWork.is_del == False,
+            models.PlanterWorkStatus.is_del == False,
+        )
+        .order_by(models.PlanterWorkStatus.created_at.desc())
+        .all()
+    )
+
+    if not planter_work_status:
+        return JSONResponse(status_code=404, content=dict(msg="NO_PLANTER_WORK_STATUS"))
+
+    if planter_work_status[0].status != "WORKING":
+        planter_work = (
+            db.query(models.PlanterWork)
+            .join(models.PlanterWork.planter_work__planter)
+            .filter(
+                models.PlanterWork.is_del == False,
+                models.Planter.serial_number == serial_number,
+            )
+            .order_by(models.PlanterWork.created_at.desc())
+            .all()
+        )
+        new_planter_work_status = models.PlanterWorkStatus(
+            planter_work_status__planter_work=planter_work[0], status="WORKING"
+        )
+        db.add(new_planter_work_status)
+        db.commit()
+        db.refresh(new_planter_work_status)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
