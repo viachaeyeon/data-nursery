@@ -50,7 +50,8 @@ def get_lastest_work(planter_sn: str, db: Session = Depends(get_db)):
     latest_on_work = None
 
     for work in planter_works:
-        latest_status = work.planter_work__planter_work_status[-1]
+        # latest_status = work.planter_work__planter_work_status[-1]
+        latest_status = work.planter_work__planter_work_status[0]
 
         if latest_status.status == "ON":
             latest_on_work = work
