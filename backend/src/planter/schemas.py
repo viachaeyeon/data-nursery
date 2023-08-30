@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 from datetime import datetime
 from utils.database import TimezoneSchema
@@ -15,6 +15,19 @@ class PlanterCreate(PlanterBase):
 
 class Planter(PlanterBase):
     id: int
+
+
+class PlanterStatusBase(BaseModel):
+    planter_id: Optional[int]
+    status: Optional[str]
+
+
+class PlanterStatusCreate(PlanterStatusBase):
+    pass
+
+
+class PlanterStatus(PlanterStatusBase):
+    id: Optional[int]
 
 
 class PlanterWorkStatusBase(BaseModel):
