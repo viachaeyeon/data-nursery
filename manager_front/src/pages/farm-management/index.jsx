@@ -23,7 +23,7 @@ function getCurrentDateTime() {
   return `${year}.${month}.${day} ${hours}:${minutes}`;
 }
 
-function Dashboard() {
+function FarmManagement() {
   // 현재시간
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
 
@@ -45,4 +45,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default FarmManagement;
