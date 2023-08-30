@@ -228,3 +228,22 @@ def farm_house_register_planter(
     db.add(planter)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+@router.post("/create/tray")
+def craete_planter_tray(
+    request: Request, tray_data: schemas.PlanterTrayBase, db: Session = Depends(get_db)
+):
+    new_planter_tray = create_(
+        db,
+        models.PlanterTray,
+        width=tray_data.width,
+        height=tray_data.height,
+        total=tray_data.total,
+    )
+
+    db.add(new_planter_tray)
+    db.commit()
+    db.refresh(new_planter_tray)
+
+    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))

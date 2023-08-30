@@ -27,18 +27,13 @@ class CropBase(BaseModel):
 
 
 class PlanterTrayBase(BaseModel):
-    pass
-
-
-class PlanterTrayCreate(PlanterTrayBase):
     width: int
     height: int
+    total: int
 
 
 class PlanterTray(PlanterTrayBase):
     id: int
-    width: int
-    height: int
 
 
 class PlanterWorkBase(TimezoneSchema):

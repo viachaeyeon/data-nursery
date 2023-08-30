@@ -44,6 +44,7 @@ class PlanterTray(BaseModel):
     id = Column(Integer, primary_key=True, index=True)
     width = Column(Integer)
     height = Column(Integer)
+    total = Column(Integer)
 
     planter_tray__planter_work = relationship(
         "PlanterWork",
