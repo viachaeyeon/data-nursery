@@ -6,6 +6,7 @@ import OptionModal from "./OptionModal";
 import AddFarmModal from "./AddFarmModal";
 import AddFarmSaveModal from "./AddFarmSaveModal";
 import QrDownloadModal from "./QrDownloadModal";
+import DeleteModal from "./DeleteModal";
 
 import ExcelIcon from "@images/management/excel-icon.svg";
 import AddIcon from "@images/management/add-icon.svg";
@@ -254,7 +255,9 @@ function FarmList() {
   const [isOneCheckBox, setIsOneCheckBox] = useState(false);
   const [isNameOrderBy, setIsNameOrderBy] = useState(true);
   const [isStateOrderBy, setIsStateOrderBy] = useState(true);
+  // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
+  // 농가추가시 필요한 데이터
   const [nurseryRegNumber, setNurseryRegNumber] = useState("");
   const [farmId, setFarmId] = useState("");
   const [farmName, setFarmName] = useState("");
@@ -283,6 +286,11 @@ function FarmList() {
   const [qrDownloadModalOpen, setQrDownloadModalOpen] = useState({
     open: false,
     data: undefined,
+  });
+
+  // 삭제 모달
+  const [deleteModalOpen,setDeleteModalOpen] = useState({
+    open:false,data:undefined
   });
 
   // 전체선택 토글
@@ -486,6 +494,10 @@ function FarmList() {
                     open: false,
                     data: data,
                   });
+                  setDeleteModalOpen({
+                    open:false,
+                    data:data                    
+                  })
                 }}
               >
                 <OptionDot width={40} height={32} />
@@ -509,6 +521,8 @@ function FarmList() {
                   setOptionModalOpen={setOptionModalOpen}
                   qrDownloadModalOpen={qrDownloadModalOpen}
                   setQrDownloadModalOpen={setQrDownloadModalOpen}
+                  deleteModalOpen={deleteModalOpen}
+                  setDeleteModalOpen={setDeleteModalOpen}
                 />
               )}
             </S.ListBlock>
@@ -567,6 +581,15 @@ function FarmList() {
             setQrDownloadModalOpen={setQrDownloadModalOpen}
             optionModalOpen={optionModalOpen}
           />
+        </div>
+      )}
+
+      {deleteModalOpen.open && (
+        <div className="modal-wrap">
+          <DeleteModal 
+          setDeleteModalOpen={setDeleteModalOpen}
+          />
+
         </div>
       )}
     </S.Wrap>

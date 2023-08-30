@@ -70,8 +70,11 @@ function OptionModal({
   setOptionModalOpen,
   qrDownloadModalOpen,
   setQrDownloadModalOpen,
+  deleteModalOpen,
+  setDeleteModalOpen
 }) {
 
+  console.log("deleteModalOpen : ",deleteModalOpen)
   // QR 다운로드 모달
   const handleQrDownloadModalClick = useCallback(() => {
     if (qrDownloadModalOpen.open === true) {
@@ -86,6 +89,12 @@ function OptionModal({
   const handelEditClick = useCallback(()=>{
     alert(qrDownloadModalOpen.data.serial_number)
   },[])
+
+  //삭제
+  const handleDeleteClick = useCallback(()=>{
+    setDeleteModalOpen({open:true,data:deleteModalOpen})
+    setOptionModalOpen({ open: false, index: undefined, data: undefined });
+  })
 
   return (
     <S.Wrap>
@@ -103,7 +112,7 @@ function OptionModal({
         </div>
         <p>수정</p>
       </div>
-      <div className="line">
+      <div className="line" onClick={handleDeleteClick}>
         <div className="icon">
           <DeleteIcon width={16} height={16} />
         </div>

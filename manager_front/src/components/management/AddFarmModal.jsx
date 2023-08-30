@@ -1,5 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback,useState,useRef } from "react";
 import styled from "styled-components";
+import { QRCodeCanvas } from "qrcode.react";
 
 import XIcon from "@images/common/icon-x.svg";
 import Refresh from "@images/management/refresh.svg";
@@ -189,6 +190,7 @@ function AddFarmModal({
   setCreateQrcode,
   setAddFarmSaveModalOpen,
 }) {
+
   const closeModal = useCallback(() => {
     setAddFarmModalOpen(false);
     setCreateQrcode(false);
@@ -197,12 +199,41 @@ function AddFarmModal({
 
   const addQrCodeClick = useCallback(() => {
     setCreateQrcode(true);
+    
   }, [createQrcode]);
 
   const qrCodeNextClick = useCallback(() => {
     setAddFarmModalOpen(false);
     setAddFarmSaveModalOpen({ open: true, serialNumber: addFarmSerialNumber });
   }, []);
+
+  //큐알코드
+  const qrRef = useRef();
+  // const downloadQRCode = (e) => {
+  //   e.preventDefault();
+  //   let canvas = qrRef.current.querySelector("canvas");
+  //   let image = canvas.toDataURL("image/png");
+  //   let anchor = document.createElement("a");
+  //   anchor.href = image;
+  //   anchor.download = `qr-code.png`;
+  //   document.body.appendChild(anchor);
+  //   anchor.click();
+  //   document.body.removeChild(anchor);
+  //   setAddFarmSerialNumber("");
+  // };
+  // const qrCodeEncoder = (e) => {
+  //   setAddFarmSerialNumber(e.target.value);
+  // };
+
+  const qrcode = (
+    <QRCodeCanvas
+      id="qrCode"
+      value={addFarmSerialNumber}
+      size={231}
+      bgColor={"#ffffff"}
+      level={"H"}
+    />
+  );
 
   return (
     <S.Wrap>
@@ -241,7 +272,17 @@ function AddFarmModal({
         {createQrcode && (
           <S.QrCodeWrap>
             <div className="qr-inner">
-              큐알코드
+              <div className="qrcode__container">
+                <div ref={qrRef}>{qrcode}</div>
+                {/* <div className="input__group">
+                  <form onSubmit={downloadQRCode}>
+                    <button type="submit" disabled={!url}>
+                      Download QR code
+                    </button>
+                  </form>
+                </div> */}
+              </div>
+
               <p>SCAN ME!</p>
             </div>
             <div className="reset-button">
