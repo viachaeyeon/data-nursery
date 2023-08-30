@@ -56,31 +56,31 @@ function QRScannerPage() {
   //   const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
   //   html5QrcodeScanner.render(onScanSuccess);
 
-  useEffect(() => {
-    if (step === "qrCode") {
-      const scanner = new Html5QrcodeScanner("render", {
-        fps: 10,
-        qrbox: 250,
-      });
+  // useEffect(() => {
+  //   if (step === "qrCode") {
+  //     const scanner = new Html5QrcodeScanner("render", {
+  //       fps: 10,
+  //       qrbox: 250,
+  //     });
 
-      scanner.render(success, error);
-      // scanner.render(onScanSuccess);
+  //     scanner.render(success, error);
+  //     // scanner.render(onScanSuccess);
 
-      // function onScanSuccess(decodedText, decodedResult) {
-      //   // Handle on success condition with the decoded text or result.
-      //   console.log(`Scan result: ${decodedText}`, decodedResult);
-      // }
+  //     // function onScanSuccess(decodedText, decodedResult) {
+  //     //   // Handle on success condition with the decoded text or result.
+  //     //   console.log(`Scan result: ${decodedText}`, decodedResult);
+  //     // }
 
-      function success(result) {
-        scanner.clear();
-        setScanResult(result);
-      }
+  //     function success(result) {
+  //       scanner.clear();
+  //       setScanResult(result);
+  //     }
 
-      function error(err) {
-        console.log(err);
-      }
-    }
-  }, [step]);
+  //     function error(err) {
+  //       console.log(err);
+  //     }
+  //   }
+  // }, [step]);
 
   // function onScanSuccess(decodedText, decodedResult) {
   //   // Handle on success condition with the decoded text or result.
