@@ -1,12 +1,14 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session, joinedload
 from starlette.responses import JSONResponse
 
+from datetime import datetime
+
 import src.planter.models as models
 import src.planter.schemas as schemas
-
 from utils.database import get_db
-from utils.db_shortcuts import get_, create_, get_list_
+from utils.db_shortcuts import get_, create_, get_current_user
+
 
 router = APIRouter()
 
@@ -206,6 +208,23 @@ def test_planter_status_change(serial_number: str, db: Session = Depends(get_db)
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
 
 
-# @router.post("/farmhouse/register", status_code=200, description="농가에서 파종기 등록 시 사용")
-# def farm_house_register_planter(serial_number: str, db: Session = Depends(get_db)):
-#     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+@router.post("/farmhouse/register", status_code=200, description="농가에서 파종기 등록 시 사용")
+def farm_house_register_planter(
+    request: Request, serial_number: str, db: Session = Depends(get_db)
+):
+    user = get_current_user("01", request.cookies, db)
+    planter = get_(db, models.Planter, is_del=False, serial_number=serial_number)
+
+    if not user.user_farm_house.farm_house_planter == planter:
+        return JSONResponse(status_code=422, content=dict(msg="INVALID_PLANTER"))
+
+    if planter.is_register:
+        return JSONResponse(status_code=422, content=dict(msg="ALEADY_REGISTERED"))
+
+    planter.is_register = True
+    planter.register_date = datetime.utcnow()
+    db.add(planter)
+    db.commit()
+    db.add(planter)
+
+    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
