@@ -32,5 +32,8 @@ async def crop_create(
     return JSONResponse(status_code=201, content=dict(msg="CROP_CREATE_SUCCESS"))
 
 
-# @router.get("/list", status_code=200)
-# def get_crop_list()
+@router.get("/list", status_code=200, response_model=schemas.MultipleCropsResponse)
+def get_crop_list(db: Session = Depends(get_db)):
+    crops = db.query(models.Crop).filter_by(is_del=False).all()
+
+    return {"crops": crops}
