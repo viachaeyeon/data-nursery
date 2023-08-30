@@ -117,6 +117,8 @@ function LogInPage() {
     try {
       const res = await loginAPI(loginInfo);
 
+      console.log(res);
+
       // 아이디 저장 시 실행
       if (loginInfo.isStayLogin) {
         // 아이디 로컬스토리지에 저장

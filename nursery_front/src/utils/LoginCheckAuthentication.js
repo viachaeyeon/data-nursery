@@ -2,7 +2,7 @@
 export function loginCheckAuthentication(gssp) {
   return async (context) => {
     const { req, res } = context;
-    const token = req.cookies._tr;
+    const token = req.cookies._ta;
     if (!!token) {
       return {
         redirect: {
@@ -20,7 +20,7 @@ export function loginCheckAuthentication(gssp) {
 export function requireAuthentication(gssp) {
   return async (context) => {
     const { req, res } = context;
-    const token = req.cookies._tr;
+    const token = req.cookies._ta;
 
     if (!token) {
       return {
