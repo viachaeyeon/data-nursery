@@ -4,6 +4,11 @@ import os
 from settings import BASE_DIR
 
 IMAGE_DIR = f"{BASE_DIR}/static"
+print("========================")
+print("========================")
+print(BASE_DIR)
+print("========================")
+print("========================")
 
 
 async def single_file_uploader(file):
@@ -26,3 +31,11 @@ async def single_file_uploader(file):
         }
     except Exception as e:
         return {"is_success": False}
+
+
+async def delete_file(url):
+    try:
+        os.remove(BASE_DIR + url)
+        return True
+    except:
+        return None

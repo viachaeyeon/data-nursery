@@ -6,7 +6,7 @@ import src.planter.models as models
 import src.planter.schemas as schemas
 
 from utils.database import get_db
-from utils.db_shortcuts import get_, get_or_create_, create_
+from utils.db_shortcuts import get_, create_
 
 router = APIRouter()
 
@@ -78,15 +78,24 @@ def create_planter_output(
     if not planter_work:
         return JSONResponse(status_code=404, content=dict(msg="NO_MATCH_PLANTER_WORK"))
 
-    planter_work_output = get_or_create_(
+    planter_work_output = get_(
         db,
         models.PlanterOutput,
         planter_work_id=planter_work_id,
     )
+
+    if not planter_work_output:
+        planter_work_output = create_(
+            db,
+            models.PlanterOutput,
+            planter_work_id=planter_work_id,
+        )
+
     status, output, operating_time = planter_data.data.split("||")
 
     # status가 Off 될 경우 파종기 상태에 OFF 저장
     # status -> "1": 작업중("WORKING"), "0" : 작업완료("DONE")
+    save_planter_work_status = None
     if (
         status == "0"
         and planter_work.planter_work__planter_work_status[-1].status != "DONE"
@@ -100,12 +109,20 @@ def create_planter_output(
                 status_code=400, content=dict(msg="ERROR_CREATE_PLANTER_WORK_STATUS")
             )
 
+        db.add(save_planter_work_status)
+
     # output은 planter_work_output에 저장
     planter_work_output.output = output
 
     # operating_time 저장
     planter_work.operating_time = operating_time
 
+    db.add(planter_work)
+    db.add(planter_work_output)
     db.commit()
+    db.refresh(planter_work)
+    db.refresh(planter_work_output)
+    if save_planter_work_status != None:
+        db.refresh(save_planter_work_status)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from starlette.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -12,7 +12,11 @@ router = APIRouter()
 
 @router.post("/create", status_code=201)
 async def crop_create(
-    name: str, color: str, image: UploadFile = File(...), db: Session = Depends(get_db)
+    # name: str, color: str, image: UploadFile = File(...), db: Session = Depends(get_db)
+    name: str = Form(...),
+    color: str = Form(...),
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
     saved_file = await single_file_uploader(image)
 
