@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import styled, { css } from "styled-components";
 
-import ModalButton from "../button/ModalButton";
+import SmallButton from "../button/SmallButton";
 
 import { borderButtonColor, defaultButtonColor } from "@src/utils/ButtonColor";
 import WarningIcon from "@images/common/icon-warning.svg";
@@ -111,12 +111,12 @@ function DefaultModal({ modalOpen, setModalOpen }) {
             <p className="modal-content-text">{modalOpen.description}</p>
             <div className="button-wrap">
               {modalOpen.btnType === "one" && (
-                <ModalButton text={"확인"} onClick={completeModal} customStyle={defaultButtonColor} />
+                <SmallButton text={"확인"} onClick={completeModal} customStyle={defaultButtonColor} />
               )}
               {modalOpen.btnType === "two" && (
                 <>
-                  <ModalButton text={"취소"} onClick={closeModal} customStyle={borderButtonColor} />
-                  <ModalButton text={"확인"} onClick={completeModal} customStyle={defaultButtonColor} />
+                  <SmallButton text={"취소"} onClick={closeModal} customStyle={borderButtonColor} />
+                  <SmallButton text={"확인"} onClick={completeModal} customStyle={defaultButtonColor} />
                 </>
               )}
             </div>

@@ -4,12 +4,14 @@ import ScrollContainer from "react-indiana-drag-scroll";
 import Image from "next/image";
 
 import MainLayout from "@components/layout/MainLayout";
+import WorkTab from "@components/dashboard/WorkTab";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 import TodayOutputIcon from "@images/dashboard/icon-output.svg";
 import UseTimeIcon from "@images/dashboard/icon-time.svg";
-import NoneIcon from "@images/dashboard/none-icon.svg";
 import { NumberFormatting } from "@src/utils/Formatting";
+import NoneIcon from "@images/dashboard/none-icon.svg";
+import theme from "@src/styles/theme";
 
 const S = {
   Wrap: styled.div`
@@ -29,7 +31,7 @@ const S = {
     margin-bottom: 5px;
 
     .scroll-container {
-      height: 100%;
+      height: 135px;
       display: flex;
       overflow-x: auto;
       gap: 16px;
@@ -163,7 +165,7 @@ function MainPage() {
             </S.CardWrap>
             <S.CardWrap className="best-kind">
               <div className="row-layout">
-                <Image src={"/images/dashboard/icon-best.png"} width={24} height={24} alt="menu image" />
+                <Image src={"/images/dashboard/icon-best.png"} width={24} height={24} alt="best kind image" />
                 <p>BEST품종</p>
               </div>
               <div className="data-wrap">
@@ -190,10 +192,11 @@ function MainPage() {
           </ScrollContainer>
         </S.ScrollWrap>
         <S.WorkWrap>
-          <div className="no-work">
-            <NoneIcon />
+          {/* <div className="no-work">
+            <NoneIcon width={50} height={50} fill={theme.basic.grey20} />
             <p>새 작업을 등록하세요!</p>
-          </div>
+          </div> */}
+          <WorkTab />
         </S.WorkWrap>
       </S.Wrap>
     </MainLayout>

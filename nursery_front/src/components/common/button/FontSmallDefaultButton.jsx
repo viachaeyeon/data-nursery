@@ -2,17 +2,20 @@ import React from "react";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
 
+import PauseIcon from "@images/dashboard/icon-pause.svg";
+import PlayIcon from "@images/dashboard/icon-play.svg";
+
 const S = {
   ButtonWrap: styled(Button)`
     width: 100%;
-    height: 52px;
-    padding: 16px 24px !important;
+    height: 56px;
+    padding: 16px 32px !important;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    ${({ theme }) => theme.textStyle.h6Bold}
+    ${({ theme }) => theme.textStyle.h5Bold}
     border-radius: 8px !important;
 
     color: ${(props) => props.fontColor} !important;
@@ -34,7 +37,7 @@ const S = {
   `,
 };
 
-function ModalButton({ text, onClick, customStyle }) {
+function FontSmallDefaultButton({ type = "text", text, onClick, customStyle }) {
   return (
     <S.ButtonWrap
       backgroundColor={customStyle.backgroundColor}
@@ -45,9 +48,11 @@ function ModalButton({ text, onClick, customStyle }) {
       focusBorderColor={customStyle.focusBorderColor}
       fontColor={customStyle.fontColor}
       onClick={customStyle.fontColor === "#DEDEDE" ? () => {} : onClick}>
-      {text}
+      {type === "text" && text}
+      {type === "pause" && <PauseIcon />}
+      {type === "play" && <PlayIcon />}
     </S.ButtonWrap>
   );
 }
 
-export default ModalButton;
+export default FontSmallDefaultButton;
