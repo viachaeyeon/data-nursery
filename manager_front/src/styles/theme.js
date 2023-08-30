@@ -20,7 +20,8 @@ const textStyle = {
     "font-size:16px; font-style:normal; font-weight:700; line-height:20px",
   h7Bold:
     "font-size:14px; font-style:normal; font-weight:700; line-height:16px",
-  h5Reguler: "",
+  h5Reguler:
+    "font-size:20px; font-style:normal; font-weight:400; line-height:24px",
   h6Reguler:
     "font-size:16px; font-style:normal; font-weight:400; line-height:20px; letter-spacing:-0.32px;",
   h7Reguler:

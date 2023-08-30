@@ -16,6 +16,7 @@ import CheckBoxOn from "@images/common/check-icon-on.svg";
 import UpArrow from "@images/common/order-by-up-icon.svg";
 import DownArrow from "@images/common/order-by-down-icon.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
+import FarmIcon from "@images/management/icon-farm.svg";
 
 const S = {
   Wrap: styled.div`
@@ -249,6 +250,20 @@ const S = {
       ${({ theme }) => theme.textStyle.h7Reguler}
     }
   `,
+  EmptyData: styled.div`
+    margin-top: 168px;
+    gap: 14px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+
+    p {
+      color: ${({ theme }) => theme.basic.gray50};
+      ${({ theme }) => theme.textStyle.h5Reguler}
+    }
+  `,
 };
 
 function FarmList() {
@@ -454,87 +469,96 @@ function FarmList() {
           </div>
           <p></p>
         </div>
-        {listData.map((data, index) => {
-          return (
-            <S.ListBlock key={`map${index}`}>
-              <div
-                className="check-box-one"
-                onClick={() => {
-                  OneCheckBoxToggle(index);
-                }}
-              >
-                {isOneCheckBox ? (
-                  <CheckBoxOn width={24} height={24} />
-                ) : (
-                  <CheckBoxOff width={24} height={24} />
-                )}
-              </div>
-              <p className="serial_number">{data.serial_number}</p>
-              <p className="farm_id">{data.farm_id}</p>
-              <div className="farm_name_wrap">
-                <div className="farm-name-frist">
-                  {data.farm_name.slice(0, 1)}
+        {listData.length === 0 ? (
+          <S.EmptyData>
+            <FarmIcon width={56} height={56} />
+            <p>등록된 농가가 없습니다.</p>
+          </S.EmptyData>
+        ) : (
+          listData.map((data, index) => {
+            return (
+              <S.ListBlock key={`map${index}`}>
+                <div
+                  className="check-box-one"
+                  onClick={() => {
+                    OneCheckBoxToggle(index);
+                  }}
+                >
+                  {isOneCheckBox ? (
+                    <CheckBoxOn width={24} height={24} />
+                  ) : (
+                    <CheckBoxOff width={24} height={24} />
+                  )}
                 </div>
-                <p className="farm_name">{data.farm_name}</p>
-              </div>
-              <p className="name">{data.name}</p>
-              <p className="farm_number">{data.farm_number}</p>
-              <p className="address" id={`address${index}`}>
-                {data.address}
-              </p>
-              <p className="phone">{data.phone}</p>
-              {data.status === "ON" ? (
-                <p className="status-on">{data.status}</p>
-              ) : (
-                <p className="status-off">{data.status}</p>
-              )}
-              <div
-                className="option-dot"
-                onClick={() => {
-                  handleOptionModalClick(index, data);
-                  setQrDownloadModalOpen({
-                    open: false,
-                    data: data,
-                  });
-                  setDeleteModalOpen({
-                    open: false,
-                    data: data,
-                  });
-                }}
-              >
-                <OptionDot width={40} height={32} />
-              </div>
-
-              <S.AddressTooltip
-                anchorId={`address${index}`}
-                place="bottom"
-                noArrow
-                content={
-                  <div className="text-wrap">
-                    <p>
-                      ({data.address_code}) {data.address}
-                    </p>
+                <p className="serial_number">{data.serial_number}</p>
+                <p className="farm_id">{data.farm_id}</p>
+                <div className="farm_name_wrap">
+                  <div className="farm-name-frist">
+                    {data.farm_name.slice(0, 1)}
                   </div>
-                }
-              />
-              {index === optionModalOpen.index && (
-                <OptionModal
-                  optionModalOpen={optionModalOpen}
-                  setOptionModalOpen={setOptionModalOpen}
-                  qrDownloadModalOpen={qrDownloadModalOpen}
-                  setQrDownloadModalOpen={setQrDownloadModalOpen}
-                  deleteModalOpen={deleteModalOpen}
-                  setDeleteModalOpen={setDeleteModalOpen}
+                  <p className="farm_name">{data.farm_name}</p>
+                </div>
+                <p className="name">{data.name}</p>
+                <p className="farm_number">{data.farm_number}</p>
+                <p className="address" id={`address${index}`}>
+                  {data.address}
+                </p>
+                <p className="phone">{data.phone}</p>
+                {data.status === "ON" ? (
+                  <p className="status-on">{data.status}</p>
+                ) : (
+                  <p className="status-off">{data.status}</p>
+                )}
+                <div
+                  className="option-dot"
+                  onClick={() => {
+                    handleOptionModalClick(index, data);
+                    setQrDownloadModalOpen({
+                      open: false,
+                      data: data,
+                    });
+                    setDeleteModalOpen({
+                      open: false,
+                      data: data,
+                    });
+                  }}
+                >
+                  <OptionDot width={40} height={32} />
+                </div>
+
+                <S.AddressTooltip
+                  anchorId={`address${index}`}
+                  place="bottom"
+                  noArrow
+                  content={
+                    <div className="text-wrap">
+                      <p>
+                        ({data.address_code}) {data.address}
+                      </p>
+                    </div>
+                  }
                 />
-              )}
-            </S.ListBlock>
-          );
-        })}
-        <S.ButtonWrap onClick={listMoreView}>
-          <S.MoreButton>
-            <p>더보기</p>
-          </S.MoreButton>
-        </S.ButtonWrap>
+                {index === optionModalOpen.index && (
+                  <OptionModal
+                    optionModalOpen={optionModalOpen}
+                    setOptionModalOpen={setOptionModalOpen}
+                    qrDownloadModalOpen={qrDownloadModalOpen}
+                    setQrDownloadModalOpen={setQrDownloadModalOpen}
+                    deleteModalOpen={deleteModalOpen}
+                    setDeleteModalOpen={setDeleteModalOpen}
+                  />
+                )}
+              </S.ListBlock>
+            );
+          })
+        )}
+        {listData.length !== 0 && (
+          <S.ButtonWrap>
+            <S.MoreButton onClick={listMoreView}>
+              <p>더보기</p>
+            </S.MoreButton>
+          </S.ButtonWrap>
+        )}
       </S.ContentList>
 
       {/* 농가추가 모달 */}
