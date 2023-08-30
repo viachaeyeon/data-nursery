@@ -38,7 +38,7 @@ function MainHeader({ currentDateTime }) {
   return (
     <S.Wrap>
       <S.DateWrap>
-        <p>{currentDateTime}</p>
+        {/* <p>{currentDateTime}</p> */}
       </S.DateWrap>
       <S.profileWrap>
         <ProfileIcon width={21} height={22} />

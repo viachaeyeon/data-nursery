@@ -37,7 +37,7 @@ function Dashboard() {
 
   return (
     <MainLayout>
-      {/* <MainHeader currentDateTime={currentDateTime} /> */}
+      <MainHeader currentDateTime={currentDateTime} />
       <S.Wrap>
         <FarmList />
       </S.Wrap>
