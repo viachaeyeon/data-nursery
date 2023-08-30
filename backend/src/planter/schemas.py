@@ -51,7 +51,7 @@ class PlanterWorkBase(TimezoneSchema):
 
 
 class PlanterWorkCreate(PlanterWorkBase):
-    planter_id: int
+    # planter_id: int
     planter_tray_id: int
     crop_id: int
 

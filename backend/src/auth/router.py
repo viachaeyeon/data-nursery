@@ -325,19 +325,27 @@ async def create_farm_house(
 
     new_planter = create_(
         db,
-        models.Planter,
+        planterModels.Planter,
         planter_farm_house=new_farm_house,
         serial_number=serial_number,
         qrcode=saved_qrcode["url"],
+    )
+    new_planter_status = create_(
+        db,
+        planterModels.PlanterStatus,
+        planter_status__planter=new_planter,
+        status="OFF",
     )
     try:
         db.add(new_user)
         db.add(new_farm_house)
         db.add(new_planter)
+        db.add(new_planter_status)
         db.commit()
         db.refresh(new_user)
         db.refresh(new_farm_house)
         db.refresh(new_planter)
+        db.refresh(new_planter_status)
     except Exception as e:
         if saved_qrcode["is_success"]:
             await delete_file(saved_qrcode["url"])
