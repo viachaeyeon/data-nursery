@@ -30,3 +30,7 @@ async def crop_create(
     db.refresh(new_crop)
 
     return JSONResponse(status_code=201, content=dict(msg="CROP_CREATE_SUCCESS"))
+
+
+# @router.get("/list", status_code=200)
+# def get_crop_list()
