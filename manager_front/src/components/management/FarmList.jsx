@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
 
+// import DaumPostcode from "react-daum-postcode";
 import OptionModal from "./OptionModal";
 import AddFarmModal from "./AddFarmModal";
 import AddFarmSaveModal from "./AddFarmSaveModal";
@@ -128,7 +129,7 @@ const S = {
     }
     p {
       ${({ theme }) => theme.textStyle.h7Reguler};
-      color: ${({theme})=>theme.basic.gray60};
+      color: ${({ theme }) => theme.basic.gray60};
     }
 
     .arrow-wrap {
@@ -289,8 +290,9 @@ function FarmList() {
   });
 
   // 삭제 모달
-  const [deleteModalOpen,setDeleteModalOpen] = useState({
-    open:false,data:undefined
+  const [deleteModalOpen, setDeleteModalOpen] = useState({
+    open: false,
+    data: undefined,
   });
 
   // 전체선택 토글
@@ -373,7 +375,7 @@ function FarmList() {
       const compareResult = a.farm_name.localeCompare(b.farm_name);
       return isFarmNameAscending ? compareResult : -compareResult;
     });
-  },[isFarmNameAscending,isNameOrderBy]);
+  }, [isFarmNameAscending, isNameOrderBy]);
 
   // 상태 정렬
   const sortByStatus = useCallback(() => {
@@ -383,17 +385,17 @@ function FarmList() {
       const compareResult = a.status.localeCompare(b.status);
       return isStatusAscending ? compareResult : -compareResult;
     });
-  },[isStatusAscending,isStateOrderBy]);
+  }, [isStatusAscending, isStateOrderBy]);
 
   // 엑셀 다운로드 버튼
-  const handleExcelClick = useCallback(()=>{
-    alert("엑셀 다운로드 클릭")
-  },[])
+  const handleExcelClick = useCallback(() => {
+    alert("엑셀 다운로드 클릭");
+  }, []);
 
   // 농가목록 더보기
-  const listMoreView = useCallback(()=>{
-    alert("더보기 버튼 구현중")
-  },[]);
+  const listMoreView = useCallback(() => {
+    alert("더보기 버튼 구현중");
+  }, []);
 
   return (
     <S.Wrap>
@@ -495,9 +497,9 @@ function FarmList() {
                     data: data,
                   });
                   setDeleteModalOpen({
-                    open:false,
-                    data:data                    
-                  })
+                    open: false,
+                    data: data,
+                  });
                 }}
               >
                 <OptionDot width={40} height={32} />
@@ -567,6 +569,7 @@ function FarmList() {
             setPhoneNumber={setPhoneNumber}
             addressData={addressData}
             addressDetailData={addressDetailData}
+            setAddressData={setAddressData}
             setAddressDetailData={setAddressDetailData}
             setCreateQrcode={setCreateQrcode}
             setAddFarmSerialNumber={setAddFarmSerialNumber}
@@ -584,12 +587,10 @@ function FarmList() {
         </div>
       )}
 
+      {/* 삭제 모달 */}
       {deleteModalOpen.open && (
         <div className="modal-wrap">
-          <DeleteModal 
-          setDeleteModalOpen={setDeleteModalOpen}
-          />
-
+          <DeleteModal setDeleteModalOpen={setDeleteModalOpen} />
         </div>
       )}
     </S.Wrap>

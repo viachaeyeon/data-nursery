@@ -10,12 +10,12 @@ const S = {
     display: flex;
     justify-content: end;
     position: absolute;
-    
-    .wrap-inner{
+    right: 30px;
+
+    .wrap-inner {
       align-items: center;
       position: absolute;
       top: 10px;
-      left: 1004px;
       background-color: #fff;
       border-radius: 8px;
       padding: 8px;
@@ -71,10 +71,8 @@ function OptionModal({
   qrDownloadModalOpen,
   setQrDownloadModalOpen,
   deleteModalOpen,
-  setDeleteModalOpen
+  setDeleteModalOpen,
 }) {
-
-  console.log("deleteModalOpen : ",deleteModalOpen)
   // QR 다운로드 모달
   const handleQrDownloadModalClick = useCallback(() => {
     if (qrDownloadModalOpen.open === true) {
@@ -86,40 +84,38 @@ function OptionModal({
   }, [qrDownloadModalOpen]);
 
   // 농가수정
-  const handelEditClick = useCallback(()=>{
-    alert(qrDownloadModalOpen.data.serial_number)
-  },[])
+  const handelEditClick = useCallback(() => {
+    alert(qrDownloadModalOpen.data.serial_number);
+  }, []);
 
   //삭제
-  const handleDeleteClick = useCallback(()=>{
-    setDeleteModalOpen({open:true,data:deleteModalOpen})
+  const handleDeleteClick = useCallback(() => {
+    setDeleteModalOpen({ open: true, data: deleteModalOpen });
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
-  })
+  });
 
   return (
     <S.Wrap>
       <div className="wrap-inner">
-
-      <div className="line" onClick={handleQrDownloadModalClick}>
-        <div className="icon">
-          <QRIcon width={16} height={16} />
+        <div className="line" onClick={handleQrDownloadModalClick}>
+          <div className="icon">
+            <QRIcon width={16} height={16} />
+          </div>
+          <p>QR다운</p>
         </div>
-        <p>QR다운</p>
-      </div>
-      <div className="line" onClick={handelEditClick}>
-        <div className="icon">
-          <EditIcon width={16} height={16} />
+        <div className="line" onClick={handelEditClick}>
+          <div className="icon">
+            <EditIcon width={16} height={16} />
+          </div>
+          <p>수정</p>
         </div>
-        <p>수정</p>
-      </div>
-      <div className="line" onClick={handleDeleteClick}>
-        <div className="icon">
-          <DeleteIcon width={16} height={16} />
+        <div className="line" onClick={handleDeleteClick}>
+          <div className="icon">
+            <DeleteIcon width={16} height={16} />
+          </div>
+          <p>삭제</p>
         </div>
-        <p>삭제</p>
       </div>
-      </div>
-
     </S.Wrap>
   );
 }

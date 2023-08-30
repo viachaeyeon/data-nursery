@@ -1,4 +1,4 @@
-import React, { useCallback,useState,useRef } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import styled from "styled-components";
 import { QRCodeCanvas } from "qrcode.react";
 
@@ -190,7 +190,6 @@ function AddFarmModal({
   setCreateQrcode,
   setAddFarmSaveModalOpen,
 }) {
-
   const closeModal = useCallback(() => {
     setAddFarmModalOpen(false);
     setCreateQrcode(false);
@@ -199,7 +198,6 @@ function AddFarmModal({
 
   const addQrCodeClick = useCallback(() => {
     setCreateQrcode(true);
-    
   }, [createQrcode]);
 
   const qrCodeNextClick = useCallback(() => {
@@ -234,6 +232,10 @@ function AddFarmModal({
       level={"H"}
     />
   );
+
+  const handleQRcodeResetClick = useCallback(() => {
+    alert("큐알코드 리셋 버튼 구현중");
+  }, []);
 
   return (
     <S.Wrap>
@@ -285,7 +287,7 @@ function AddFarmModal({
 
               <p>SCAN ME!</p>
             </div>
-            <div className="reset-button">
+            <div className="reset-button" onClick={handleQRcodeResetClick}>
               <div className="img">
                 <Refresh width={24} height={24} />
               </div>

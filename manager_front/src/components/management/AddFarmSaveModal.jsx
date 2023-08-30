@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
-import DaumPostcode from "react-daum-postcode";
+import { useDaumPostcodePopup } from "react-daum-postcode";
 
 import XIcon from "@images/common/icon-x.svg";
 import SearchIcon from "@images/management/search-btn.svg";
@@ -158,7 +158,6 @@ const S = {
 
 function AddFarmSaveModal({
   addFarmSerialNumber,
-  addFarmSaveModalOpen,
   nurseryRegNumber,
   setNurseryRegNumber,
   farmId,
@@ -170,58 +169,63 @@ function AddFarmSaveModal({
   phoneNumber,
   setPhoneNumber,
   addressData,
+  setAddressData,
   addressDetailData,
   setAddressDetailData,
   setAddFarmSaveModalOpen,
   setCreateQrcode,
   setAddFarmSerialNumber,
 }) {
-  console.log("addFarmSaveModalOpen", addFarmSaveModalOpen);
-
   const closeModal = useCallback(() => {
     setAddFarmSaveModalOpen({ open: false, serialNumber: undefined });
     setCreateQrcode(false);
+    setNurseryRegNumber("");
+    setFarmId("");
+    setFarmName("");
+    setProducerName("");
+    setPhoneNumber("");
+    setAddressData("");
+    setAddressDetailData("");
     setAddFarmSerialNumber("");
   }, []);
 
   const FarmInfoSave = useCallback(() => {
     alert("저장 클릭");
+
+    console.log("파종기 시리얼번호 : ", addFarmSerialNumber);
+    console.log("육묘업 등록번호 : ", nurseryRegNumber);
+    console.log("농가ID : ", farmId);
+    console.log("농가명 : ", farmName);
+    console.log("생산자명 : ", producerName);
+    console.log("연락처 : ", phoneNumber);
+    console.log("주소 : ", addressData, addressDetailData);
   }, []);
 
-  const [address, setAddress] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const open = useDaumPostcodePopup(
+    "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js",
+  );
 
-  const handleAddressClick = (data) => {
-    setAddress(data.address);
-    setIsModalOpen(false);
-  };
+  const handleComplete = useCallback((data) => {
+    let fullAddress = data.address;
+    let extraAddress = "";
+    let zoneCode = data.zonecode;
+    setAddressData("(" + zoneCode + ") " + fullAddress);
 
-  // const handleAddressClick = useCallback(() => {
+    if (data.addressType === "R") {
+      if (data.bname !== "") {
+        extraAddress += data.bname;
+      }
+      if (data.buildingName !== "") {
+        extraAddress +=
+          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+      }
+      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+    }
+  }, []);
 
-  //   // const complete = (data) =>{
-  //     // let fullAddress = data.address;
-  //     // let extraAddress = '';
-
-  //     // if (data.addressType === 'R') {
-  //     //     if (data.bname !== '') {
-  //     //         extraAddress += data.bname;
-  //     //     }
-  //     //     if (data.buildingName !== '') {
-  //     //         extraAddress += (extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName);
-  //     //     }
-  //     //     fullAddress += (extraAddress !== '' ? ` (${extraAddress})` : '');
-  //     // }
-  //     // console.log(data)
-  //     // console.log(fullAddress)
-  //     // console.log(data.zonecode)
-
-  //     // props.setcompany({
-  //     //     ...props.company,
-  //     //     address:fullAddress,
-  //     // })
-  // }
-
-  // }, []);
+  const handleClick = useCallback(() => {
+    open({ onComplete: handleComplete });
+  }, []);
 
   return (
     <S.Wrap>
@@ -288,7 +292,7 @@ function AddFarmSaveModal({
                 value={addressData}
                 disabled
               />
-              <div className="search" onClick={() => setIsModalOpen(true)}>
+              <div className="search" onClick={handleClick}>
                 <SearchIcon width={40} height={40} />
               </div>
             </div>
@@ -301,14 +305,6 @@ function AddFarmSaveModal({
             </div>
           </div>
         </S.InputWrap>
-        {isModalOpen && (
-          <DaumPostcode onComplete={handleAddressClick} autoClose={true} />
-        )}
-        {/* <DaumPostcode
-                className="postmodal"
-                autoClose
-                onComplete={complete} /> */}
-        {/* <div onComplete={handleComplete} className="post-code" /> */}
 
         {nurseryRegNumber.length === 0 ||
         farmId.length === 0 ||

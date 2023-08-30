@@ -1,4 +1,4 @@
-import React, { useCallback,useState,useRef } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import styled from "styled-components";
 
 const S = {
@@ -25,92 +25,81 @@ const S = {
     align-items: center;
     gap: 16px;
 
-    .title{
-        color: ${({theme})=>theme.basic.gray60};
-        ${({theme})=>theme.textStyle.h5Bold};
+    .title {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h5Bold};
     }
 
-    .sub-title{
-        color: ${({theme})=>theme.basic.gray40};
-        ${({theme})=>theme.textStyle.h6Reguler};
+    .sub-title {
+      color: ${({ theme }) => theme.basic.gray40};
+      ${({ theme }) => theme.textStyle.h6Reguler};
     }
   `,
-  ButtonWrap:styled.div`
+  ButtonWrap: styled.div`
     margin-top: 32px;
     display: flex;
     gap: 16px;
-    p{
-
-        ${({theme})=>theme.textStyle.h7Bold}
-
+    p {
+      ${({ theme }) => theme.textStyle.h7Bold}
     }
 
-    .cancel-button{
-        padding: 12px 24px;
-        width: 118px;
-        height: 40px;
-        border: 1px solid ${({theme})=>theme.primery.primery};
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        
+    .cancel-button {
+      padding: 12px 24px;
+      width: 118px;
+      height: 40px;
+      border: 1px solid ${({ theme }) => theme.primery.primery};
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
 
-        p{
-            color: ${({theme})=>theme.primery.primery};
-        }
-
-
+      p {
+        color: ${({ theme }) => theme.primery.primery};
+      }
     }
 
-    .ok-button{
-        width: 118px;
-        padding: 12px 40px;
-        background-color: ${({theme})=>theme.primery.primery};
-        border:1px solid ${({theme})=>theme.primery.primery};
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        cursor: pointer;
+    .ok-button {
+      width: 118px;
+      padding: 12px 40px;
+      background-color: ${({ theme }) => theme.primery.primery};
+      border: 1px solid ${({ theme }) => theme.primery.primery};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
 
-        
-
-        p{
-            color: ${({theme})=>theme.blackWhite.white};
-        }
+      p {
+        color: ${({ theme }) => theme.blackWhite.white};
+      }
     }
-
   `,
 };
 
-function AddFarmModal({
-    setDeleteModalOpen
-}) {
-
+function AddFarmModal({ setDeleteModalOpen }) {
   const closeModal = useCallback(() => {
-    setDeleteModalOpen({open:false,data:undefined})
+    setDeleteModalOpen({ open: false, data: undefined });
   }, []);
 
-  const handleDeleteOkClick = useCallback(()=>{
+  const handleDeleteOkClick = useCallback(() => {
     alert("확인 클릭");
-  },[]);
+  }, []);
 
   return (
     <S.Wrap>
       <S.WrapInner>
         <S.TitleWrap>
-            <p className="title">작물을 삭제하시겠습니까?</p>
-            <p className="sub-title">삭제된 작물정보는 복원 할 수 없습니다.</p>
+          <p className="title">작물을 삭제하시겠습니까?</p>
+          <p className="sub-title">삭제된 작물정보는 복원 할 수 없습니다.</p>
         </S.TitleWrap>
         <S.ButtonWrap>
-            <div className ="cancel-button" onClick={closeModal}>
-                <p>취소</p>
-            </div>
-            <div className="ok-button" onClick={handleDeleteOkClick}>
-                <p>확인</p>
-            </div>
+          <div className="cancel-button" onClick={closeModal}>
+            <p>취소</p>
+          </div>
+          <div className="ok-button" onClick={handleDeleteOkClick}>
+            <p>확인</p>
+          </div>
         </S.ButtonWrap>
       </S.WrapInner>
     </S.Wrap>
