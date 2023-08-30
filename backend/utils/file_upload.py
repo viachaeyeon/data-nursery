@@ -4,11 +4,6 @@ import os
 from settings import BASE_DIR
 
 IMAGE_DIR = f"{BASE_DIR}/static"
-print("========================")
-print("========================")
-print(BASE_DIR)
-print("========================")
-print("========================")
 
 
 async def single_file_uploader(file):
