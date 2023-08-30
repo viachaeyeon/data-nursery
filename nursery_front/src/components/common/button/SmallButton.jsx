@@ -4,30 +4,27 @@ import { Button } from "react-bootstrap";
 
 const S = {
   ButtonWrap: styled(Button)`
-    width: 100%;
-    height: 56px;
-    padding: 16px 32px !important;
+    width: ${(props) => props.width};
+    height: 52px;
+    padding: 16px 24px !important;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    /* font-size: 24px !important;
-    line-height: 28px !important;
-    font-weight: 700 !important; */
-    ${({ theme }) => theme.textStyle.h3Bold}
+    ${({ theme }) => theme.textStyle.h6Bold}
     border-radius: 8px !important;
 
     color: ${(props) => props.fontColor} !important;
     background-color: ${(props) => props.backgroundColor} !important;
-    border: 2px solid ${(props) => props.borderColor} !important;
+    border: 1px solid ${(props) => props.borderColor} !important;
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
 
     cursor: ${(props) => (props.fontColor === `#C2D6E1` ? "auto" : "pointer")} !important;
 
     &:hover {
       background-color: ${(props) => props.hoverBackgroundColor} !important;
-      border-color: ${(props) => props.hoverBorderColor} !important;
+      border: 2px solid ${(props) => props.hoverBorderColor} !important;
     }
 
     &:focus {
@@ -37,9 +34,10 @@ const S = {
   `,
 };
 
-function DefaultButton({ text, onClick, customStyle }) {
+function SmallButton({ width = "100%", text, onClick, customStyle }) {
   return (
     <S.ButtonWrap
+      width={width}
       backgroundColor={customStyle.backgroundColor}
       borderColor={customStyle.borderColor}
       hoverBackgroundColor={customStyle.hoverBackgroundColor}
@@ -53,4 +51,4 @@ function DefaultButton({ text, onClick, customStyle }) {
   );
 }
 
-export default DefaultButton;
+export default SmallButton;

@@ -25,7 +25,7 @@ const S = {
     align-items: center;
     justify-content: center;
 
-    width: 456px;
+    width: 360px;
     height: 843px;
 
     border: 1px solid ${({ theme }) => theme.mobile.inputOutline};

@@ -19,3 +19,23 @@ export const borderButtonColor = {
   focusBorderColor: theme.basic.btnAction,
   fontColor: "#5899FB",
 };
+
+export const whiteButtonColor = {
+  backgroundColor: "#ffffff",
+  borderColor: "#ffffff",
+  hoverBackgroundColor: "#ffffff",
+  hoverBorderColor: theme.basic.grey30,
+  focusBackgroundColor: theme.basic.lightSky,
+  focusBorderColor: theme.basic.lightSky,
+  fontColor: theme.basic.grey50,
+};
+
+export const purpleButtonColor = {
+  backgroundColor: theme.mobile.secondary2,
+  borderColor: theme.mobile.secondary2,
+  hoverBackgroundColor: theme.mobile.secondary2,
+  hoverBorderColor: theme.mobile.btnPress,
+  focusBackgroundColor: theme.mobile.btnPress,
+  focusBorderColor: theme.mobile.btnPress,
+  fontColor: "#ffffff",
+};

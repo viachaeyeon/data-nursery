@@ -1,13 +1,17 @@
 import React from "react";
 import styled from "styled-components";
 import ScrollContainer from "react-indiana-drag-scroll";
+import Image from "next/image";
 
 import MainLayout from "@components/layout/MainLayout";
+import WorkTab from "@components/dashboard/WorkTab";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 import TodayOutputIcon from "@images/dashboard/icon-output.svg";
-import BestIcon from "@images/dashboard/icon-best.svg";
 import UseTimeIcon from "@images/dashboard/icon-time.svg";
+import { NumberFormatting } from "@src/utils/Formatting";
+import NoneIcon from "@images/dashboard/none-icon.svg";
+import theme from "@src/styles/theme";
 
 const S = {
   Wrap: styled.div`
@@ -23,9 +27,11 @@ const S = {
   `,
   ScrollWrap: styled.div`
     width: 100%;
-    height: fit-content;
-    margin-bottom: 24px;
+    height: 135px;
+    margin-bottom: 5px;
+
     .scroll-container {
+      height: 135px;
       display: flex;
       overflow-x: auto;
       gap: 16px;
@@ -109,6 +115,35 @@ const S = {
         ${({ theme }) => theme.textStyle.h5Regular}
       }
     }
+
+    .time-wrap {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+
+      .data-wrap {
+        gap: 2px;
+      }
+    }
+  `,
+  WorkWrap: styled.div`
+    padding: 0px 24px;
+    width: 100%;
+    height: 100%;
+
+    .no-work {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        ${({ theme }) => theme.textStyle.h5Bold}
+        color: ${({ theme }) => theme.basic.grey50};
+      }
+    }
   `,
 };
 
@@ -124,32 +159,45 @@ function MainPage() {
                 <p>오늘의 생산량</p>
               </div>
               <div className="data-wrap">
-                <p className="bold-text">485000</p>
+                <p className="bold-text">{NumberFormatting(485000)}</p>
                 <p className="suffix-text">개</p>
               </div>
             </S.CardWrap>
             <S.CardWrap className="best-kind">
               <div className="row-layout">
-                <BestIcon />
+                <Image src={"/images/dashboard/icon-best.png"} width={24} height={24} alt="best kind image" />
                 <p>BEST품종</p>
               </div>
               <div className="data-wrap">
-                <p className="bold-text">485000</p>
+                <p className="bold-text">{NumberFormatting(485000)}</p>
                 <p className="suffix-text">개</p>
               </div>
             </S.CardWrap>
             <S.CardWrap className="use-time">
               <div className="row-layout">
                 <UseTimeIcon />
-                <p>사용시간 - </p>
+                <p>사용시간 - 3회</p>
               </div>
-              <div className="data-wrap">
-                <p className="bold-text">485000</p>
-                <p className="suffix-text">개</p>
+              <div className="time-wrap">
+                <div className="data-wrap">
+                  <p className="bold-text">6</p>
+                  <p className="suffix-text">시간</p>
+                </div>
+                <div className="data-wrap">
+                  <p className="bold-text">20</p>
+                  <p className="suffix-text">분</p>
+                </div>
               </div>
             </S.CardWrap>
           </ScrollContainer>
         </S.ScrollWrap>
+        <S.WorkWrap>
+          {/* <div className="no-work">
+            <NoneIcon width={50} height={50} fill={theme.basic.grey20} />
+            <p>새 작업을 등록하세요!</p>
+          </div> */}
+          <WorkTab />
+        </S.WorkWrap>
       </S.Wrap>
     </MainLayout>
   );
