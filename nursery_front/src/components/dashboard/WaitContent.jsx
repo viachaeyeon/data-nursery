@@ -13,6 +13,7 @@ const S = {
     display: flex;
     flex-direction: column;
     padding-top: 16px;
+    margin-bottom: 35px;
 
     .divider {
       width: 100%;

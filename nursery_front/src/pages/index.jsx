@@ -18,7 +18,7 @@ const S = {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 35px 0px;
+    padding-top: 35px;
     overflow-y: auto;
 
     p {

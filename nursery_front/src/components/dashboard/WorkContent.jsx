@@ -12,6 +12,7 @@ import BoxIcon from "@images/dashboard/icon-box.svg";
 const S = {
   Wrap: styled.div`
     background-color: ${({ theme }) => theme.basic.whiteGrey};
+    margin-bottom: 35px;
     border-radius: 8px;
     padding: 24px 32px;
     display: flex;

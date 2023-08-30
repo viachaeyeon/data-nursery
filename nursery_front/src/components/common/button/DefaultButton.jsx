@@ -12,9 +12,6 @@ const S = {
     align-items: center;
     justify-content: center;
 
-    /* font-size: 24px !important;
-    line-height: 28px !important;
-    font-weight: 700 !important; */
     ${({ theme }) => theme.textStyle.h3Bold}
     border-radius: 8px !important;
 

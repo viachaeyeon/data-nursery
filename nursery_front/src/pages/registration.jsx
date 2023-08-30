@@ -10,6 +10,7 @@ import DefaultButton from "@components/common/button/DefaultButton";
 import DefaultModal from "@components/common/modal/DefaultModal";
 
 import { defaultButtonColor } from "@src/utils/ButtonColor";
+import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 
 const S = {
   Wrap: styled.div`
@@ -141,5 +142,10 @@ function RegistrationPage() {
     </MainLayout>
   );
 }
+
+// 로그인 안되어 있을 경우 로그인 페이지로 이동
+export const getServerSideProps = requireAuthentication((context) => {
+  return { props: {} };
+});
 
 export default RegistrationPage;

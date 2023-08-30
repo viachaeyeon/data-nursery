@@ -7,6 +7,7 @@ import BottomBar from "@components/layout/BottomBar";
 import BackIcon from "@images/common/arrow-left.svg";
 import MoreIcon from "@images/common/more-icon.svg";
 import MyInfoIcon from "@images/common/my-info-icon.svg";
+import theme from "@src/styles/theme";
 
 const S = {
   Wrap: styled.div`
@@ -26,7 +27,8 @@ const S = {
     justify-content: center;
 
     width: 360px;
-    height: 843px;
+    max-height: 843px;
+    height: 100%;
 
     border: 1px solid ${({ theme }) => theme.mobile.inputOutline};
 
@@ -67,17 +69,18 @@ const S = {
     top: 0px;
     padding: 16px 24px;
     z-index: 99;
-    background-color: #ffffff;
+    background-color: ${(props) => props.backgroundColor};
 
     svg {
       cursor: pointer;
+      fill: ${(props) => (props.backgroundColor === "#ffffff" ? "#929FA6" : "#ffffff")};
     }
 
     p {
       width: calc(100% - 72px);
 
       ${({ theme }) => theme.textStyle.h3Bold}
-      color: ${({ theme }) => theme.basic.grey60};
+      color: ${(props) => (props.backgroundColor === "#ffffff" ? theme.basic.grey60 : "#ffffff")};
 
       white-space: nowrap;
       overflow: hidden;
@@ -140,8 +143,15 @@ const S = {
 // isBackIcon : 헤더에서 뒤로가기 아이콘 표시 유무
 // backIconClickFn : 뒤로가기 아이콘 클릭 시 실행되는 함수
 // isMoreIcon : 헤더에서 ... 표시 유무
-// mainBackgroundColor : 메인콘텐츠의 배경 색상 (메인화면의 하단 버튼의 radius의 뒷 배경 색 변경 위해 필요)
-function MainLayout({ children, pageName, isBackIcon = true, backIconClickFn, isMoreIcon = false }) {
+// backgroundColor : 헤더 배경 색상
+function MainLayout({
+  children,
+  pageName,
+  isBackIcon = true,
+  backIconClickFn,
+  isMoreIcon = false,
+  backgroundColor = "#ffffff",
+}) {
   const router = useRouter();
 
   // 오늘 날짜
@@ -178,20 +188,20 @@ function MainLayout({ children, pageName, isBackIcon = true, backIconClickFn, is
       <S.MainLayout isMain={pageName === "main"}>
         <S.MainContent height={mainContentHeight}>
           {pageName === "main" && (
-            <S.PageNameWrap className="main-page-name">
+            <S.PageNameWrap className="main-page-name" backgroundColor={backgroundColor}>
               <div className="text-wrap">
                 <p className="date-text">{today[0] + today[1] + today[2].replace(".", " ") + today[3]}</p>
                 <p className="logo-text">Data Nursery</p>
               </div>
               <MyInfoIcon
                 onClick={() => {
-                  alert("준비중입니다.");
+                  router.push("/nursery-information");
                 }}
               />
             </S.PageNameWrap>
           )}
           {!!pageName && pageName !== "main" && (
-            <S.PageNameWrap isBackIcon={isBackIcon} isMoreIcon={isMoreIcon}>
+            <S.PageNameWrap isBackIcon={isBackIcon} isMoreIcon={isMoreIcon} backgroundColor={backgroundColor}>
               <BackIcon className="back-icon-wrap" onClick={backIconClickFn} />
               <p>{pageName}</p>
               <MoreIcon
