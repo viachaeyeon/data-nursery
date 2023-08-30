@@ -8,10 +8,10 @@ import { loginAPI } from "@src/apis/authAPIs";
 
 import MainLayout from "@components/layout/MainLayout";
 import PrefixInput from "@components/common/input/PrefixInput";
+import DefaultButton from "@components/common/button/DefaultButton";
 
 import OnCheckBoxIcon from "@images/login/on-check-box.svg";
 import OffCheckBoxIcon from "@images/login/off-check-box.svg";
-import DefaultButton from "@components/common/button/DefaultButton";
 import { defaultButtonColor } from "@src/utils/ButtonColor";
 import { loginCheckAuthentication } from "@src/utils/LoginCheckAuthentication";
 
@@ -117,8 +117,6 @@ function LogInPage() {
     try {
       const res = await loginAPI(loginInfo);
 
-      console.log(res);
-
       // 아이디 저장 시 실행
       if (loginInfo.isStayLogin) {
         // 아이디 로컬스토리지에 저장
@@ -128,7 +126,11 @@ function LogInPage() {
         secureLocalStorage.removeItem("login_id");
       }
 
-      router.push("/");
+      if (res.data.planter.is_register) {
+        router.push("/");
+      } else {
+        router.push("QR-scanner");
+      }
     } catch (e) {
       alert("로그인에 실패하였습니다. 아이디 및 비밀번호를 확인해주세요.");
     }
