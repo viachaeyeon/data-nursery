@@ -2,10 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
 
+import useUserInfo from "@hooks/queries/auth/useUserInfo";
+
 import MainLayout from "@components/layout/MainLayout";
+import DefaultButton from "@components/common/button/DefaultButton";
 
 import QRCodeImage from "@images/login/img-qrcode.svg";
-import DefaultButton from "@components/common/button/DefaultButton";
 import { defaultButtonColor } from "@src/utils/ButtonColor";
 
 const S = {
@@ -61,13 +63,13 @@ function QRScannerPage() {
   //       qrbox: 250,
   //     });
 
-  //     //   scanner.render(success, error);
-  //     scanner.render(onScanSuccess);
+  //     scanner.render(success, error);
+  //     // scanner.render(onScanSuccess);
 
-  //     function onScanSuccess(decodedText, decodedResult) {
-  //       // Handle on success condition with the decoded text or result.
-  //       console.log(`Scan result: ${decodedText}`, decodedResult);
-  //     }
+  //     // function onScanSuccess(decodedText, decodedResult) {
+  //     //   // Handle on success condition with the decoded text or result.
+  //     //   console.log(`Scan result: ${decodedText}`, decodedResult);
+  //     // }
 
   //     function success(result) {
   //       scanner.clear();
@@ -80,7 +82,22 @@ function QRScannerPage() {
   //   }
   // }, [step]);
 
+  // function onScanSuccess(decodedText, decodedResult) {
+  //   // Handle on success condition with the decoded text or result.
+  //   console.log(`Scan result: ${decodedText}`, decodedResult);
+  // }
+
+  // var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+  // html5QrcodeScanner.render(onScanSuccess);
+
   console.log(scanResult);
+
+  const { data: userInfo } = useUserInfo({
+    successFn: () => {},
+    errorFn: () => {
+      // userLogout(router, clearQueries);
+    },
+  });
 
   return (
     <>
@@ -89,7 +106,7 @@ function QRScannerPage() {
           <S.Wrap>
             <p className="welcome-text">환영합니다.</p>
             <p className="description-text">
-              농가명님의{"\n"}생산량 관리를 시작해볼까요?{"\n"}
+              {userInfo?.farm_house.name}님의{"\n"}생산량 관리를 시작해볼까요?{"\n"}
               {"\n"}먼저 <span>QR코드를 준비해주세요!</span>
             </p>
             <S.QRCodeImageWrap>
@@ -105,14 +122,15 @@ function QRScannerPage() {
           </S.Wrap>
         </MainLayout>
       )}
-      {/* {step === "qrCode" &&
+      {/* {step === "qrCode" && <div style="width: 500px" id="reader"></div>} */}
+      {step === "qrCode" &&
         (scanResult ? (
           <div>
             Success : <a href={"http://" + scanResult}>{scanResult}</a>
           </div>
         ) : (
           <div style="width: 500px" id="reader"></div>
-        ))} */}
+        ))}
     </>
   );
 }

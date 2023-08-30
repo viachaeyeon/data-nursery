@@ -149,7 +149,7 @@ function BottomBar() {
           }}
         />
         <ChartIcon />
-        <p>이력조회</p>
+        <p>통계보기</p>
       </S.BottomBarContent>
     </S.BottomWrap>
   );

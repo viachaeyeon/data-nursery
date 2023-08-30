@@ -2,23 +2,20 @@ import React from "react";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
 
+import ArrowRightIcon from "@images/common/chevron-right.svg";
+
 const S = {
   ButtonWrap: styled(Button)`
-    width: 100%;
+    width: 84px;
     height: 56px;
-    padding: 16px 32px !important;
+    padding: 16px 8px 16px 16px !important;
 
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 
-    /* font-size: 24px !important;
-    line-height: 28px !important;
-    font-weight: 700 !important; */
-    ${({ theme }) => theme.textStyle.h3Bold}
     border-radius: 8px !important;
 
-    color: ${(props) => props.fontColor} !important;
     background-color: ${(props) => props.backgroundColor} !important;
     border: 2px solid ${(props) => props.borderColor} !important;
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
@@ -34,10 +31,15 @@ const S = {
       background-color: ${(props) => props.focusBackgroundColor} !important;
       border-color: ${(props) => props.focusBorderColor} !important;
     }
+
+    .button-text {
+      ${({ theme }) => theme.textStyle.h6Bold}
+      color: ${(props) => props.fontColor} !important;
+    }
   `,
 };
 
-function DefaultButton({ text, onClick, customStyle }) {
+function SuffixButton({ text, onClick, customStyle }) {
   return (
     <S.ButtonWrap
       backgroundColor={customStyle.backgroundColor}
@@ -48,9 +50,10 @@ function DefaultButton({ text, onClick, customStyle }) {
       focusBorderColor={customStyle.focusBorderColor}
       fontColor={customStyle.fontColor}
       onClick={customStyle.fontColor === "#DEDEDE" ? () => {} : onClick}>
-      {text}
+      <p className="button-text">{text}</p>
+      <ArrowRightIcon />
     </S.ButtonWrap>
   );
 }
 
-export default DefaultButton;
+export default SuffixButton;

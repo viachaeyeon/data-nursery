@@ -35,7 +35,7 @@ const S = {
     width: 100%;
     flex: 1;
     ${({ theme }) => theme.textStyle.h5Bold}
-    color: #a5a5a5;
+    color: ${({ theme }) => theme.basic.grey60};
     outline: none;
     border: none;
     box-shadow: none !important;
