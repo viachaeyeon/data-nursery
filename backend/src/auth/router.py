@@ -48,7 +48,10 @@ def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     # TODO: 실제 회원가입 시 FarmHouse도 같이 생성
     hash_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
     new_user = models.User(
-        login_id=user.login_id, password=hash_pw.decode("utf-8"), code=user.code
+        login_id=user.login_id,
+        name=user.name,
+        password=hash_pw.decode("utf-8"),
+        code=user.code,
     )
     db.add(new_user)
     db.commit()

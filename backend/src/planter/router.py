@@ -204,3 +204,8 @@ def test_planter_status_change(serial_number: str, db: Session = Depends(get_db)
         db.refresh(new_planter_work_status)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+# @router.post("/farmhouse/register", status_code=200, description="농가에서 파종기 등록 시 사용")
+# def farm_house_register_planter(serial_number: str, db: Session = Depends(get_db)):
+#     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
