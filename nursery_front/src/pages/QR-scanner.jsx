@@ -92,6 +92,7 @@ function QRScannerPage() {
 
   console.log(scanResult);
 
+  // 유저 정보 API
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
