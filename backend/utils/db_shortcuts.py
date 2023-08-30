@@ -17,12 +17,17 @@ def get_current_user(user_type: str, token: dict, db):
         login_id = validate_token(token[AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN])
         user = get_(db, User, login_id=login_id)
 
+        if user.code != "01":
+            raise AuthenticationException(name="INVALID_USER_TYPE")
+
     elif user_type == "99":
         if token.get(AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN) == None:
             raise AuthenticationException(name="INVALID_TOKEN")
 
         login_id = validate_token(token[AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN])
         user = get_(db, User, login_id=login_id)
+        if user.code != "99":
+            raise AuthenticationException(name="INVALID_USER_TYPE")
 
     if not user:
         raise AuthenticationException(name="INVALID_USER")

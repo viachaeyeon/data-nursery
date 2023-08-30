@@ -247,8 +247,9 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     return response
 
 
-@router.post("create/harmhouse", description="관리자페이지에서 농가 추가할때 사용", status_code=201)
+@router.post("/create/harmhouse", description="관리자페이지에서 농가 추가할때 사용", status_code=201)
 async def create_farm_house(
+    request: Request,
     serial_number: str = Form(...),
     nursery_number: str = Form(...),
     farm_house_id: str = Form(...),
@@ -259,6 +260,9 @@ async def create_farm_house(
     qrcode: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
+    # api 요청한 유저가 관리자 유저인지 확인
+    get_current_user("99", request.cookies, db)
+
     dup_check_user = get_(db, models.User, login_id=serial_number)
     if dup_check_user != None:
         return JSONResponse(status_code=404, content=dict(msg="DUPLICATED_LOGIN_ID"))
