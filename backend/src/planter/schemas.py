@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 from datetime import datetime
 from utils.database import TimezoneSchema
@@ -34,6 +35,10 @@ class PlanterTrayBase(BaseModel):
 
 class PlanterTray(PlanterTrayBase):
     id: int
+
+
+class MultiplePlanterTrayResponse(BaseModel):
+    planter_trays: List[PlanterTray]
 
 
 class PlanterWorkBase(TimezoneSchema):

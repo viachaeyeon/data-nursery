@@ -247,3 +247,17 @@ def craete_planter_tray(
     db.refresh(new_planter_tray)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+@router.get(
+    "/tray/list", status_code=200, response_model=schemas.MultiplePlanterTrayResponse
+)
+def planter_tray_list(db: Session = Depends(get_db)):
+    planter_trays = db.query(models.PlanterTray).filter_by(is_del=False).all()
+
+    # planter_tray_list = [
+    #     {"id": tray.id, "width": tray.width, "height": tray.height, "total": tray.total}
+    #     for tray in planter_trays
+    # ]
+
+    return {"planter_trays": planter_trays}
