@@ -103,6 +103,8 @@ const S = {
     border-radius: 8px;
     background-color: #5899fb;
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    border: 1px solid ${({ theme }) => theme.primery.primery};
+
     width: 172px;
 
     p {
