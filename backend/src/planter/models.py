@@ -93,6 +93,7 @@ class PlanterWork(BaseModel):
     )
     planter_works__planter_output = relationship(
         "PlanterOutput",
+        uselist=False,
         back_populates="planter_output__planter_works",
         primaryjoin="PlanterWork.id == PlanterOutput.planter_work_id",
     )

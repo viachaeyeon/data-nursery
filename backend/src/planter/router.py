@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import or_, case, literal_column, func
+from sqlalchemy.orm import Session, joinedload, aliased
 from starlette.responses import JSONResponse
 
 from datetime import datetime
@@ -297,3 +298,84 @@ def create_planter_work(
     db.refresh(new_work)
     db.refresh(new_work_status)
     return JSONResponse(status_code=201, content=dict(msg="CREATED_WORK"))
+
+
+@router.get(
+    "/work/working/list/{serial_number}",
+    status_code=200,
+    description="파종기 작업 중 작업중인 목록(WORKING, PAUSE 상태)을 불러올때 사용",
+)
+def planter_work_working_pause_list(
+    request: Request, serial_number: str, db: Session = Depends(get_db)
+):
+    user = get_current_user("01", request.cookies, db)
+
+    planter = user.user_farm_house.farm_house_planter
+    # 유저에 등록된 시리얼번호와 일치하는지 확인
+    if planter.serial_number != serial_number:
+        return JSONResponse(status_code=400, content=dict(msg="NOT_MATCHED_PLANTER"))
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    recent_status_subquery = (
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.created_at).label("max_created_at"),
+        )
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    planter_works_with_recent_working_or_pause_status = (
+        db.query(pw)
+        .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
+            & (pws.created_at == recent_status_subquery.c.max_created_at),
+        )
+        .filter(
+            pw.is_del == False,
+            pw.planter_id == planter.id,
+            pws.status.in_(["WORKING", "PAUSE"]),
+        )
+        .order_by(pw.created_at.desc())
+    ).first()
+
+    if not planter_works_with_recent_working_or_pause_status:
+        return None
+
+    return {
+        "id": planter_works_with_recent_working_or_pause_status.id,
+        "crop_kind": planter_works_with_recent_working_or_pause_status.crop_kind,
+        "planter_work_output": planter_works_with_recent_working_or_pause_status.planter_works__planter_output.output,
+        "tray_total": planter_works_with_recent_working_or_pause_status.planter_work__planter_tray.total,
+    }
+
+
+@router.get(
+    "/work/wait/list/{serial_number}",
+    status_code=200,
+    description="파종기 작업 중 대기중인 목록(WAIT 상태)을 불러올때 사용",
+)
+def planter_work_wait_list():
+    pass
+
+
+@router.get(
+    "/work/done/list/{year}/{month}/{date}",
+    status_code=200,
+    description="파종기 작업 중 특정 날짜의 완료된 목록(DONE 상태)을 불러올때 사용",
+)
+def planter_work_done_datetime_list():
+    pass
+
+
+@router.patch(
+    "/work/status/update",
+    status_code=200,
+    description="파종기 작업 상태 변경 시 사용<br/>WAIT: 대기중, WORKING: 작업중, DONE: 완료, PAUSE: 일시정지",
+)
+def update_planter_work_status(request: Request, db: Session = Depends(get_db)):
+    pass
