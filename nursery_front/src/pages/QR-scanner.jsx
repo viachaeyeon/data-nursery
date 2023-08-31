@@ -58,7 +58,7 @@ function QRScannerPage() {
 
   useEffect(() => {
     if (step === "qrCode") {
-      const scanner = new Html5QrcodeScanner("render", {
+      const scanner = new Html5QrcodeScanner("reader", {
         fps: 10,
         qrbox: 250,
       });
