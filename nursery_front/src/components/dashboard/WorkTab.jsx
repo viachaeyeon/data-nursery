@@ -88,7 +88,7 @@ const S = {
 
 function WorkTab() {
   const [selectTab, setSelectTab] = useState("working");
-  const [isWork, setIsWork] = useState(true);
+  const [isWork, setIsWork] = useState(false);
 
   return (
     <S.Wrap>
