@@ -8,6 +8,7 @@ import AddFarmModal from "./AddFarmModal";
 import AddFarmSaveModal from "./AddFarmSaveModal";
 import QrDownloadModal from "./QrDownloadModal";
 import DeleteModal from "./DeleteModal";
+import EditFarmModal from "./EditFarmModal";
 
 import ExcelIcon from "@images/management/excel-icon.svg";
 import AddIcon from "@images/management/add-icon.svg";
@@ -310,6 +311,12 @@ function FarmList() {
     data: undefined,
   });
 
+  // 수정 모달
+  const [editModalOpen, setEditModalOpen] = useState({
+    open: false,
+    data: undefined,
+  });
+
   // 전체선택 토글
   const AllCheckBoxToggle = useCallback(() => {
     setIsAllCheckBox((prevIs) => !prevIs);
@@ -546,6 +553,7 @@ function FarmList() {
                     setQrDownloadModalOpen={setQrDownloadModalOpen}
                     deleteModalOpen={deleteModalOpen}
                     setDeleteModalOpen={setDeleteModalOpen}
+                    setEditModalOpen={setEditModalOpen}
                   />
                 )}
               </S.ListBlock>
@@ -615,6 +623,16 @@ function FarmList() {
       {deleteModalOpen.open && (
         <div className="modal-wrap">
           <DeleteModal setDeleteModalOpen={setDeleteModalOpen} />
+        </div>
+      )}
+
+      {/* 수정모달 */}
+      {editModalOpen.open && (
+        <div className="modal-wrap">
+          <EditFarmModal
+            editModalOpen={editModalOpen}
+            setEditModalOpen={setEditModalOpen}
+          />
         </div>
       )}
     </S.Wrap>
