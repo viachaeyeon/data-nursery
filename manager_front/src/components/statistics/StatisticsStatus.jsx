@@ -233,6 +233,20 @@ const S = {
       background-color: ${({ theme }) => theme.basic.recOutline};
     }
   `,
+  EmptyData: styled.div`
+    margin-top: 168px;
+    gap: 14px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+
+    p {
+      color: ${({ theme }) => theme.basic.gray50};
+      ${({ theme }) => theme.textStyle.h5Reguler}
+    }
+  `,
 };
 
 function StatisticsStatus() {
@@ -342,146 +356,165 @@ function StatisticsStatus() {
                 <UpArrow width={15} height={15} />
                 <p className="info-sub">정렬기능 )</p>
               </div>
-              <S.DateChooseWrap>
-                <S.DropDown>
-                  <select className="select-style">
-                    <option value="year">연도별</option>
-                  </select>
-                  <SelectArrowIcon width={24} height={24} />
-                </S.DropDown>
-                <S.DropDown>
-                  <select className="select-style">
-                    <option value="month">월별</option>
-                  </select>
-                  <SelectArrowIcon width={24} height={24} />
-                </S.DropDown>
-                <DatePicer />
-              </S.DateChooseWrap>
+              {listData.length !== 0 && (
+                <S.DateChooseWrap>
+                  <S.DropDown>
+                    <select className="select-style">
+                      <option value="year">연도별</option>
+                    </select>
+                    <SelectArrowIcon width={24} height={24} />
+                  </S.DropDown>
+                  <S.DropDown>
+                    <select className="select-style">
+                      <option value="month">월별</option>
+                    </select>
+                    <SelectArrowIcon width={24} height={24} />
+                  </S.DropDown>
+                  <DatePicer />
+                </S.DateChooseWrap>
+              )}
             </div>
           </div>
         </div>
         <div>
-          <div className="button-wrap">
-            <S.ExcelButton>
-              <ExcelIcon width={20} height={25} />
-              <p>엑셀 내려받기</p>
-            </S.ExcelButton>
-          </div>
+          {listData.length !== 0 && (
+            <div className="button-wrap">
+              <S.ExcelButton>
+                <ExcelIcon width={20} height={25} />
+                <p>엑셀 내려받기</p>
+              </S.ExcelButton>
+            </div>
+          )}
         </div>
       </S.InfoBlock>
       <S.ContentList>
-        <div className="list-table-head">
-          <p>NO</p>
-          <S.HeaderDropDown>
-            <select className="select-style">
-              <option value="farm-id">농가 ID</option>
-            </select>
-            <HeaderSelectArrowIcon width={20} height={20} />
-          </S.HeaderDropDown>
-          <S.HeaderDropDown>
-            <select className="select-style">
-              <option value="farm-name">농가명</option>
-            </select>
-            <HeaderSelectArrowIcon width={20} height={20} />
-          </S.HeaderDropDown>
-          <S.HeaderDropDown>
-            <select className="select-style">
-              <option value="farm-plant">작물명</option>
-            </select>
-            <HeaderSelectArrowIcon width={20} height={20} />
-          </S.HeaderDropDown>
+        {listData.length === 0 ? (
+          <S.EmptyData>
+            <img
+              src="/images/statistics/w-icon-graph.png"
+              alt="statistics-icon"
+            />
+            <p>등록된 통계현황이 없습니다.</p>
+          </S.EmptyData>
+        ) : (
+          <>
+            <div className="list-table-head">
+              <p>NO</p>
+              <S.HeaderDropDown>
+                <select className="select-style">
+                  <option value="farm-id">농가 ID</option>
+                </select>
+                <HeaderSelectArrowIcon width={20} height={20} />
+              </S.HeaderDropDown>
+              <S.HeaderDropDown>
+                <select className="select-style">
+                  <option value="farm-name">농가명</option>
+                </select>
+                <HeaderSelectArrowIcon width={20} height={20} />
+              </S.HeaderDropDown>
+              <S.HeaderDropDown>
+                <select className="select-style">
+                  <option value="farm-plant">작물명</option>
+                </select>
+                <HeaderSelectArrowIcon width={20} height={20} />
+              </S.HeaderDropDown>
 
-          <div className="arrow-wrap">
-            <p>품종명</p>
-            <div className="icon-wrap" onClick={sortByFarmName}>
-              {plantName ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
-              )}
-            </div>
-          </div>
-          <S.HeaderDropDown>
-            <select className="select-style">
-              <option value="tray">트레이</option>
-            </select>
-            <HeaderSelectArrowIcon width={20} height={20} />
-          </S.HeaderDropDown>
-          <div className="arrow-wrap">
-            <p>주문수량</p>
-            <div className="icon-wrap" onClick={sortByStatus}>
-              {orderCount ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
-              )}
-            </div>
-          </div>
-          <div className="arrow-wrap">
-            <p>파종량</p>
-            <div className="icon-wrap" onClick={sortBySowingCount}>
-              {sowingCount ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
-              )}
-            </div>
-          </div>
-          <div className="arrow-wrap">
-            <p>파종일자</p>
-            <div className="icon-wrap" onClick={sortBySowingDate}>
-              {sowingDate ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
-              )}
-            </div>
-          </div>
-          <div className="arrow-wrap">
-            <p>출하상태</p>
-            <div className="icon-wrap" onClick={sortByState}>
-              {state ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
-              )}
-            </div>
-          </div>
-        </div>
-        {listData.map((data, index) => {
-          return (
-            <S.ListBlock key={`map${index}`}>
-              <p>{data.id}</p>
-              <p className="list_text">{data.farm_id}</p>
-              <div className="farm_name_wrap">
-                <div className="farm-name-frist">
-                  {data.farm_name.slice(0, 1)}
+              <div className="arrow-wrap">
+                <p>품종명</p>
+                <div className="icon-wrap" onClick={sortByFarmName}>
+                  {plantName ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
                 </div>
-                <p className="ellipsis_text">{data.farm_name}</p>
               </div>
-              <p className="list_text">{data.farm_plant}</p>
-              <p className="ellipsis_text">{data.plant_name}</p>
-              <p className="name">{data.tray}</p>
-              <p className="list_text">
-                {NumberCommaFormatting(data.order_count)}
-              </p>
-              <p className="list_text">
-                {NumberCommaFormatting(data.sowing_count)}
-              </p>
-              <p className="list_text">{data.sowingDate}</p>
-              {data.state === "fin" ? (
-                <FinCheckIcon width={98} height={40} />
-              ) : (
-                <WaitingIcon width={98} height={40} />
-              )}
-            </S.ListBlock>
-          );
-        })}
-        <S.ButtonWrap>
-          <S.MoreButton onClick={listMoreView}>
-            <p>더보기</p>
-          </S.MoreButton>
-        </S.ButtonWrap>
+              <S.HeaderDropDown>
+                <select className="select-style">
+                  <option value="tray">트레이</option>
+                </select>
+                <HeaderSelectArrowIcon width={20} height={20} />
+              </S.HeaderDropDown>
+              <div className="arrow-wrap">
+                <p>주문수량</p>
+                <div className="icon-wrap" onClick={sortByStatus}>
+                  {orderCount ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
+                </div>
+              </div>
+              <div className="arrow-wrap">
+                <p>파종량</p>
+                <div className="icon-wrap" onClick={sortBySowingCount}>
+                  {sowingCount ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
+                </div>
+              </div>
+              <div className="arrow-wrap">
+                <p>파종일자</p>
+                <div className="icon-wrap" onClick={sortBySowingDate}>
+                  {sowingDate ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
+                </div>
+              </div>
+              <div className="arrow-wrap">
+                <p>출하상태</p>
+                <div className="icon-wrap" onClick={sortByState}>
+                  {state ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {listData.map((data, index) => {
+              return (
+                <S.ListBlock key={`map${index}`}>
+                  <p>{data.id}</p>
+                  <p className="list_text">{data.farm_id}</p>
+                  <div className="farm_name_wrap">
+                    <div className="farm-name-frist">
+                      {data.farm_name.slice(0, 1)}
+                    </div>
+                    <p className="ellipsis_text">{data.farm_name}</p>
+                  </div>
+                  <p className="list_text">{data.farm_plant}</p>
+                  <p className="ellipsis_text">{data.plant_name}</p>
+                  <p className="name">{data.tray}</p>
+                  <p className="list_text">
+                    {NumberCommaFormatting(data.order_count)}
+                  </p>
+                  <p className="list_text">
+                    {NumberCommaFormatting(data.sowing_count)}
+                  </p>
+                  <p className="list_text">{data.sowingDate}</p>
+                  {data.state === "fin" ? (
+                    <FinCheckIcon width={98} height={40} />
+                  ) : (
+                    <WaitingIcon width={98} height={40} />
+                  )}
+                </S.ListBlock>
+              );
+            })}
+          </>
+        )}
+        {listData.length !== 0 && (
+          <S.ButtonWrap>
+            <S.MoreButton onClick={listMoreView}>
+              <p>더보기</p>
+            </S.MoreButton>
+          </S.ButtonWrap>
+        )}
       </S.ContentList>
     </S.Wrap>
   );
