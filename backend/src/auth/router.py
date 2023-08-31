@@ -376,16 +376,6 @@ def get_farm_house_list(
     else:
         page -= 1
 
-    # farm_houses = (
-    #     db.query(models.FarmHouse)
-    #     .filter(models.FarmHouse.is_del == False)
-    #     .order_by(
-    #         models.FarmHouse.name.asc()
-    #         if name_order == 0
-    #         else models.FarmHouse.name.desc()
-    #     )
-    # )
-
     # name_order == 0 : FarmHouse.name 오름차순
     # name_order == 1 : FarmHouse.name 내림차순
     # status_order == 0 : PlanterStatus.status 오름차순 OFF -> ON -> PAUSE
@@ -460,3 +450,79 @@ def get_farm_house_list(
         farm_house_responses.append(farm_house_response)
 
     return {"total": total, "farm_houses": farm_house_responses}
+
+
+@router.patch(
+    "/farmhouse/update",
+    status_code=200,
+)
+def update_farm_house_info(
+    request: Request,
+    farmhouse_data: schemas.FarmHouseUpdate,
+    db: Session = Depends(get_db),
+):
+    get_current_user("99", request.cookies, db)
+    farmhouse = get_(db, models.FarmHouse, id=farmhouse_data.id)
+
+    if not farmhouse:
+        return JSONResponse(status_code=404, content=dict(msg="FARMHOUSE_NOT_FOUND"))
+
+    for field in farmhouse_data.__dict__:
+        if getattr(farmhouse_data, field) is not None:
+            setattr(farmhouse, field, getattr(farmhouse_data, field))
+
+    db.commit()
+    db.refresh(farmhouse)
+
+    return JSONResponse(status_code=200, content=dict(msg="UPDATE_SUCCESS"))
+
+
+@router.patch(
+    "/farmhouse/delete",
+    status_code=200,
+)
+def delete_farmhouse(
+    request: Request, farmhouse_id: int, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+
+    farmhouse = get_(db, models.FarmHouse, id=farmhouse_id)
+
+    # Farmhouse User 삭제
+    user = farmhouse.farm_house_user
+    user.is_del = True
+
+    # Famhouse Planter 삭제
+    planter = farmhouse.farm_house_planter
+    planter.is_del = True
+
+    # Planter status 삭제
+    planter_status_list = planter.planter__planter_status
+    for planter_status in planter_status_list:
+        planter_status.is_del = True
+
+    # PlanterWork 목록 가져오기
+    planter_work_list = planter.planter__planter_work
+
+    for planter_work in planter_work_list:
+        # PlanterWOrk 삭제
+        planter_work.is_del = True
+        # lanterWorkStatus 가져오기
+        planter_work_status_list = planter_work.planter_work__planter_work_status
+        # PlanterWork별 PlanterWorkStatus 가져오기
+        for planter_work_status in planter_work_status_list:
+            # PlanterWorkStatus 삭제
+            planter_work_status.is_del = True
+        # PlanterOutput 가져오기
+        planter_work_output_list = planter_work.planter_works__planter_output
+        # PlanterWork별 PlanterOutput 가져오기
+        for planter_work_output in planter_work_output_list:
+            # PlanterOutput 삭제
+            planter_work_output.is_del = True
+
+    # Farmhouse 삭제
+    farmhouse.is_del = True
+
+    db.commit()
+
+    return JSONResponse(status_code=200, content=dict(msg="DELETE_SUCCESS"))
