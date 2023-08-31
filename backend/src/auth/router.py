@@ -440,6 +440,11 @@ def get_farm_house_list(
         else:
             last_status_response = None
 
+        planter = farm_house.farm_house_planter
+        planter_response = planterSchemas.Planter(
+            id=planter.id, serial_number=planter.serial_number, qrcode=planter.qrcode
+        )
+
         farm_house_response = schemas.FarmHouseResponse(
             id=farm_house.id,
             name=farm_house.name,
@@ -448,6 +453,7 @@ def get_farm_house_list(
             producer_name=farm_house.producer_name,
             address=farm_house.address,
             phone=farm_house.phone,
+            planter=planter_response,
             last_planter_status=last_status_response,
         )
 

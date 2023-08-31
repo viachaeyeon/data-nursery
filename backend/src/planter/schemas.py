@@ -6,7 +6,8 @@ from utils.database import TimezoneSchema
 
 
 class PlanterBase(BaseModel):
-    pass
+    serial_number: str
+    qrcode: str
 
 
 class PlanterCreate(PlanterBase):

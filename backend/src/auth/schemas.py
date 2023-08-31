@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
-from src.planter.schemas import PlanterStatus
+from src.planter.schemas import PlanterStatus, Planter
 
 
 class UserBase(BaseModel):
@@ -60,6 +60,7 @@ class FarmHouseResponse(BaseModel):
     producer_name: str
     address: str
     phone: str
+    planter: Planter
     last_planter_status: Optional[PlanterStatus]
 
 
