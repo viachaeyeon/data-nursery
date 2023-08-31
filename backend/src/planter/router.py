@@ -228,3 +228,72 @@ def farm_house_register_planter(
     db.add(planter)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+@router.post("/tray/create")
+def craete_planter_tray(
+    request: Request, tray_data: schemas.PlanterTrayBase, db: Session = Depends(get_db)
+):
+    new_planter_tray = create_(
+        db,
+        models.PlanterTray,
+        width=tray_data.width,
+        height=tray_data.height,
+        total=tray_data.total,
+    )
+
+    db.add(new_planter_tray)
+    db.commit()
+    db.refresh(new_planter_tray)
+
+    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+@router.get(
+    "/tray/list", status_code=200, response_model=schemas.MultiplePlanterTrayResponse
+)
+def planter_tray_list(db: Session = Depends(get_db)):
+    planter_trays = db.query(models.PlanterTray).filter_by(is_del=False).all()
+
+    # planter_tray_list = [
+    #     {"id": tray.id, "width": tray.width, "height": tray.height, "total": tray.total}
+    #     for tray in planter_trays
+    # ]
+
+    return {"planter_trays": planter_trays}
+
+
+@router.post("/work/create", status_code=201)
+def create_planter_work(
+    request: Request,
+    work_data: schemas.PlanterWorkCreate,
+    db: Session = Depends(get_db),
+):
+    user = get_current_user("01", request.cookies, db)
+
+    new_work = create_(
+        db,
+        models.PlanterWork,
+        planter_id=user.user_farm_house.farm_house_planter.id,
+        planter_tray_id=work_data.planter_tray_id,
+        crop_id=work_data.crop_id,
+        crop_kind=work_data.crop_kind,
+        sowing_date=work_data.sowing_date,
+        deadline=work_data.deadline,
+        order_quantity=work_data.order_quantity,
+        seed_quantity=work_data.seed_quantity,
+    )
+
+    new_work_status = create_(
+        db,
+        models.PlanterWorkStatus,
+        planter_work_status__planter_work=new_work,
+        status="WAIT",
+    )
+
+    db.add(new_work)
+    db.add(new_work_status)
+    db.commit()
+    db.refresh(new_work)
+    db.refresh(new_work_status)
+    return JSONResponse(status_code=201, content=dict(msg="CREATED_WORK"))

@@ -1,11 +1,13 @@
 from pydantic import BaseModel
+from typing import List, Optional
 
 from datetime import datetime
 from utils.database import TimezoneSchema
 
 
 class PlanterBase(BaseModel):
-    pass
+    serial_number: str
+    qrcode: str
 
 
 class PlanterCreate(PlanterBase):
@@ -14,6 +16,19 @@ class PlanterCreate(PlanterBase):
 
 class Planter(PlanterBase):
     id: int
+
+
+class PlanterStatusBase(BaseModel):
+    planter_id: Optional[int]
+    status: Optional[str]
+
+
+class PlanterStatusCreate(PlanterStatusBase):
+    pass
+
+
+class PlanterStatus(PlanterStatusBase):
+    id: Optional[int]
 
 
 class PlanterWorkStatusBase(BaseModel):
@@ -27,18 +42,17 @@ class CropBase(BaseModel):
 
 
 class PlanterTrayBase(BaseModel):
-    pass
-
-
-class PlanterTrayCreate(PlanterTrayBase):
     width: int
     height: int
+    total: int
 
 
 class PlanterTray(PlanterTrayBase):
     id: int
-    width: int
-    height: int
+
+
+class MultiplePlanterTrayResponse(BaseModel):
+    planter_trays: List[PlanterTray]
 
 
 class PlanterWorkBase(TimezoneSchema):
@@ -51,7 +65,7 @@ class PlanterWorkBase(TimezoneSchema):
 
 
 class PlanterWorkCreate(PlanterWorkBase):
-    planter_id: int
+    # planter_id: int
     planter_tray_id: int
     crop_id: int
 

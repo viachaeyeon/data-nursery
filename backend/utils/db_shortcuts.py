@@ -35,8 +35,8 @@ def get_current_user(user_type: str, token: dict, db):
     if user.is_del:
         raise AuthenticationException(name="DELETED_USER")
 
-    if user.code != user_type:
-        raise AuthenticationException(name="FAILED_LOGIN")
+    # if  user.code != user_type:
+    #     raise AuthenticationException(name="FAILED_LOGIN")
 
     return user
 

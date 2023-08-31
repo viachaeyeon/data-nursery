@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, Request, UploadFile, File, Form
 from starlette.responses import JSONResponse
 from sqlalchemy.orm import Session
-
+from sqlalchemy.sql import func
 import bcrypt
 from datetime import datetime, timedelta
 
 import src.auth.schemas as schemas
 import src.auth.models as models
 import src.planter.models as planterModels
+import src.planter.schemas as planterSchemas
 from utils.db_shortcuts import get_current_user
 from utils.database import get_db
 from utils.file_upload import single_file_uploader, delete_file
@@ -250,7 +251,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     return response
 
 
-@router.post("/create/harmhouse", description="관리자페이지에서 농가 추가할때 사용", status_code=201)
+@router.post("/farmhouse/create", description="관리자페이지에서 농가 추가할때 사용", status_code=201)
 async def create_farm_house(
     request: Request,
     serial_number: str = Form(...),
@@ -325,22 +326,137 @@ async def create_farm_house(
 
     new_planter = create_(
         db,
-        models.Planter,
+        planterModels.Planter,
         planter_farm_house=new_farm_house,
         serial_number=serial_number,
         qrcode=saved_qrcode["url"],
+    )
+    new_planter_status = create_(
+        db,
+        planterModels.PlanterStatus,
+        planter_status__planter=new_planter,
+        status="OFF",
     )
     try:
         db.add(new_user)
         db.add(new_farm_house)
         db.add(new_planter)
+        db.add(new_planter_status)
         db.commit()
         db.refresh(new_user)
         db.refresh(new_farm_house)
         db.refresh(new_planter)
+        db.refresh(new_planter_status)
     except Exception as e:
         if saved_qrcode["is_success"]:
             await delete_file(saved_qrcode["url"])
         return JSONResponse(status_code=400, content=dict(msg="CREATED_FAILED"))
 
     return JSONResponse(status_code=201, content=dict(msg="CREATED_SUCCESS"))
+
+
+@router.get(
+    "/farmhouse/list",
+    status_code=200,
+    response_model=schemas.PageFarmHouseResponse,
+    description="name_order == 0 : 농가이름 오름차순, name_order == 1 : 농가이름 내림차순<br/>status_order == 0 : 파종기 상태 오름차순 (OFF -> ON -> PUASE), status_order == 1 : 파종기 상태 내림차순 (PUASE -> ON -> OFF)<br/>page : 요청할 페이지 번호<br/>size : 한 페이지에 보여줄 갯수",
+)
+def get_farm_house_list(
+    request: Request,
+    name_order: int = 0,
+    status_order: int = 1,
+    db: Session = Depends(get_db),
+    page: int = 1,  # 페이지 번호
+    size: int = 8,  # 한 페이지에 보여줄 게시물 갯수
+):
+    get_current_user("99", request.cookies, db)
+    # offset 인덱스는 0부터 시작
+    if page - 1 < 0:
+        page = 0
+    else:
+        page -= 1
+
+    # farm_houses = (
+    #     db.query(models.FarmHouse)
+    #     .filter(models.FarmHouse.is_del == False)
+    #     .order_by(
+    #         models.FarmHouse.name.asc()
+    #         if name_order == 0
+    #         else models.FarmHouse.name.desc()
+    #     )
+    # )
+
+    # name_order == 0 : FarmHouse.name 오름차순
+    # name_order == 1 : FarmHouse.name 내림차순
+    # status_order == 0 : PlanterStatus.status 오름차순 OFF -> ON -> PAUSE
+    # status_order == 1 : PlanterStatus.status 내림차순 PAUSE -> ON -> OFF
+    subquery = (
+        db.query(
+            planterModels.PlanterStatus.planter_id,
+            func.max(planterModels.PlanterStatus.id).label("max_status_id"),
+        )
+        .group_by(planterModels.PlanterStatus.planter_id)
+        .subquery()
+    )
+    farm_houses = (
+        db.query(models.FarmHouse)
+        .join(planterModels.Planter)
+        .outerjoin(subquery, planterModels.Planter.id == subquery.c.planter_id)
+        .outerjoin(
+            planterModels.PlanterStatus,
+            subquery.c.max_status_id == planterModels.PlanterStatus.id,
+        )
+        .filter(models.FarmHouse.is_del == False)
+        .order_by(
+            planterModels.PlanterStatus.status.asc()
+            if status_order == 0
+            else planterModels.PlanterStatus.status.desc(),
+            models.FarmHouse.name.asc()
+            if name_order == 0
+            else models.FarmHouse.name.desc(),
+        )
+    )
+
+    total = farm_houses.count()
+
+    farm_house_responses = []
+    for farm_house in farm_houses.offset(page * size).limit(size).all():
+        last_status = (
+            db.query(planterModels.PlanterStatus)
+            .filter(
+                planterModels.PlanterStatus.planter_id
+                == farm_house.farm_house_planter.id
+            )
+            .order_by(planterModels.PlanterStatus.id.desc())
+            .first()
+        )
+
+        if last_status:
+            last_status_response = planterSchemas.PlanterStatus(
+                id=last_status.id,
+                planter_id=last_status.planter_id,
+                status=last_status.status,
+            )
+        else:
+            last_status_response = None
+
+        planter = farm_house.farm_house_planter
+        planter_response = planterSchemas.Planter(
+            id=planter.id, serial_number=planter.serial_number, qrcode=planter.qrcode
+        )
+
+        farm_house_response = schemas.FarmHouseResponse(
+            id=farm_house.id,
+            name=farm_house.name,
+            nursery_number=farm_house.nursery_number,
+            farm_house_id=farm_house.farm_house_id,
+            producer_name=farm_house.producer_name,
+            address=farm_house.address,
+            phone=farm_house.phone,
+            planter=planter_response,
+            last_planter_status=last_status_response,
+        )
+
+        farm_house_responses.append(farm_house_response)
+
+    return {"total": total, "farm_houses": farm_house_responses}
