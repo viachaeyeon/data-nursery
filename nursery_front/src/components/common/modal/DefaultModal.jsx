@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 
 import SmallButton from "../button/SmallButton";
 
-import { borderButtonColor, defaultButtonColor } from "@src/utils/ButtonColor";
+import { borderButtonColor, defaultButtonColor } from "@utils/ButtonColor";
 import WarningIcon from "@images/common/icon-warning.svg";
 import PositiveIcon from "@images/common/icon-positive.svg";
 
@@ -112,7 +112,7 @@ function DefaultModal({ modalOpen, setModalOpen }) {
             {modalOpen?.type === "error" && <WarningIcon />}
             {modalOpen?.type === "success" && <PositiveIcon />}
             <p className="modal-title-text">{modalOpen.title}</p>
-            <p className="modal-content-text">{modalOpen.description}</p>
+            {!!modalOpen.description && <p className="modal-content-text">{modalOpen.description}</p>}
             <div className="button-wrap">
               {modalOpen.btnType === "one" && (
                 <SmallButton text={"확인"} onClick={completeModal} customStyle={defaultButtonColor} />

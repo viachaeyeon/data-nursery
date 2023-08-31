@@ -1,19 +1,8 @@
 const media = {
-  max_tablet: "@media screen and (max-width: 1280px)",
-  min_tablet: "@media screen and (min-width: 1280px)",
-  max_mobile: "@media screen and (max-width: 900px)",
-  min_mobile: "@media screen and (min-width: 900px)",
-};
-
-const contentWidths = {
-  mobile: "900px",
-};
-
-const headerHeights = {
-  desktop: "124px",
-  mobile: "59px",
-  mobile_title: "118px",
-  tablet: "103px",
+  max_tablet: "@media screen and (max-width: 813px)",
+  min_tablet: "@media screen and (min-width: 813px)",
+  max_mobile: "@media screen and (max-width: 600px)",
+  min_mobile: "@media screen and (min-width: 600px)",
 };
 
 const textStyle = {
@@ -63,8 +52,6 @@ const mobile = {
 
 const theme = {
   media,
-  contentWidths,
-  headerHeights,
   textStyle,
   basic,
   mobile,

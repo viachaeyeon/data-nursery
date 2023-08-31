@@ -8,7 +8,7 @@ import MainLayout from "@components/layout/MainLayout";
 import DefaultButton from "@components/common/button/DefaultButton";
 
 import QRCodeImage from "@images/login/img-qrcode.svg";
-import { defaultButtonColor } from "@src/utils/ButtonColor";
+import { defaultButtonColor } from "@utils/ButtonColor";
 
 const S = {
   Wrap: styled.div`
@@ -56,31 +56,31 @@ function QRScannerPage() {
   //   const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
   //   html5QrcodeScanner.render(onScanSuccess);
 
-  // useEffect(() => {
-  //   if (step === "qrCode") {
-  //     const scanner = new Html5QrcodeScanner("render", {
-  //       fps: 10,
-  //       qrbox: 250,
-  //     });
+  useEffect(() => {
+    if (step === "qrCode") {
+      const scanner = new Html5QrcodeScanner("render", {
+        fps: 10,
+        qrbox: 250,
+      });
 
-  //     scanner.render(success, error);
-  //     // scanner.render(onScanSuccess);
+      const success = (result) => {
+        scanner.clear();
+        setScanResult(result);
+      };
 
-  //     // function onScanSuccess(decodedText, decodedResult) {
-  //     //   // Handle on success condition with the decoded text or result.
-  //     //   console.log(`Scan result: ${decodedText}`, decodedResult);
-  //     // }
+      const error = (err) => {
+        console.log(err);
+      };
 
-  //     function success(result) {
-  //       scanner.clear();
-  //       setScanResult(result);
-  //     }
+      scanner.render(success, error);
+      // scanner.render(onScanSuccess);
 
-  //     function error(err) {
-  //       console.log(err);
-  //     }
-  //   }
-  // }, [step]);
+      // function onScanSuccess(decodedText, decodedResult) {
+      //   // Handle on success condition with the decoded text or result.
+      //   console.log(`Scan result: ${decodedText}`, decodedResult);
+      // }
+    }
+  }, [step]);
 
   // function onScanSuccess(decodedText, decodedResult) {
   //   // Handle on success condition with the decoded text or result.
@@ -92,6 +92,7 @@ function QRScannerPage() {
 
   console.log(scanResult);
 
+  // 유저 정보 API
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
@@ -122,14 +123,14 @@ function QRScannerPage() {
           </S.Wrap>
         </MainLayout>
       )}
-      {/* {step === "qrCode" && <div style="width: 500px" id="reader"></div>} */}
+      {/* {step === "qrCode" && <div style={{ width: "500px" }} id="reader"></div>} */}
       {step === "qrCode" &&
         (scanResult ? (
           <div>
             Success : <a href={"http://" + scanResult}>{scanResult}</a>
           </div>
         ) : (
-          <div style="width: 500px" id="reader"></div>
+          <div style={{ width: "500px" }} id="reader"></div>
         ))}
     </>
   );

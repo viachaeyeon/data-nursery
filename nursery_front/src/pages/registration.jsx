@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
+import { useRouter } from "next/router";
+
+import useRegisterPlanter from "@hooks/queries/planter/useRegisterPlanter";
+import useUserInfo from "@hooks/queries/auth/useUserInfo";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultButton from "@components/common/button/DefaultButton";
+import DefaultModal from "@components/common/modal/DefaultModal";
 
-import { defaultButtonColor } from "@src/utils/ButtonColor";
+import { defaultButtonColor } from "@utils/ButtonColor";
+import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 
 const S = {
   Wrap: styled.div`
@@ -51,7 +57,63 @@ const S = {
 };
 
 function RegistrationPage() {
+  const router = useRouter();
+
   const [serialNumber, setSerialNumber] = useState("");
+  const [modalOpen, setModalOpen] = useState({
+    open: false,
+    type: "",
+    title: "",
+    description: "",
+    btnType: "",
+    afterFn: null,
+  });
+
+  const checkPlanterSerial = useCallback(() => {
+    if (serialNumber === userInfo.planter.serial_number) {
+      registerPlanterMutate({
+        data: {
+          serial_number: serialNumber,
+        },
+      });
+    } else {
+      setModalOpen({
+        open: true,
+        type: "error",
+        title: "파종기 인식불가",
+        description: "다시 시도해주세요.",
+        btnType: "one",
+        afterFn: null,
+      });
+    }
+  }, [serialNumber]);
+
+  // 유저 정보 API
+  const { data: userInfo } = useUserInfo({
+    successFn: () => {},
+    errorFn: () => {
+      // userLogout(router, clearQueries);
+    },
+  });
+
+  // 파종기 등록 API
+  const { mutate: registerPlanterMutate } = useRegisterPlanter(
+    () => {
+      setModalOpen({
+        open: true,
+        type: "success",
+        title: "등록이 완료되었습니다.",
+        description: "메인화면으로 이동합니다.",
+        btnType: "one",
+        afterFn: () => {
+          router.push("/");
+        },
+      });
+    },
+    (error) => {
+      alert(error);
+    },
+  );
 
   return (
     <MainLayout pageName={"파종기 등록"}>
@@ -71,13 +133,19 @@ function RegistrationPage() {
         <DefaultButton
           text={"다음"}
           onClick={() => {
-            alert("파종기 등록");
+            checkPlanterSerial();
           }}
           customStyle={defaultButtonColor}
         />
       </S.Wrap>
+      <DefaultModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </MainLayout>
   );
 }
+
+// 로그인 안되어 있을 경우 로그인 페이지로 이동
+export const getServerSideProps = requireAuthentication((context) => {
+  return { props: {} };
+});
 
 export default RegistrationPage;

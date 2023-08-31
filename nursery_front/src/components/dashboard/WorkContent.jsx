@@ -1,17 +1,18 @@
-import { NumberFormatting } from "@src/utils/Formatting";
+import { NumberFormatting } from "@utils/Formatting";
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 
 import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
 import DefaultModal from "@components/common/modal/DefaultModal";
 
-import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@src/utils/ButtonColor";
+import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/ButtonColor";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 
 const S = {
   Wrap: styled.div`
     background-color: ${({ theme }) => theme.basic.whiteGrey};
+    margin-bottom: 35px;
     border-radius: 8px;
     padding: 24px 32px;
     display: flex;
