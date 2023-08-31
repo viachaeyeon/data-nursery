@@ -321,8 +321,10 @@ def planter_work_working_pause_list(
     recent_status_subquery = (
         db.query(
             pws.planter_work_id,
-            func.max(pws.created_at).label("max_created_at"),
+            func.max(pws.id).label("last_pws_id"),
+            # func.max(pws.created_at).label("max_created_at"),
         )
+        .filter(pws.is_del == False)
         .group_by(pws.planter_work_id)
         .subquery()
     )
@@ -333,7 +335,8 @@ def planter_work_working_pause_list(
         .join(
             pws,
             (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
-            & (pws.created_at == recent_status_subquery.c.max_created_at),
+            & (pws.id == recent_status_subquery.c.last_pws_id),
+            # & (pws.created_at == recent_status_subquery.c.max_created_at),
         )
         .filter(
             pw.is_del == False,
@@ -346,10 +349,16 @@ def planter_work_working_pause_list(
     if not planter_works_with_recent_working_or_pause_status:
         return None
 
+    planter_work_output = (
+        planter_works_with_recent_working_or_pause_status.planter_works__planter_output
+    )
     return {
         "id": planter_works_with_recent_working_or_pause_status.id,
+        "crop_img": planter_works_with_recent_working_or_pause_status.planter_work__crop.image,
         "crop_kind": planter_works_with_recent_working_or_pause_status.crop_kind,
-        "planter_work_output": planter_works_with_recent_working_or_pause_status.planter_works__planter_output.output,
+        "planter_work_output": planter_work_output.output
+        if planter_work_output is not None
+        else 0,
         "tray_total": planter_works_with_recent_working_or_pause_status.planter_work__planter_tray.total,
     }
 
@@ -359,8 +368,62 @@ def planter_work_working_pause_list(
     status_code=200,
     description="파종기 작업 중 대기중인 목록(WAIT 상태)을 불러올때 사용",
 )
-def planter_work_wait_list():
-    pass
+def planter_work_wait_list(
+    request: Request,
+    serial_number: str,
+    page: int = 1,
+    size: int = 8,
+    db: Session = Depends(get_db),
+):
+    user = get_current_user("01", request.cookies, db)
+    planter = user.user_farm_house.farm_house_planter
+    if planter.serial_number != serial_number:
+        return JSONResponse(status_code=400, content=dict(msg="NOT_MATCHED_PLANTER"))
+
+    if page - 1 < 0:
+        page = 0
+    else:
+        page -= 1
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    recent_status_subquery = (
+        db.query(pws.planter_work_id, func.max(pws.id).label("last_pws_id"))
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    planter_works_with_recent_wait_status = (
+        db.query(pw)
+        .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
+            & (pws.id == recent_status_subquery.c.last_pws_id),
+        )
+        .filter(pw.is_del == False, pw.planter_id == planter.id, pws.status == "WAIT")
+        .order_by(pw.created_at.desc())
+    )
+
+    total = planter_works_with_recent_wait_status.count()
+
+    result_data = []
+    for planter_work in (
+        planter_works_with_recent_wait_status.offset(page * size).limit(size).all()
+    ):
+        result_data.append(
+            {
+                "id": planter_work.id,
+                "crop_name": planter_work.planter_work__crop.name,
+                "crop_kine": planter_work.crop_kind,
+                "seed_quantity": planter_work.seed_quantity,
+                "tray_total": planter_work.planter_work__planter_tray.total,
+            }
+        )
+
+    return {"total": total, "planter_works": result_data}
 
 
 @router.get(
