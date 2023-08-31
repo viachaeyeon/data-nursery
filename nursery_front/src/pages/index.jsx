@@ -6,10 +6,10 @@ import Image from "next/image";
 import MainLayout from "@components/layout/MainLayout";
 import WorkTab from "@components/dashboard/WorkTab";
 
-import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
+import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import TodayOutputIcon from "@images/dashboard/icon-output.svg";
 import UseTimeIcon from "@images/dashboard/icon-time.svg";
-import { NumberFormatting } from "@src/utils/Formatting";
+import { NumberFormatting } from "@utils/Formatting";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import theme from "@src/styles/theme";
 

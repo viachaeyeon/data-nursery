@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { registerPlanter } from "@src/apis/planterAPIs";
+import { registerPlanter } from "@apis/planterAPIs";
 
 export default function useRegisterPlanter(successFn, errorFn) {
   return useMutation(

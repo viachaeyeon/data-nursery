@@ -8,7 +8,7 @@ import MainLayout from "@components/layout/MainLayout";
 import DefaultButton from "@components/common/button/DefaultButton";
 
 import QRCodeImage from "@images/login/img-qrcode.svg";
-import { defaultButtonColor } from "@src/utils/ButtonColor";
+import { defaultButtonColor } from "@utils/ButtonColor";
 
 const S = {
   Wrap: styled.div`

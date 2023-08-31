@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 
 import SmallButton from "../button/SmallButton";
 
-import { borderButtonColor, defaultButtonColor } from "@src/utils/ButtonColor";
+import { borderButtonColor, defaultButtonColor } from "@utils/ButtonColor";
 import WarningIcon from "@images/common/icon-warning.svg";
 import PositiveIcon from "@images/common/icon-positive.svg";
 

@@ -8,6 +8,7 @@ import BackIcon from "@images/common/arrow-left.svg";
 import MoreIcon from "@images/common/more-icon.svg";
 import MyInfoIcon from "@images/common/my-info-icon.svg";
 import theme from "@src/styles/theme";
+import DefaultAlert from "@components/common/alert/DefaultAlert";
 
 const S = {
   Wrap: styled.div`
@@ -34,6 +35,7 @@ const S = {
 
     ${({ theme }) => theme.media.max_mobile} {
       width: 100%;
+      max-height: 100%;
 
       ${(props) =>
         props.isMain
@@ -214,6 +216,7 @@ function MainLayout({
           )}
           <div className="content">{children}</div>
           {pageName === "main" && <BottomBar />}
+          <DefaultAlert />
         </S.MainContent>
       </S.MainLayout>
     </S.Wrap>

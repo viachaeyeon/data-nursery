@@ -1,10 +1,10 @@
-import { NumberFormatting } from "@src/utils/Formatting";
+import { NumberFormatting } from "@utils/Formatting";
 import React from "react";
 import styled, { css } from "styled-components";
 
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
-import { borderButtonColor, defaultButtonColor, purpleButtonColor, whiteButtonColor } from "@src/utils/ButtonColor";
+import { borderButtonColor, defaultButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/ButtonColor";
 import SuffixButton from "@components/common/button/SuffixButton";
 import SmallButton from "@components/common/button/SmallButton";
 

@@ -16,10 +16,6 @@ const S = {
     .no-work {
       margin-top: 48px;
     }
-
-    ${({ theme }) => theme.media.max_mobile} {
-      padding-bottom: 35px;
-    }
   `,
   TabWrap: styled.div`
     display: flex;

@@ -4,7 +4,7 @@ import { styled } from "styled-components";
 import secureLocalStorage from "react-secure-storage";
 
 // import useAllCacheClear from "@src/hooks/queries/common/useAllCacheClear";
-import { loginAPI } from "@src/apis/authAPIs";
+import { loginAPI } from "@apis/authAPIs";
 
 import MainLayout from "@components/layout/MainLayout";
 import PrefixInput from "@components/common/input/PrefixInput";
@@ -12,8 +12,8 @@ import DefaultButton from "@components/common/button/DefaultButton";
 
 import OnCheckBoxIcon from "@images/login/on-check-box.svg";
 import OffCheckBoxIcon from "@images/login/off-check-box.svg";
-import { defaultButtonColor } from "@src/utils/ButtonColor";
-import { loginCheckAuthentication } from "@src/utils/LoginCheckAuthentication";
+import { defaultButtonColor } from "@utils/ButtonColor";
+import { loginCheckAuthentication } from "@utils/LoginCheckAuthentication";
 
 const S = {
   Wrap: styled.div`

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider, Hydrate } from "@tanstack/react-query";
+import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
 import SSRProvider from "react-bootstrap/SSRProvider";
 import BootstrapThemeProvider from "react-bootstrap/ThemeProvider";
@@ -34,17 +35,19 @@ export default function App({ Component, pageProps }) {
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <SSRProvider>
-          <BootstrapThemeProvider lang="en" breakpoints={["xxxl", "xxl", "xl", "lg", "md", "sm", "xs", "xxs"]}>
-            <ThemeProvider theme={theme}>
-              <GlobalStyle />
-              <Head>
-                <title>자동파종기 - 농가용</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="icon" href="/favicon.ico" />
-              </Head>
-              <Component {...pageProps} />
-            </ThemeProvider>
-          </BootstrapThemeProvider>
+          <RecoilRoot>
+            <BootstrapThemeProvider lang="en" breakpoints={["xxxl", "xxl", "xl", "lg", "md", "sm", "xs", "xxs"]}>
+              <ThemeProvider theme={theme}>
+                <GlobalStyle />
+                <Head>
+                  <title>자동파종기 - 농가용</title>
+                  <meta name="viewport" content="width=device-width, initial-scale=1" />
+                  <link rel="icon" href="/favicon.ico" />
+                </Head>
+                <Component {...pageProps} />
+              </ThemeProvider>
+            </BootstrapThemeProvider>
+          </RecoilRoot>
         </SSRProvider>
       </Hydrate>
     </QueryClientProvider>

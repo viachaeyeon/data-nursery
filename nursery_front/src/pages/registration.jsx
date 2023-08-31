@@ -9,8 +9,8 @@ import MainLayout from "@components/layout/MainLayout";
 import DefaultButton from "@components/common/button/DefaultButton";
 import DefaultModal from "@components/common/modal/DefaultModal";
 
-import { defaultButtonColor } from "@src/utils/ButtonColor";
-import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
+import { defaultButtonColor } from "@utils/ButtonColor";
+import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 
 const S = {
   Wrap: styled.div`
