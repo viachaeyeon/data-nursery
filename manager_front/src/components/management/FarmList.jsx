@@ -342,13 +342,9 @@ function FarmList() {
   );
 
   // 농가추가 모달
-  const handleAddFarmModalClick = () => {
-    if (addFarmModalOpen === true) {
-      setAddFarmModalOpen(false);
-    } else if (addFarmModalOpen === false) {
-      setAddFarmModalOpen(true);
-    }
-  };
+  const handleAddFarmModalClick = useCallback(() => {
+    setAddFarmModalOpen(true);
+  }, [addFarmModalOpen]);
 
   // 농가목록 데이터
   const [listData, setListData] = useState([

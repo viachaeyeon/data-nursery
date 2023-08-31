@@ -1,15 +1,28 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
+import AddTrayModal from "./AddTrayModal";
+
 import AddIcon from "@images/management/add-icon.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
 import CheckBoxOn from "@images/common/check-icon-on.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import TrayIcon from "@images/setting/tray-no-data.svg";
+import OptionModal from "./TrayOptionModal";
 
 const S = {
   Wrap: styled.div`
     width: 70%;
+
+    .modal-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #00000040;
+      z-index: 1;
+    }
   `,
   TitleWrap: styled.div`
     display: flex;
@@ -125,8 +138,16 @@ function TrayList() {
     data: undefined,
   });
 
-  // 관리자목록 : 눌렀을때 나오는 모달
-  const handleOptionModalClick = useCallback(
+  //트레이 가로 숫자
+  const [trayWidthNum,setTrayWidthNum] = useState("");
+  const [trayHeighthNum,setTrayHeighthNum] = useState("");
+  const [trayNum,setTrayNum] = useState("");
+
+  //트레이 추가 모달
+  const [addTrayModalOpen, setAddTrayModalOpen] = useState(false);
+
+  // 트레이 목록 : 눌렀을때 나오는 모달
+  const handleCropsOptionModalClick = useCallback(
     (index, data) => {
       if (optionModalOpen.open === true) {
         setOptionModalOpen({ open: false, index: undefined, data: undefined });
@@ -137,18 +158,10 @@ function TrayList() {
     [optionModalOpen],
   );
 
-  // 작물목록 : 눌렀을때 나오는 모달
-  const handleCropsOptionModalClick = useCallback(
-    (index, data) => {
-      alert("트레이목록 옵션");
-      // if (optionModalOpen.open === true) {
-      //     setOptionModalOpen({ open: false, index: undefined, data: undefined });
-      // } else if (optionModalOpen.open === false) {
-      //     setOptionModalOpen({ open: true, index: index, data: data });
-      // }
-    },
-    [optionModalOpen],
-  );
+  // 트레이 추가 모달
+  const handleAddTrayModalClick = useCallback(() => {
+    setAddTrayModalOpen(true);
+  }, [addTrayModalOpen]);
 
   const [listData, setListData] = useState([
     {
@@ -189,7 +202,7 @@ function TrayList() {
           <p className="title">트레이목록</p>
           <p className="sub-title">트레이목록 추가, 변경</p>
         </S.Title>
-        <S.AddButton>
+        <S.AddButton onClick={handleAddTrayModalClick}>
           <AddIcon width={24} height={24} />
           <p>트레이 추가</p>
         </S.AddButton>
@@ -232,6 +245,12 @@ function TrayList() {
                     >
                       <OptionDot width={32} height={32} />
                     </div>
+                    {index === optionModalOpen.index && (
+                      <OptionModal
+                        optionModalOpen={optionModalOpen}
+                        setOptionModalOpen={setOptionModalOpen}
+                      />
+                    )}
                   </S.ListBlock>
                 );
               })}
@@ -239,6 +258,21 @@ function TrayList() {
           </>
         )}
       </S.ContentList>
+
+      {/* 트레이추가 모달 */}
+      {addTrayModalOpen && (
+        <div className="modal-wrap">
+          <AddTrayModal 
+          setAddTrayModalOpen={setAddTrayModalOpen} 
+          trayWidthNum={trayWidthNum} 
+          setTrayWidthNum={setTrayWidthNum}
+           trayHeighthNum={trayHeighthNum} 
+           setTrayHeighthNum={setTrayHeighthNum} 
+           trayNum={trayNum}
+            setTrayNum={setTrayNum}
+          />
+        </div>
+      )}
     </S.Wrap>
   );
 }

@@ -8,7 +8,7 @@ import CheckBoxOn from "@images/common/check-icon-on.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import TopManager from "@images/setting/top-manager.svg";
 import CommonManager from "@images/setting/common-manager.svg";
-import OptionModal from "./OptionModal";
+import OptionModal from "./ManagerOptionModal";
 
 const S = {
   Wrap: styled.div``,

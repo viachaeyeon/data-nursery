@@ -64,7 +64,7 @@ const S = {
   `,
 };
 
-function OptionModal({ optionModalOpen, setOptionModalOpen }) {
+function ManagerOptionModal({ optionModalOpen, setOptionModalOpen }) {
   console.log("optionModalOpen", optionModalOpen);
 
   // 농가수정
@@ -103,4 +103,4 @@ function OptionModal({ optionModalOpen, setOptionModalOpen }) {
   );
 }
 
-export default OptionModal;
+export default ManagerOptionModal;
