@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import MainLayout from "../../components/layout/MainLayout";
 import MainHeader from "@components/layout/MainHeader";
-import CurrentSituation from "@components/statistics/CurrentSituation";
+import StatisticsStatus from "@components/statistics/StatisticsStatus";
 
 const S = {
   Wrap: styled.div`
@@ -39,7 +39,7 @@ function Statistics() {
     <MainLayout>
       <MainHeader currentDateTime={currentDateTime} />
       <S.Wrap>
-        <CurrentSituation />
+        <StatisticsStatus />
       </S.Wrap>
     </MainLayout>
   );

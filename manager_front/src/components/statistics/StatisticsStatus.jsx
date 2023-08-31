@@ -10,6 +10,8 @@ import UpArrow from "@images/common/order-by-up-icon.svg";
 import DownArrow from "@images/common/order-by-down-icon.svg";
 import FinCheckIcon from "@images/statistics/fin-check-icon.svg";
 import WaitingIcon from "@images/statistics/waiting-icon.svg";
+import HeaderSelectArrowIcon from "@images/statistics/header-icon-arrow.svg";
+import SelectArrowIcon from "@images/statistics/icon-arrow.svg";
 
 const S = {
   Wrap: styled.div`
@@ -85,15 +87,46 @@ const S = {
   DateChooseWrap: styled.div`
     display: flex;
     gap: 8px;
-    .select-style {
-      border: 1px solid ${({ theme }) => theme.basic.recOutline};
-      background-color: ${({ theme }) => theme.blackWhite.white};
-      border-radius: 8px;
-      box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
-      height: 36px;
-    }
-    select:focus-visible {
+  `,
+  DropDown: styled.div`
+    cursor: pointer;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    background-color: ${({ theme }) => theme.blackWhite.white};
+    border-radius: 8px;
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 12px 6px 16px;
+
+    select {
+      -webkit-appearance: none;
+      cursor: pointer;
+      border: none;
       outline: none;
+      width: 100%;
+    }
+  `,
+  HeaderDropDown: styled.div`
+    cursor: pointer;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    background-color: #f7f7f9;
+    border-radius: 8px;
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    height: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 6px 6px 16px;
+
+    select {
+      cursor: pointer;
+      -webkit-appearance: none;
+      border: none;
+      outline: none;
+      width: 100%;
+      background-color: #f7f7f9;
     }
   `,
   ContentList: styled.div`
@@ -128,17 +161,6 @@ const S = {
     .check-box {
       cursor: pointer;
     }
-
-    .select-style {
-      border: 1px solid ${({ theme }) => theme.basic.recOutline};
-      background-color: #f7f7f9;
-      border-radius: 8px;
-      box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
-      height: 32px;
-    }
-    select:focus-visible {
-      outline: none;
-    }
   `,
   ListBlock: styled.div`
     display: flex;
@@ -163,7 +185,6 @@ const S = {
       white-space: nowrap;
     }
     .list_text {
-      /* width: 132px; */
       justify-content: center;
       display: flex;
     }
@@ -214,7 +235,7 @@ const S = {
   `,
 };
 
-function CurrentSituation() {
+function StatisticsStatus() {
   const [plantName, setPlantName] = useState(true);
   const [orderCount, setOrderCount] = useState(true);
   const [sowingCount, setSowingCount] = useState(true);
@@ -322,12 +343,18 @@ function CurrentSituation() {
                 <p className="info-sub">정렬기능 )</p>
               </div>
               <S.DateChooseWrap>
-                <select className="select-style">
-                  <option value="year">연도별</option>
-                </select>
-                <select className="select-style">
-                  <option value="month">월별</option>
-                </select>
+                <S.DropDown>
+                  <select className="select-style">
+                    <option value="year">연도별</option>
+                  </select>
+                  <SelectArrowIcon width={24} height={24} />
+                </S.DropDown>
+                <S.DropDown>
+                  <select className="select-style">
+                    <option value="month">월별</option>
+                  </select>
+                  <SelectArrowIcon width={24} height={24} />
+                </S.DropDown>
                 <DatePicer />
               </S.DateChooseWrap>
             </div>
@@ -344,16 +371,26 @@ function CurrentSituation() {
       </S.InfoBlock>
       <S.ContentList>
         <div className="list-table-head">
-          <div>NO</div>
-          <select className="select-style">
-            <option value="farm-id">농가 ID</option>
-          </select>
-          <select className="select-style">
-            <option value="farm-name">농가명</option>
-          </select>
-          <select className="select-style">
-            <option value="farm-plant">작물명</option>
-          </select>
+          <p>NO</p>
+          <S.HeaderDropDown>
+            <select className="select-style">
+              <option value="farm-id">농가 ID</option>
+            </select>
+            <HeaderSelectArrowIcon width={20} height={20} />
+          </S.HeaderDropDown>
+          <S.HeaderDropDown>
+            <select className="select-style">
+              <option value="farm-name">농가명</option>
+            </select>
+            <HeaderSelectArrowIcon width={20} height={20} />
+          </S.HeaderDropDown>
+          <S.HeaderDropDown>
+            <select className="select-style">
+              <option value="farm-plant">작물명</option>
+            </select>
+            <HeaderSelectArrowIcon width={20} height={20} />
+          </S.HeaderDropDown>
+
           <div className="arrow-wrap">
             <p>품종명</p>
             <div className="icon-wrap" onClick={sortByFarmName}>
@@ -364,9 +401,12 @@ function CurrentSituation() {
               )}
             </div>
           </div>
-          <select className="select-style">
-            <option value="tray">트레이</option>
-          </select>
+          <S.HeaderDropDown>
+            <select className="select-style">
+              <option value="tray">트레이</option>
+            </select>
+            <HeaderSelectArrowIcon width={20} height={20} />
+          </S.HeaderDropDown>
           <div className="arrow-wrap">
             <p>주문수량</p>
             <div className="icon-wrap" onClick={sortByStatus}>
@@ -434,21 +474,6 @@ function CurrentSituation() {
               ) : (
                 <WaitingIcon width={98} height={40} />
               )}
-              {/* <div
-                className="option-dot"
-                onClick={() => {
-                  handleOptionModalClick(index, data);
-                  setQrDownloadModalOpen({
-                    open: false,
-                    data: data,
-                  });
-                  setDeleteModalOpen({
-                    open: false,
-                    data: data,
-                  });
-                }}
-              >
-              </div> */}
             </S.ListBlock>
           );
         })}
@@ -462,4 +487,4 @@ function CurrentSituation() {
   );
 }
 
-export default CurrentSituation;
+export default StatisticsStatus;
