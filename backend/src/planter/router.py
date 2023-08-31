@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy import or_, case, literal_column, func
+from sqlalchemy import func, Date, cast
 from sqlalchemy.orm import Session, joinedload, aliased
 from starlette.responses import JSONResponse
 
 from datetime import datetime
+from pytz import timezone
+
+# import pytz
 
 import src.planter.models as models
 import src.planter.schemas as schemas
@@ -427,12 +430,87 @@ def planter_work_wait_list(
 
 
 @router.get(
-    "/work/done/list/{year}/{month}/{date}",
+    "/work/done/list/{serial_number}/{year}/{month}/{date}",
     status_code=200,
-    description="파종기 작업 중 특정 날짜의 완료된 목록(DONE 상태)을 불러올때 사용",
+    description="파종기 작업 중 특정 날짜의 완료된 목록(DONE 상태)을 불러올때 사용<br/>year: 2023, month: 8, date: 31",
 )
-def planter_work_done_datetime_list():
-    pass
+def planter_work_done_datetime_list(
+    request: Request,
+    serial_number: str,
+    year: int,
+    month: int,
+    date: int,
+    page: int = 1,
+    size: int = 8,
+    db: Session = Depends(get_db),
+):
+    user = get_current_user("01", request.cookies, db)
+    planter = user.user_farm_house.farm_house_planter
+    if planter.serial_number != serial_number:
+        return JSONResponse(status_code=400, content=dict(msg="NOT_MATCHED_PLANTER"))
+
+    if page - 1 < 0:
+        page = 0
+    else:
+        page -= 1
+
+    target_timezone = timezone("Asia/Seoul")
+    target_date = datetime(year, month, date, tzinfo=target_timezone).date()
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    recent_status_subquery = (
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.id).label("last_pws_id"),
+        )
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    planter_works_with_recent_done_status = (
+        db.query(pw)
+        .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
+            & (pws.id == recent_status_subquery.c.last_pws_id),
+        )
+        .filter(
+            pw.is_del == False,
+            pw.planter_id == planter.id,
+            pws.status == "DONE",
+            cast(func.timezone("Asia/Seoul", pw.created_at), Date) == target_date,
+        )
+        .order_by(pw.created_at.desc())
+    )
+
+    total = planter_works_with_recent_done_status.count()
+    total_seed_quantity = 0
+    for planter_work in planter_works_with_recent_done_status.all():
+        total_seed_quantity += planter_work.seed_quantity
+
+    result_data = []
+    for planter_work in (
+        planter_works_with_recent_done_status.offset(page * size).limit(size).all()
+    ):
+        result_data.append(
+            {
+                "id": planter_work.id,
+                "crop_name": planter_work.planter_work__crop.name,
+                "crop_kine": planter_work.crop_kind,
+                "seed_quantity": planter_work.seed_quantity,
+                "tray_total": planter_work.planter_work__planter_tray.total,
+            }
+        )
+
+    return {
+        "total": total,
+        "total_seed_quantity": total_seed_quantity,
+        "planter_works": result_data,
+    }
 
 
 @router.patch(
