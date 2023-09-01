@@ -3,10 +3,11 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import { Button } from "react-bootstrap";
 
+import useUserInfo from "@hooks/queries/auth/useUserInfo";
+
 import MainLayout from "@components/layout/MainLayout";
 import DefaultModal from "@components/common/modal/DefaultModal";
 
-import { defaultButtonColor } from "@utils/ButtonColor";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 
 const S = {
@@ -111,6 +112,14 @@ function NurseryInfomationPage() {
     afterFn: null,
   });
 
+  // 유저 정보 API
+  const { data: userInfo } = useUserInfo({
+    successFn: () => {},
+    errorFn: () => {
+      // userLogout(router, clearQueries);
+    },
+  });
+
   return (
     <MainLayout
       pageName={"농가정보"}
@@ -120,43 +129,43 @@ function NurseryInfomationPage() {
       backgroundColor="#5899FB">
       <S.Wrap>
         <S.FarmHouseNameWrap>
-          <p>가야프러그영농조합</p>
+          <p>{userInfo?.farm_house.name}</p>
         </S.FarmHouseNameWrap>
         <S.InfoWrap>
           <S.InfoContent>
             <p className="title-text">파종기 S/N</p>
             <div className="value-box">
-              <p>KN001DS0976</p>
+              <p>{userInfo?.planter.serial_number}</p>
             </div>
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">농가 ID</p>
             <div className="value-box">
-              <p>PF_0021350</p>
+              <p>{userInfo?.farm_house.farm_house_id}</p>
             </div>
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">육묘업 등록번호</p>
             <div className="value-box">
-              <p>제 13-부산-2018-60-01</p>
+              <p>{userInfo?.farm_house.nursery_number}</p>
             </div>
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">주소</p>
             <div className="value-box">
-              <p>(51010) 경남 김해시 화목동 1605-4</p>
+              <p>{userInfo?.farm_house.address}</p>
             </div>
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">생산자명</p>
             <div className="value-box">
-              <p>이형재</p>
+              <p>{userInfo?.farm_house.producer_name}</p>
             </div>
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">연락처</p>
             <div className="value-box">
-              <p>055-314-5858</p>
+              <p>{userInfo?.farm_house.phone}</p>
             </div>
           </S.InfoContent>
           <S.LogoutButtonWrap>

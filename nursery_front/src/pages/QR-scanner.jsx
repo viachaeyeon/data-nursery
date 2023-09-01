@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import { useRouter } from "next/router";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
@@ -8,12 +8,12 @@ import useRegisterPlanter from "@hooks/queries/planter/useRegisterPlanter";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultButton from "@components/common/button/DefaultButton";
+import DefaultModal from "@components/common/modal/DefaultModal";
+import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
 
 import QRCodeImage from "@images/login/img-qrcode.svg";
 import { defaultButtonColor, greyButtonColor } from "@utils/ButtonColor";
-import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
 import CloseIcon from "@images/common/close-icon.svg";
-import DefaultModal from "@components/common/modal/DefaultModal";
 
 const S = {
   Wrap: styled.div`
@@ -167,6 +167,7 @@ function QRScannerPage() {
         config,
         (result) => {
           if (result === userInfo?.planter.serial_number) {
+            // 시리얼번호 일치 시 성공모달 오픈 및 카메라 종료
             setModalOpen({
               open: true,
               type: "success",
@@ -193,8 +194,8 @@ function QRScannerPage() {
               afterFn: null,
             });
           }
-        },
-        () => {},
+        }, // success
+        () => {}, // error
       );
     }
   }, [step]);
