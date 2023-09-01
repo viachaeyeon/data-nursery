@@ -527,17 +527,12 @@ def update_planter_work_status(
     pws = aliased(models.PlanterWorkStatus)
 
     request_planter_work = get_(db, pw, id=planter_work_id)
-    request_planter = request_planter_work.planter_work__planter
-
-    last_planter_work_status = (
-        db.query(pws)
-        .filter(
-            pws.is_del == False,
-            pws.planter_work_id == planter_work_id,
+    if not request_planter_work:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NOT_FOUND_PLANT_WORK"),
         )
-        .order_by(pws.created_at.desc())
-        .first()
-    )
+    request_planter = request_planter_work.planter_work__planter
 
     # 유저에 등록된 파종기 시리얼넘버와 요청한 Planter_work_id의 파종기 시리얼넘버 비교
     if (
@@ -548,6 +543,16 @@ def update_planter_work_status(
             status_code=404,
             content=dict(msg="NO_MATCH_PLANTER_WORK_WITH_ENROLLED_PLANTER"),
         )
+
+    last_planter_work_status = (
+        db.query(pws)
+        .filter(
+            pws.is_del == False,
+            pws.planter_work_id == planter_work_id,
+        )
+        .order_by(pws.created_at.desc())
+        .first()
+    )
 
     # 작업상태를 WORKING으로 변경
     if status == "WORKING":
@@ -655,3 +660,44 @@ def update_planter_work_status(
             return JSONResponse(status_code=422, content=dict(msg="NOT_CHANGE_TO_DONE"))
     else:
         return JSONResponse(status_code=422, content=dict(msg="INVALID_REQUEST_VALUE"))
+
+
+@router.get(
+    "/work/info/{planter_work_id}",
+    status_code=200,
+    response_model=schemas.PlanterWorkResponse,
+)
+def get_planter_work_info(
+    request: Request, planter_work_id: int, db: Session = Depends(get_db)
+):
+    user = get_current_user("01", request.cookies, db)
+    user_planter = user.user_farm_house.farm_house_planter
+    request_planter_work = get_(db, models.PlanterWork, id=planter_work_id)
+    if not request_planter_work:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NOT_FOUND_PLANT_WORK"),
+        )
+    request_planter = request_planter_work.planter_work__planter
+
+    if user_planter.serial_number != request_planter.serial_number:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NO_MATCH_PLANTER_WORK_WITH_ENROLLED_PLANTER"),
+        )
+
+    last_planter_work_status = (
+        db.query(models.PlanterWorkStatus)
+        .filter(
+            models.PlanterWorkStatus.is_del == False, planter_work_id == planter_work_id
+        )
+        .order_by(models.PlanterWorkStatus.created_at.desc())
+        .first()
+    )
+
+    return {
+        "crop": request_planter_work.planter_work__crop,
+        "planter_work_status": last_planter_work_status,
+        "planter_tray": request_planter_work.planter_work__planter_tray,
+        "planter_work": request_planter_work,
+    }
