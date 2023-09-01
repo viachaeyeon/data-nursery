@@ -65,12 +65,13 @@ const S = {
   `,
 };
 
-function TrayOptionModal({ optionModalOpen, setOptionModalOpen }) {
+function TrayOptionModal({ optionModalOpen, setOptionModalOpen,setEditTrayModalOpen }) {
   // 수정
   const handelEditClick = useCallback(() => {
-    alert("수정");
-    // setEditModalOpen({ open: true, data: optionModalOpen });
-    // setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    setOptionModalOpen({open: false,
+      index: undefined,
+      data: undefined,})
+      setEditTrayModalOpen({ open: true, data: optionModalOpen });
   }, []);
 
   //삭제
@@ -79,6 +80,7 @@ function TrayOptionModal({ optionModalOpen, setOptionModalOpen }) {
     // setDeleteModalOpen({ open: true, data: deleteModalOpen });
     // setOptionModalOpen({ open: false, index: undefined, data: undefined });
   });
+
 
   return (
     <S.Wrap>

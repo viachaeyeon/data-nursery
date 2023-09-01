@@ -9,6 +9,7 @@ import CheckBoxOn from "@images/common/check-icon-on.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import TrayIcon from "@images/setting/tray-no-data.svg";
 import OptionModal from "./TrayOptionModal";
+import EditTrayModal from "./EditTrayModal";
 
 const S = {
   Wrap: styled.div`
@@ -132,6 +133,8 @@ const S = {
 };
 
 function TrayList() {
+
+  // 옵션 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
     index: undefined,
@@ -145,6 +148,9 @@ function TrayList() {
 
   //트레이 추가 모달
   const [addTrayModalOpen, setAddTrayModalOpen] = useState(false);
+
+  //트레이 수정 모달
+  const [editTrayModalOpen,setEditTrayModalOpen] = useState({open:false,data:undefined});
 
   // 트레이 목록 : 눌렀을때 나오는 모달
   const handleCropsOptionModalClick = useCallback(
@@ -162,6 +168,11 @@ function TrayList() {
   const handleAddTrayModalClick = useCallback(() => {
     setAddTrayModalOpen(true);
   }, [addTrayModalOpen]);
+
+  //트레이 수정 모달
+  const handleEditTrayModalClick = useCallback(()=>{
+
+  })
 
   const [listData, setListData] = useState([
     {
@@ -249,6 +260,7 @@ function TrayList() {
                       <OptionModal
                         optionModalOpen={optionModalOpen}
                         setOptionModalOpen={setOptionModalOpen}
+                        setEditTrayModalOpen={setEditTrayModalOpen}
                       />
                     )}
                   </S.ListBlock>
@@ -270,6 +282,14 @@ function TrayList() {
            setTrayHeighthNum={setTrayHeighthNum} 
            trayNum={trayNum}
             setTrayNum={setTrayNum}
+          />
+        </div>
+      )}
+      {editTrayModalOpen.open && (
+        <div className="modal-wrap">
+          <EditTrayModal 
+          editTrayModalOpen={editTrayModalOpen}
+          setEditTrayModalOpen={setEditTrayModalOpen}
           />
         </div>
       )}
