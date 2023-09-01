@@ -701,3 +701,39 @@ def get_planter_work_info(
         "planter_tray": request_planter_work.planter_work__planter_tray,
         "planter_work": request_planter_work,
     }
+
+
+@router.patch(
+    "/work/info/update/{planter_work_id}",
+    status_code=200,
+)
+def update_planter_work_info(
+    request: Request,
+    planter_work_id: int,
+    planter_work_data: schemas.PlanterWorkUpdate,
+    db: Session = Depends(get_db),
+):
+    user = get_current_user("01", request.cookies, db)
+    user_planter = user.user_farm_house.farm_house_planter
+    request_planter_work = get_(db, models.PlanterWork, id=planter_work_id)
+    if not request_planter_work:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NOT_FOUND_PLANT_WORK"),
+        )
+    request_planter = request_planter_work.planter_work__planter
+
+    if user_planter.serial_number != request_planter.serial_number:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NO_MATCH_PLANTER_WORK_WITH_ENROLLED_PLANTER"),
+        )
+
+    for field in planter_work_data.__dict__:
+        if getattr(planter_work_data, field) is not None:
+            setattr(request_planter_work, field, getattr(planter_work_data, field))
+
+    db.commit()
+    db.refresh(request_planter_work)
+
+    return JSONResponse(status_code=200, content=dict(msg="UPDATE_SUCCESS"))
