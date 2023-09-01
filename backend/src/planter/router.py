@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy import func, Date, cast
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload, aliased
 from starlette.responses import JSONResponse
 
@@ -488,8 +488,6 @@ def planter_work_done_datetime_list(
         .order_by(pw.created_at.desc())
     )
 
-    print(planter_work)
-
     total = planter_works_with_recent_done_status.count()
     total_seed_quantity = 0
     for planter_work in planter_works_with_recent_done_status.all():
@@ -517,9 +515,143 @@ def planter_work_done_datetime_list(
 
 
 @router.patch(
-    "/work/status/update",
+    "/work/status/update/{planter_work_id}",
     status_code=200,
     description="파종기 작업 상태 변경 시 사용<br/>WAIT: 대기중, WORKING: 작업중, DONE: 완료, PAUSE: 일시정지",
 )
-def update_planter_work_status(request: Request, db: Session = Depends(get_db)):
-    pass
+def update_planter_work_status(
+    request: Request, planter_work_id: int, status: str, db: Session = Depends(get_db)
+):
+    user = get_current_user("01", request.cookies, db)
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    request_planter_work = get_(db, pw, id=planter_work_id)
+    request_planter = request_planter_work.planter_work__planter
+
+    last_planter_work_status = (
+        db.query(pws)
+        .filter(
+            pws.is_del == False,
+            pws.planter_work_id == planter_work_id,
+        )
+        .order_by(pws.created_at.desc())
+        .first()
+    )
+
+    # 유저에 등록된 파종기 시리얼넘버와 요청한 Planter_work_id의 파종기 시리얼넘버 비교
+    if (
+        user.user_farm_house.farm_house_planter.serial_number
+        != request_planter.serial_number
+    ):
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NO_MATCH_PLANTER_WORK_WITH_ENROLLED_PLANTER"),
+        )
+
+    # 작업상태를 WORKING으로 변경
+    if status == "WORKING":
+        # 현재 상태가 WAIT일 경우
+        if last_planter_work_status.status == "WAIT":
+            last_planter_work_status_subquery = (
+                db.query(pws.planter_work_id, func.max(pws.id).label("last_pwd_id"))
+                .filter(pws.is_del == False)
+                .group_by(pws.planter_work_id)
+                .subquery()
+            )
+
+            check_working_puase_planter_work = (
+                db.query(pw)
+                .join(
+                    last_planter_work_status_subquery,
+                    last_planter_work_status_subquery.c.planter_work_id == pw.id,
+                )
+                .join(
+                    pws,
+                    (
+                        pws.planter_work_id
+                        == last_planter_work_status_subquery.c.planter_work_id
+                    )
+                    & (pws.id == last_planter_work_status_subquery.c.last_pwd_id),
+                )
+                .filter(
+                    pw.is_del == False,
+                    pw.planter_id == request_planter.id,
+                    pws.status.in_(["WORKING", "PAUSE"]),
+                )
+                .order_by(pw.created_at.desc())
+                .all()
+            )
+
+            # 현재 Planter의 PlanterWork 중 PlanterWorkStatus가 WORKING, PAUSE상태가 아니라면 WORKING으로 변경
+            if not check_working_puase_planter_work:
+                new_planter_work_status = create_(
+                    db,
+                    models.PlanterWorkStatus,
+                    planter_work_id=planter_work_id,
+                    status="WORKING",
+                )
+                db.add(new_planter_work_status)
+                db.commit()
+                db.refresh(new_planter_work_status)
+                return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+            # 이미 Planter에 등록된 PlanterWork 중 WORKING 또는 PAUSE 상태인 작업이 있어 오류 리턴
+            else:
+                return JSONResponse(
+                    status_code=400, content=dict(msg="ALEADY_WORKING_PLANTER")
+                )
+
+        # 현재 상태가 PAUSE일 경우 : WORKING으로 변경
+        elif last_planter_work_status.status == "PAUSE":
+            new_planter_work_status = create_(
+                db,
+                models.PlanterWorkStatus,
+                planter_work_id=planter_work_id,
+                status="WORKING",
+            )
+            db.add(new_planter_work_status)
+            db.commit()
+            db.refresh(new_planter_work_status)
+            return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+        # 현재 상태가 DONE, WOKRING일 경우 : 오류 리턴
+        else:
+            return JSONResponse(
+                status_code=400, content=dict(msg="ALEADY_DONE_OR_WOKRING")
+            )
+    # 현재 PlanterWorkStatus의 상태가 WORKING일 경우에만 동작
+    elif status == "PAUSE":
+        if last_planter_work_status.status == "WORKING":
+            new_planter_work_status = create_(
+                db,
+                models.PlanterWorkStatus,
+                planter_work_id=planter_work_id,
+                status="PAUSE",
+            )
+            db.add(new_planter_work_status)
+            db.commit()
+            db.refresh(new_planter_work_status)
+            return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+        else:
+            return JSONResponse(
+                status_code=400, content=dict(msg="NOT_CHANGE_TO_PAUSE")
+            )
+    # 현재 상태가 WORKING, PAUSE 일 경우에만 동작
+    elif status == "DONE":
+        if (
+            last_planter_work_status.status == "WORKING"
+            or last_planter_work_status.status == "PAUSE"
+        ):
+            new_planter_work_status = create_(
+                db,
+                models.PlanterWorkStatus,
+                planter_work_id=planter_work_id,
+                status="DONE",
+            )
+            db.add(new_planter_work_status)
+            db.commit()
+            db.refresh(new_planter_work_status)
+            return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+        else:
+            return JSONResponse(status_code=422, content=dict(msg="NOT_CHANGE_TO_DONE"))
+    else:
+        return JSONResponse(status_code=422, content=dict(msg="INVALID_REQUEST_VALUE"))
