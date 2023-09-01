@@ -482,10 +482,13 @@ def planter_work_done_datetime_list(
             pw.is_del == False,
             pw.planter_id == planter.id,
             pws.status == "DONE",
-            cast(func.timezone("Asia/Seoul", pw.created_at), Date) == target_date,
+            # cast(func.timezone("Asia/Seoul", pw.created_at), Date) == target_date,
+            func.Date(func.timezone("Asia/Seoul", pw.created_at)) == target_date,
         )
         .order_by(pw.created_at.desc())
     )
+
+    print(planter_work)
 
     total = planter_works_with_recent_done_status.count()
     total_seed_quantity = 0
