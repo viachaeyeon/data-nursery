@@ -1,4 +1,4 @@
-import React, { useCallback,useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import XIcon from "@images/common/icon-x.svg";
@@ -133,29 +133,31 @@ const S = {
   `,
 };
 
-function EditTrayModal({ setEditTrayModalOpen,editTrayModalOpen
-}) {
+function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
+  const [editWidth, setEditWidth] = useState(
+    editTrayModalOpen.data.data.width_count,
+  );
+  const [editHeight, setEditHeight] = useState(
+    editTrayModalOpen.data.data.height_count,
+  );
+  const [editTray, setEditTray] = useState(
+    editTrayModalOpen.data.data.tray_number,
+  );
 
-  const [editWidth,setEditWidth] = useState(editTrayModalOpen.data.data.width_count);
-  const [editHeight,setEditHeight] = useState(editTrayModalOpen.data.data.height_count);
-  const [editTray,setEditTray] = useState(editTrayModalOpen.data.data.tray_number);
-
-
-  useEffect(()=>{
-    setEditTray(editWidth * editHeight)
-  },[editWidth,editHeight])
+  useEffect(() => {
+    setEditTray(editWidth * editHeight);
+  }, [editWidth, editHeight]);
 
   const closeModal = useCallback(() => {
-    setEditTrayModalOpen({open:false,data:undefined});
+    setEditTrayModalOpen({ open: false, data: undefined });
     setEditWidth("");
     setEditHeight("");
-  }, [editWidth,editHeight]);
+  }, [editWidth, editHeight]);
 
-
-  const handleTraySaveClick = useCallback(()=>{
-    alert("변경")
+  const handleTraySaveClick = useCallback(() => {
+    alert("변경");
     closeModal();
-  },[])
+  }, []);
 
   return (
     <S.Wrap>
@@ -177,7 +179,9 @@ function EditTrayModal({ setEditTrayModalOpen,editTrayModalOpen
             <input
               placeholder="예) 30"
               value={editWidth}
-              onChange={(e) => setEditWidth(e.target.value.replace(/[^0-9]/g, ""))}
+              onChange={(e) =>
+                setEditWidth(e.target.value.replace(/[^0-9]/g, ""))
+              }
             />
           </div>
           <S.TextWrap>
@@ -188,33 +192,31 @@ function EditTrayModal({ setEditTrayModalOpen,editTrayModalOpen
             <input
               placeholder="예) 14"
               value={editHeight}
-              onChange={(e) => setEditHeight(e.target.value.replace(/[^0-9]/g, ""))}
+              onChange={(e) =>
+                setEditHeight(e.target.value.replace(/[^0-9]/g, ""))
+              }
             />
           </div>
           <S.TextWrap>
             <p className="input-title">트레이공수</p>
-            <p className="input-info">※ 가로,세로값이 입력되면 자동으로 계산됩니다.</p>
+            <p className="input-info">
+              ※ 가로,세로값이 입력되면 자동으로 계산됩니다.
+            </p>
           </S.TextWrap>
           <div className="input-wrap-off">
-            <input
-              value={editTray}
-            />
+            <input value={editTray} />
           </div>
         </S.InputWrap>
 
-        {editWidth.length === 0 || editHeight.length === 0 ?
-        (
+        {editWidth.length === 0 || editHeight.length === 0 ? (
           <S.ButtonWrapOff>
-          <p>변경</p>
-        </S.ButtonWrapOff>
-        ):
-        (
+            <p>변경</p>
+          </S.ButtonWrapOff>
+        ) : (
           <S.ButtonWrap onClick={handleTraySaveClick}>
-          <p>변경</p>
-        </S.ButtonWrap>
+            <p>변경</p>
+          </S.ButtonWrap>
         )}
-        
-        
       </S.WrapInner>
     </S.Wrap>
   );

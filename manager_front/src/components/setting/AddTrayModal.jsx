@@ -1,4 +1,4 @@
-import React, { useCallback,useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import styled from "styled-components";
 
 import XIcon from "@images/common/icon-x.svg";
@@ -133,24 +133,28 @@ const S = {
   `,
 };
 
-function AddTrayModal({ setAddTrayModalOpen,
-  trayWidthNum,setTrayWidthNum,trayHeighthNum,setTrayHeighthNum,trayNum,setTrayNum
+function AddTrayModal({
+  setAddTrayModalOpen,
+  trayWidthNum,
+  setTrayWidthNum,
+  trayHeighthNum,
+  setTrayHeighthNum,
+  trayNum,
+  setTrayNum,
 }) {
-
-  useEffect(()=>{
-    setTrayNum(trayWidthNum * trayHeighthNum)
-  },[trayWidthNum,trayHeighthNum])
+  useEffect(() => {
+    setTrayNum(trayWidthNum * trayHeighthNum);
+  }, [trayWidthNum, trayHeighthNum]);
 
   const closeModal = useCallback(() => {
     setAddTrayModalOpen(false);
     setTrayWidthNum("");
     setTrayHeighthNum("");
-    
-  }, [trayWidthNum,trayHeighthNum]);
+  }, [trayWidthNum, trayHeighthNum]);
 
-  const handleTraySaveClick = useCallback(()=>{
+  const handleTraySaveClick = useCallback(() => {
     closeModal();
-  },[])
+  }, []);
 
   return (
     <S.Wrap>
@@ -172,7 +176,9 @@ function AddTrayModal({ setAddTrayModalOpen,
             <input
               placeholder="예) 30"
               value={trayWidthNum}
-              onChange={(e) => setTrayWidthNum(e.target.value.replace(/[^0-9]/g, ""))}
+              onChange={(e) =>
+                setTrayWidthNum(e.target.value.replace(/[^0-9]/g, ""))
+              }
             />
           </div>
           <S.TextWrap>
@@ -183,33 +189,31 @@ function AddTrayModal({ setAddTrayModalOpen,
             <input
               placeholder="예) 14"
               value={trayHeighthNum}
-              onChange={(e) => setTrayHeighthNum(e.target.value.replace(/[^0-9]/g, ""))}
+              onChange={(e) =>
+                setTrayHeighthNum(e.target.value.replace(/[^0-9]/g, ""))
+              }
             />
           </div>
           <S.TextWrap>
             <p className="input-title">트레이공수</p>
-            <p className="input-info">※ 가로,세로값이 입력되면 자동으로 계산됩니다.</p>
+            <p className="input-info">
+              ※ 가로,세로값이 입력되면 자동으로 계산됩니다.
+            </p>
           </S.TextWrap>
           <div className="input-wrap-off">
-            <input
-              value={trayNum}
-            />
+            <input value={trayNum} />
           </div>
         </S.InputWrap>
 
-        {trayWidthNum.length === 0 || trayHeighthNum.length === 0 ?
-        (
+        {trayWidthNum.length === 0 || trayHeighthNum.length === 0 ? (
           <S.ButtonWrapOff>
-          <p>저장</p>
-        </S.ButtonWrapOff>
-        ):
-        (
+            <p>저장</p>
+          </S.ButtonWrapOff>
+        ) : (
           <S.ButtonWrap onClick={handleTraySaveClick}>
-          <p>저장</p>
-        </S.ButtonWrap>
+            <p>저장</p>
+          </S.ButtonWrap>
         )}
-        
-        
       </S.WrapInner>
     </S.Wrap>
   );

@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import QRIcon from "@images/management/qr-icon.svg";
 import EditIcon from "@images/common/edit-icon.svg";
 import DeleteIcon from "@images/common/delete-icon.svg";
 
@@ -65,22 +64,24 @@ const S = {
   `,
 };
 
-function TrayOptionModal({ optionModalOpen, setOptionModalOpen,setEditTrayModalOpen }) {
+function TrayOptionModal({
+  optionModalOpen,
+  setOptionModalOpen,
+  setEditTrayModalOpen,
+  deleteTrayModalOpen,
+  setDeleteTrayModalOpen,
+}) {
   // 수정
   const handelEditClick = useCallback(() => {
-    setOptionModalOpen({open: false,
-      index: undefined,
-      data: undefined,})
-      setEditTrayModalOpen({ open: true, data: optionModalOpen });
+    setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    setEditTrayModalOpen({ open: true, data: optionModalOpen });
   }, []);
 
   //삭제
   const handleDeleteClick = useCallback(() => {
-    alert("삭제");
-    // setDeleteModalOpen({ open: true, data: deleteModalOpen });
-    // setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    setDeleteTrayModalOpen({ open: true, data: deleteTrayModalOpen });
+    setOptionModalOpen({ open: false, index: undefined, data: undefined });
   });
-
 
   return (
     <S.Wrap>

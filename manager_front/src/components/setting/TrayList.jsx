@@ -10,6 +10,7 @@ import OptionDot from "@images/common/option-dot-icon.svg";
 import TrayIcon from "@images/setting/tray-no-data.svg";
 import OptionModal from "./TrayOptionModal";
 import EditTrayModal from "./EditTrayModal";
+import TrayDeleteModal from "./TrayDeleteModal";
 
 const S = {
   Wrap: styled.div`
@@ -133,7 +134,6 @@ const S = {
 };
 
 function TrayList() {
-
   // 옵션 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
@@ -142,15 +142,24 @@ function TrayList() {
   });
 
   //트레이 가로 숫자
-  const [trayWidthNum,setTrayWidthNum] = useState("");
-  const [trayHeighthNum,setTrayHeighthNum] = useState("");
-  const [trayNum,setTrayNum] = useState("");
+  const [trayWidthNum, setTrayWidthNum] = useState("");
+  const [trayHeighthNum, setTrayHeighthNum] = useState("");
+  const [trayNum, setTrayNum] = useState("");
 
-  //트레이 추가 모달
+  //트레이 추가 모달 오픈
   const [addTrayModalOpen, setAddTrayModalOpen] = useState(false);
 
-  //트레이 수정 모달
-  const [editTrayModalOpen,setEditTrayModalOpen] = useState({open:false,data:undefined});
+  //트레이 수정 모달 오픈
+  const [editTrayModalOpen, setEditTrayModalOpen] = useState({
+    open: false,
+    data: undefined,
+  });
+
+  //트레이 삭제 모달 오픈
+  const [deleteTrayModalOpen, setDeleteTrayModalOpen] = useState({
+    open: false,
+    data: undefined,
+  });
 
   // 트레이 목록 : 눌렀을때 나오는 모달
   const handleCropsOptionModalClick = useCallback(
@@ -168,11 +177,6 @@ function TrayList() {
   const handleAddTrayModalClick = useCallback(() => {
     setAddTrayModalOpen(true);
   }, [addTrayModalOpen]);
-
-  //트레이 수정 모달
-  const handleEditTrayModalClick = useCallback(()=>{
-
-  })
 
   const [listData, setListData] = useState([
     {
@@ -252,6 +256,7 @@ function TrayList() {
                       className="option-dot"
                       onClick={() => {
                         handleCropsOptionModalClick(index, data);
+                        setDeleteTrayModalOpen({ open: false, data: data });
                       }}
                     >
                       <OptionDot width={32} height={32} />
@@ -261,6 +266,8 @@ function TrayList() {
                         optionModalOpen={optionModalOpen}
                         setOptionModalOpen={setOptionModalOpen}
                         setEditTrayModalOpen={setEditTrayModalOpen}
+                        deleteTrayModalOpen={deleteTrayModalOpen}
+                        setDeleteTrayModalOpen={setDeleteTrayModalOpen}
                       />
                     )}
                   </S.ListBlock>
@@ -274,23 +281,32 @@ function TrayList() {
       {/* 트레이추가 모달 */}
       {addTrayModalOpen && (
         <div className="modal-wrap">
-          <AddTrayModal 
-          setAddTrayModalOpen={setAddTrayModalOpen} 
-          trayWidthNum={trayWidthNum} 
-          setTrayWidthNum={setTrayWidthNum}
-           trayHeighthNum={trayHeighthNum} 
-           setTrayHeighthNum={setTrayHeighthNum} 
-           trayNum={trayNum}
+          <AddTrayModal
+            setAddTrayModalOpen={setAddTrayModalOpen}
+            trayWidthNum={trayWidthNum}
+            setTrayWidthNum={setTrayWidthNum}
+            trayHeighthNum={trayHeighthNum}
+            setTrayHeighthNum={setTrayHeighthNum}
+            trayNum={trayNum}
             setTrayNum={setTrayNum}
           />
         </div>
       )}
+
+      {/* 트레이 수정 모달 */}
       {editTrayModalOpen.open && (
         <div className="modal-wrap">
-          <EditTrayModal 
-          editTrayModalOpen={editTrayModalOpen}
-          setEditTrayModalOpen={setEditTrayModalOpen}
+          <EditTrayModal
+            editTrayModalOpen={editTrayModalOpen}
+            setEditTrayModalOpen={setEditTrayModalOpen}
           />
+        </div>
+      )}
+
+      {/* 트레이 삭제 모달 */}
+      {deleteTrayModalOpen.open && (
+        <div className="modal-wrap">
+          <TrayDeleteModal setDeleteTrayModalOpen={setDeleteTrayModalOpen} />
         </div>
       )}
     </S.Wrap>
