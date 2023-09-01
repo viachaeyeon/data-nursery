@@ -9,9 +9,23 @@ import OptionDot from "@images/common/option-dot-icon.svg";
 import TopManager from "@images/setting/top-manager.svg";
 import CommonManager from "@images/setting/common-manager.svg";
 import OptionModal from "./ManagerOptionModal";
+import AddManagerModal from "./AddManagerModal";
+import EditManagerModal from "./EditManagerModal";
+import EditManagerPasswordModal from "./EditManagerPasswordModal";
+import ManagerDeleteModal from "./ManagerDeleteModal";
 
 const S = {
-  Wrap: styled.div``,
+  Wrap: styled.div`
+    .modal-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #00000040;
+      z-index: 1;
+    }
+  `,
   TitleWrap: styled.div`
     display: flex;
     justify-content: space-between;
@@ -105,6 +119,38 @@ function ManagementList() {
     data: undefined,
   });
 
+  //관리자 추가 모달 오픈
+  const [addManagerModalOpen, setAddManagerModalOpen] = useState(false);
+
+  //관리자 수정 모달 오픈
+  const [editManagerModalOpen, setEditManagerModalOpen] = useState({
+    open: false,
+    data: undefined,
+  });
+
+  //관리자 비밀번호 변경 모달 오픈
+  const [editManagerPwChangeModalOpen, setEditManagerPWChangeModalOpen] =
+    useState({ open: false, data: undefined });
+
+  //관리자 삭제모달 오픈
+  const [deleteManagerModalOpen,setDeleteManagerModalOpen] = useState({
+    open:false,data:undefined
+  });
+
+  //관리자 모달 정보
+  const [managerId, setManagerId] = useState("");
+  const [managerCompany, setManagerCompany] = useState("");
+  const [managerDepartment, setManagerDepartment] = useState("");
+  const [managerPosition, setManagerPosition] = useState("");
+  const [managerName, setManagerName] = useState("");
+  const [managerPhone, setManagerPhone] = useState("");
+  const [managerPassword, setManagerPassword] = useState("");
+
+  //관리자 추가 모달
+  const handelAddManagerModalClick = useCallback(() => {
+    setAddManagerModalOpen(true);
+  }, [addManagerModalOpen]);
+
   // : 눌렀을때 나오는 모달
   const handleOptionModalClick = useCallback(
     (index, data) => {
@@ -126,6 +172,7 @@ function ManagementList() {
       position: "팀장",
       name: "박희진",
       phone: "010-0000-0000",
+      password: "1234",
     },
     {
       member_type: "second",
@@ -135,6 +182,7 @@ function ManagementList() {
       position: "연구원연구원연구원",
       name: "홍길동",
       phone: "010-1111-1111",
+      password: "5678",
     },
   ]);
   return (
@@ -144,7 +192,7 @@ function ManagementList() {
           <p className="title">관리자목록</p>
           <p className="sub-title">관리자 추가 및 변경</p>
         </S.Title>
-        <S.AddButton>
+        <S.AddButton onClick={handelAddManagerModalClick}>
           <AddIcon width={24} height={24} />
           <p>관리자 추가</p>
         </S.AddButton>
@@ -187,6 +235,7 @@ function ManagementList() {
                   className="option-dot"
                   onClick={() => {
                     handleOptionModalClick(index, data);
+                    setDeleteManagerModalOpen({open:false,data:data})
                   }}
                 >
                   <OptionDot width={32} height={32} />
@@ -195,6 +244,9 @@ function ManagementList() {
                   <OptionModal
                     optionModalOpen={optionModalOpen}
                     setOptionModalOpen={setOptionModalOpen}
+                    setEditManagerModalOpen={setEditManagerModalOpen}
+                    deleteManagerModalOpen={deleteManagerModalOpen}
+                    setDeleteManagerModalOpen={setDeleteManagerModalOpen}
                   />
                 )}
               </S.ListBlock>
@@ -202,6 +254,59 @@ function ManagementList() {
           })}
         </S.ListBlockWrap>
       </S.ContentList>
+
+      {/* 관리자추가 모달 */}
+      {addManagerModalOpen && (
+        <div className="modal-wrap">
+          <AddManagerModal
+            setAddManagerModalOpen={setAddManagerModalOpen}
+            managerId={managerId}
+            setManagerId={setManagerId}
+            managerCompany={managerCompany}
+            setManagerCompany={setManagerCompany}
+            managerDepartment={managerDepartment}
+            setManagerDepartment={setManagerDepartment}
+            managerPosition={managerPosition}
+            setManagerPosition={setManagerPosition}
+            managerName={managerName}
+            setManagerName={setManagerName}
+            managerPhone={managerPhone}
+            setManagerPhone={setManagerPhone}
+            managerPassword={managerPassword}
+            setManagerPassword={setManagerPassword}
+          />
+        </div>
+      )}
+
+      {/* 관리자 수정 모달 */}
+      {editManagerModalOpen.open && (
+        <div className="modal-wrap">
+          <EditManagerModal
+            editManagerModalOpen={editManagerModalOpen}
+            setEditManagerModalOpen={setEditManagerModalOpen}
+            setEditManagerPWChangeModalOpen={setEditManagerPWChangeModalOpen}
+          />
+        </div>
+      )}
+
+      {/* 관리자 비밀번호 변경 모달 */}
+      {editManagerPwChangeModalOpen.open && (
+        <div className="modal-wrap">
+          <EditManagerPasswordModal
+            editManagerModalOpen={editManagerModalOpen}
+            setEditManagerPWChangeModalOpen={setEditManagerPWChangeModalOpen}
+            setManagerPassword={setManagerPassword}
+          />
+        </div>
+      )}
+
+      {/* 관리자 삭제모달 */}
+      {deleteManagerModalOpen.open &&(
+        <div className="modal-wrap">
+          <ManagerDeleteModal setDeleteManagerModalOpen={setDeleteManagerModalOpen} />
+        </div>
+      )}
+      
     </S.Wrap>
   );
 }

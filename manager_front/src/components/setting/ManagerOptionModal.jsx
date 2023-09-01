@@ -64,21 +64,23 @@ const S = {
   `,
 };
 
-function ManagerOptionModal({ optionModalOpen, setOptionModalOpen }) {
-  console.log("optionModalOpen", optionModalOpen);
-
-  // 농가수정
+function ManagerOptionModal({
+  optionModalOpen,
+  setOptionModalOpen,
+  setEditManagerModalOpen,
+  deleteManagerModalOpen,
+  setDeleteManagerModalOpen
+}) {
+  // 관리자 수정
   const handelEditClick = useCallback(() => {
-    alert("수정");
-    // setEditModalOpen({ open: true, data: optionModalOpen });
-    // setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    setEditManagerModalOpen({ open: true, data: optionModalOpen });
+    setOptionModalOpen({ open: false, index: undefined, data: undefined });
   }, []);
 
   //삭제
   const handleDeleteClick = useCallback(() => {
-    alert("삭제");
-    // setDeleteModalOpen({ open: true, data: deleteModalOpen });
-    // setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    setDeleteManagerModalOpen({ open: true, data: deleteManagerModalOpen });
+    setOptionModalOpen({ open: false, index: undefined, data: undefined });
   });
 
   return (
