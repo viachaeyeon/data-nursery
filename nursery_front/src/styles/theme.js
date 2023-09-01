@@ -38,6 +38,7 @@ const basic = {
   warning: "#FF7C8C",
   positive: "#00B071",
   btnAction: "#357AE1",
+  whiteAlpha20: "#ffffff20",
 };
 
 const mobile = {

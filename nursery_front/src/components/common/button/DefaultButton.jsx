@@ -8,11 +8,13 @@ const S = {
     height: 56px;
     padding: 16px 32px !important;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-    ${({ theme }) => theme.textStyle.h3Bold}
+    font-weight: 700 !important;
+    font-size: 24px !important;
+    line-height: 28px !important;
     border-radius: 8px !important;
 
     color: ${(props) => props.fontColor} !important;

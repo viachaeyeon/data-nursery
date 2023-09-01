@@ -129,7 +129,7 @@ function LogInPage() {
       if (res.data.planter.is_register) {
         router.push("/");
       } else {
-        router.push("QR-scanner");
+        router.push("/QR-scanner");
       }
     } catch (e) {
       alert("로그인에 실패하였습니다. 아이디 및 비밀번호를 확인해주세요.");

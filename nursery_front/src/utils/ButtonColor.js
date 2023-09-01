@@ -30,6 +30,16 @@ export const whiteButtonColor = {
   fontColor: theme.basic.grey50,
 };
 
+export const greyButtonColor = {
+  backgroundColor: theme.basic.grey50,
+  borderColor: theme.basic.grey50,
+  hoverBackgroundColor: theme.basic.grey50,
+  hoverBorderColor: theme.basic.grey60,
+  focusBackgroundColor: theme.basic.grey60,
+  focusBorderColor: theme.basic.grey60,
+  fontColor: "#ffffff",
+};
+
 export const purpleButtonColor = {
   backgroundColor: theme.mobile.secondary2,
   borderColor: theme.mobile.secondary2,

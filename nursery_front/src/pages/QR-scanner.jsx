@@ -1,14 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
+import { useRouter } from "next/router";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
+import useRegisterPlanter from "@hooks/queries/planter/useRegisterPlanter";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultButton from "@components/common/button/DefaultButton";
 
 import QRCodeImage from "@images/login/img-qrcode.svg";
-import { defaultButtonColor } from "@utils/ButtonColor";
+import { defaultButtonColor, greyButtonColor } from "@utils/ButtonColor";
+import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
+import CloseIcon from "@images/common/close-icon.svg";
+import DefaultModal from "@components/common/modal/DefaultModal";
 
 const S = {
   Wrap: styled.div`
@@ -41,56 +46,166 @@ const S = {
     justify-content: center;
     margin: 24px 0px;
   `,
+  QrScanWrap: styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  `,
+  ScanTopSection: styled.div`
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 16px 16px 32px;
+
+    .close-icon-wrap {
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      right: 0px;
+      border-radius: 8px;
+      background-color: ${({ theme }) => theme.basic.whiteAlpha20};
+      margin-left: auto;
+    }
+
+    .please-scan-text {
+      width: 254px;
+      border-radius: 8px;
+      padding: 16px;
+      background-color: ${({ theme }) => theme.basic.whiteAlpha20};
+
+      ${({ theme }) => theme.textStyle.h5Bold}
+      color: #ffffff;
+      text-align: center;
+    }
+  `,
+  QrReaderWrap: styled.div`
+    flex: 1;
+    position: relative;
+
+    #reader {
+      width: 254px;
+      height: 254px;
+    }
+
+    #qr-shaded-region {
+      border-width: 4px !important;
+      border-color: rgba(0, 0, 0, 0) !important;
+
+      div {
+        background-color: #5899fb !important;
+      }
+    }
+  `,
+  RegistrationButtonWrap: styled.div`
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 32px 16px 24px 16px;
+
+    button {
+      width: 138px;
+      padding: 16px !important;
+    }
+  `,
 };
 
 function QRScannerPage() {
+  const router = useRouter();
   const [step, setStep] = useState("first");
 
-  const [scanResult, setScanResult] = useState(null);
+  const [qrCodeScanner, setQRCodeScanner] = useState(null);
 
-  //   const onScanSuccess = useCallback((decodedText, decodedResult) => {
-  //     // Handle on success condition with the decoded text or result.
-  //     console.log(`Scan result: ${decodedText}`, decodedResult);
-  //   }, []);
+  const [modalOpen, setModalOpen] = useState({
+    open: false,
+    type: "",
+    title: "",
+    description: "",
+    btnType: "",
+    afterFn: null,
+  });
 
-  //   const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-  //   html5QrcodeScanner.render(onScanSuccess);
+  useEffect(() => {
+    if (!!router.query.step) {
+      setStep("qrCode");
+    }
+  }, [router.query]);
 
   useEffect(() => {
     if (step === "qrCode") {
-      const scanner = new Html5QrcodeScanner("reader", {
+      const scanner = new Html5Qrcode("reader");
+      setQRCodeScanner(scanner);
+
+      const config = {
         fps: 10,
-        qrbox: 250,
-      });
-
-      const success = (result) => {
-        scanner.clear();
-        setScanResult(result);
+        qrbox: { width: 243, height: 243 },
+        rememberLastUsedCamera: true,
+        disableFlip: true,
+        aspectRatio: 1,
+        facingMode: { exact: "environment" }, // 카메라 방향 (environment : 후면카메라, user : 전면카메라)
+        focusMode: "continuous", // 포커스모드 (continuous : 지속 포커스)
+        showTorchButtonIfSupported: true,
+        useBarCodeDetectorIfSupported: true,
+        showZoomSliderIfSupported: true,
+        defaultZoomValueIfSupported: 2,
       };
 
-      const error = (err) => {
-        console.log(err);
-      };
-
-      scanner.render(success, error);
-      // scanner.render(onScanSuccess);
-
-      // function onScanSuccess(decodedText, decodedResult) {
-      //   // Handle on success condition with the decoded text or result.
-      //   console.log(`Scan result: ${decodedText}`, decodedResult);
-      // }
+      scanner.start(
+        { facingMode: "environment" },
+        config,
+        (result) => {
+          if (result === userInfo?.planter.serial_number) {
+            setModalOpen({
+              open: true,
+              type: "success",
+              title: "QR코드가 정상적으로\n인식되었습니다.",
+              description: "메인화면으로 이동합니다.",
+              btnType: "one",
+              afterFn: () => {
+                registerPlanterMutate({
+                  data: {
+                    serial_number: result,
+                  },
+                });
+              },
+            });
+            scanner.stop();
+            scanner.clear();
+          } else {
+            setModalOpen({
+              open: true,
+              type: "error",
+              title: "QR코드가 인식불가",
+              description: "다시 시도해주세요.",
+              btnType: "one",
+              afterFn: null,
+            });
+          }
+        },
+        () => {},
+      );
     }
   }, [step]);
 
-  // function onScanSuccess(decodedText, decodedResult) {
-  //   // Handle on success condition with the decoded text or result.
-  //   console.log(`Scan result: ${decodedText}`, decodedResult);
-  // }
-
-  // var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-  // html5QrcodeScanner.render(onScanSuccess);
-
-  console.log(scanResult);
+  // 카메라 종료
+  const cameraClose = useCallback(() => {
+    if (qrCodeScanner) {
+      qrCodeScanner.stop();
+      qrCodeScanner.clear();
+    }
+  }, [qrCodeScanner]);
 
   // 유저 정보 API
   const { data: userInfo } = useUserInfo({
@@ -99,6 +214,16 @@ function QRScannerPage() {
       // userLogout(router, clearQueries);
     },
   });
+
+  // 파종기 등록 API
+  const { mutate: registerPlanterMutate } = useRegisterPlanter(
+    () => {
+      router.push("/");
+    },
+    (error) => {
+      alert(error);
+    },
+  );
 
   return (
     <>
@@ -123,15 +248,37 @@ function QRScannerPage() {
           </S.Wrap>
         </MainLayout>
       )}
-      {/* {step === "qrCode" && <div style={{ width: "500px" }} id="reader"></div>} */}
-      {step === "qrCode" &&
-        (scanResult ? (
-          <div>
-            Success : <a href={"http://" + scanResult}>{scanResult}</a>
-          </div>
-        ) : (
-          <div style={{ width: "500px" }} id="reader"></div>
-        ))}
+      {step === "qrCode" && (
+        <MainLayout backgroundColor="#272727">
+          <S.QrScanWrap>
+            <S.ScanTopSection>
+              <div
+                className="close-icon-wrap"
+                onClick={() => {
+                  setStep("first");
+                  cameraClose();
+                }}>
+                <CloseIcon />
+              </div>
+              <div className="please-scan-text">QR코드를 인식해주세요.</div>
+            </S.ScanTopSection>
+            <S.QrReaderWrap>
+              <div id="reader" />
+            </S.QrReaderWrap>
+            <S.RegistrationButtonWrap>
+              <FontSmallDefaultButton
+                text={"직접 등록"}
+                onClick={() => {
+                  router.push("registration");
+                  cameraClose();
+                }}
+                customStyle={greyButtonColor}
+              />
+            </S.RegistrationButtonWrap>
+          </S.QrScanWrap>
+          <DefaultModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+        </MainLayout>
+      )}
     </>
   );
 }
