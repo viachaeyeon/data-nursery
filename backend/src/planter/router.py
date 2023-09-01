@@ -4,12 +4,13 @@ from sqlalchemy.orm import Session, joinedload, aliased
 from starlette.responses import JSONResponse
 
 from datetime import datetime
-from pytz import timezone
+from pytz import timezone, utc
 
 # import pytz
 
 import src.planter.models as models
 import src.planter.schemas as schemas
+import src.crops.models as cropModels
 from utils.database import get_db
 from utils.db_shortcuts import get_, create_, get_current_user
 
@@ -737,3 +738,75 @@ def update_planter_work_info(
     db.refresh(request_planter_work)
 
     return JSONResponse(status_code=200, content=dict(msg="UPDATE_SUCCESS"))
+
+
+@router.get("/today/dashboard", status_code=200)
+def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user("01", request.cookies, db)
+    user_planter = user.user_farm_house.farm_house_planter
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+    last_plant_work_status_done_subquery = (
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.id).label("last_pws_id"),
+        )
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    base_query = (
+        db.query(pw)
+        .join(
+            last_plant_work_status_done_subquery,
+            last_plant_work_status_done_subquery.c.planter_work_id == pw.id,
+        )
+        .join(
+            pws,
+            (
+                pws.planter_work_id
+                == last_plant_work_status_done_subquery.c.planter_work_id
+            )
+            & (pws.id == last_plant_work_status_done_subquery.c.last_pws_id),
+        )
+        .filter(
+            pw.is_del == False,
+            pw.planter_id == user_planter.id,
+            pws.status == "DONE",
+            func.Date(pws.created_at) == datetime.now(tz=utc).date(),
+        )
+    )
+
+    today_total_seed_quantity = base_query.with_entities(
+        func.sum(pw.seed_quantity)
+    ).scalar()
+
+    today_best_crop_kind = (
+        base_query.with_entities(pw.crop_kind, func.sum(pw.seed_quantity))
+        .group_by(pw.crop_kind)
+        .order_by(func.sum(pw.seed_quantity).desc())
+        .first()
+    )
+
+    today_best_crop_kind_result = None
+
+    if today_best_crop_kind is not None:
+        today_best_crop_kind_result = {
+            "crop_kind": today_best_crop_kind[0],
+            "total_seed_quantity": today_best_crop_kind[1],
+        }
+
+    today_planter_usage = base_query.with_entities(
+        func.count(pw.id), func.sum(pw.operating_time)
+    ).first()
+
+    return {
+        "today_total_seed_quantity": today_total_seed_quantity,
+        "today_best_crop_kind": today_best_crop_kind_result,
+        "today_planter_usage": {
+            "working_times": today_planter_usage[0],
+            "time": today_planter_usage[1],
+        },
+    }
