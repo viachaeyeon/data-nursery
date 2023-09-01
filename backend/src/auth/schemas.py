@@ -54,13 +54,9 @@ class FarmHouse(FarmHouseBase):
 
 class FarmHouseUpdate(BaseModel):
     id: int
-    # name: str | None = None
     name: Optional[str] = None
-    # producer_name: str | None = None
     producer_name: Optional[str] = None
-    # phone: str | None = None
     phone: Optional[str] = None
-    # address: str | None = None
     address: Optional[str] = None
 
 

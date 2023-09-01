@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
+from sqlalchemy.orm import Session, joinedload, aliased
 from starlette.responses import JSONResponse
 
 from datetime import datetime
+from pytz import timezone, utc
+
+# import pytz
 
 import src.planter.models as models
 import src.planter.schemas as schemas
+import src.crops.models as cropModels
 from utils.database import get_db
 from utils.db_shortcuts import get_, create_, get_current_user
 
@@ -297,3 +302,511 @@ def create_planter_work(
     db.refresh(new_work)
     db.refresh(new_work_status)
     return JSONResponse(status_code=201, content=dict(msg="CREATED_WORK"))
+
+
+@router.get(
+    "/work/working/list/{serial_number}",
+    status_code=200,
+    description="파종기 작업 중 작업중인 목록(WORKING, PAUSE 상태)을 불러올때 사용",
+)
+def planter_work_working_pause_list(
+    request: Request, serial_number: str, db: Session = Depends(get_db)
+):
+    user = get_current_user("01", request.cookies, db)
+
+    planter = user.user_farm_house.farm_house_planter
+    # 유저에 등록된 시리얼번호와 일치하는지 확인
+    if planter.serial_number != serial_number:
+        return JSONResponse(status_code=400, content=dict(msg="NOT_MATCHED_PLANTER"))
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    recent_status_subquery = (
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.id).label("last_pws_id"),
+            # func.max(pws.created_at).label("max_created_at"),
+        )
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    planter_works_with_recent_working_or_pause_status = (
+        db.query(pw)
+        .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
+            & (pws.id == recent_status_subquery.c.last_pws_id),
+            # & (pws.created_at == recent_status_subquery.c.max_created_at),
+        )
+        .filter(
+            pw.is_del == False,
+            pw.planter_id == planter.id,
+            pws.status.in_(["WORKING", "PAUSE"]),
+        )
+        .order_by(pw.created_at.desc())
+    ).first()
+
+    if not planter_works_with_recent_working_or_pause_status:
+        return None
+
+    planter_work_output = (
+        planter_works_with_recent_working_or_pause_status.planter_works__planter_output
+    )
+    return {
+        "id": planter_works_with_recent_working_or_pause_status.id,
+        "crop_img": planter_works_with_recent_working_or_pause_status.planter_work__crop.image,
+        "crop_kind": planter_works_with_recent_working_or_pause_status.crop_kind,
+        "planter_work_output": planter_work_output.output
+        if planter_work_output is not None
+        else 0,
+        "tray_total": planter_works_with_recent_working_or_pause_status.planter_work__planter_tray.total,
+    }
+
+
+@router.get(
+    "/work/wait/list/{serial_number}",
+    status_code=200,
+    description="파종기 작업 중 대기중인 목록(WAIT 상태)을 불러올때 사용",
+)
+def planter_work_wait_list(
+    request: Request,
+    serial_number: str,
+    page: int = 1,
+    size: int = 8,
+    db: Session = Depends(get_db),
+):
+    user = get_current_user("01", request.cookies, db)
+    planter = user.user_farm_house.farm_house_planter
+    if planter.serial_number != serial_number:
+        return JSONResponse(status_code=400, content=dict(msg="NOT_MATCHED_PLANTER"))
+
+    if page - 1 < 0:
+        page = 0
+    else:
+        page -= 1
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    recent_status_subquery = (
+        db.query(pws.planter_work_id, func.max(pws.id).label("last_pws_id"))
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    planter_works_with_recent_wait_status = (
+        db.query(pw)
+        .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
+            & (pws.id == recent_status_subquery.c.last_pws_id),
+        )
+        .filter(pw.is_del == False, pw.planter_id == planter.id, pws.status == "WAIT")
+        .order_by(pw.created_at.desc())
+    )
+
+    total = planter_works_with_recent_wait_status.count()
+
+    result_data = []
+    for planter_work in (
+        planter_works_with_recent_wait_status.offset(page * size).limit(size).all()
+    ):
+        result_data.append(
+            {
+                "id": planter_work.id,
+                "crop_name": planter_work.planter_work__crop.name,
+                "crop_kine": planter_work.crop_kind,
+                "seed_quantity": planter_work.seed_quantity,
+                "tray_total": planter_work.planter_work__planter_tray.total,
+            }
+        )
+
+    return {"total": total, "planter_works": result_data}
+
+
+@router.get(
+    "/work/done/list/{serial_number}/{year}/{month}/{date}",
+    status_code=200,
+    description="파종기 작업 중 특정 날짜의 완료된 목록(DONE 상태)을 불러올때 사용<br/>year: 2023, month: 8, date: 31",
+)
+def planter_work_done_datetime_list(
+    request: Request,
+    serial_number: str,
+    year: int,
+    month: int,
+    date: int,
+    page: int = 1,
+    size: int = 8,
+    db: Session = Depends(get_db),
+):
+    user = get_current_user("01", request.cookies, db)
+    planter = user.user_farm_house.farm_house_planter
+    if planter.serial_number != serial_number:
+        return JSONResponse(status_code=400, content=dict(msg="NOT_MATCHED_PLANTER"))
+
+    if page - 1 < 0:
+        page = 0
+    else:
+        page -= 1
+
+    target_timezone = timezone("Asia/Seoul")
+    target_date = datetime(year, month, date, tzinfo=target_timezone).date()
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    recent_status_subquery = (
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.id).label("last_pws_id"),
+        )
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    planter_works_with_recent_done_status = (
+        db.query(pw)
+        .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
+            & (pws.id == recent_status_subquery.c.last_pws_id),
+        )
+        .filter(
+            pw.is_del == False,
+            pw.planter_id == planter.id,
+            pws.status == "DONE",
+            # cast(func.timezone("Asia/Seoul", pw.created_at), Date) == target_date,
+            func.Date(func.timezone("Asia/Seoul", pw.created_at)) == target_date,
+        )
+        .order_by(pw.created_at.desc())
+    )
+
+    total = planter_works_with_recent_done_status.count()
+    total_seed_quantity = 0
+    for planter_work in planter_works_with_recent_done_status.all():
+        total_seed_quantity += planter_work.seed_quantity
+
+    result_data = []
+    for planter_work in (
+        planter_works_with_recent_done_status.offset(page * size).limit(size).all()
+    ):
+        result_data.append(
+            {
+                "id": planter_work.id,
+                "crop_name": planter_work.planter_work__crop.name,
+                "crop_kine": planter_work.crop_kind,
+                "seed_quantity": planter_work.seed_quantity,
+                "tray_total": planter_work.planter_work__planter_tray.total,
+            }
+        )
+
+    return {
+        "total": total,
+        "total_seed_quantity": total_seed_quantity,
+        "planter_works": result_data,
+    }
+
+
+@router.patch(
+    "/work/status/update/{planter_work_id}",
+    status_code=200,
+    description="파종기 작업 상태 변경 시 사용<br/>WAIT: 대기중, WORKING: 작업중, DONE: 완료, PAUSE: 일시정지",
+)
+def update_planter_work_status(
+    request: Request, planter_work_id: int, status: str, db: Session = Depends(get_db)
+):
+    user = get_current_user("01", request.cookies, db)
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    request_planter_work = get_(db, pw, id=planter_work_id)
+    if not request_planter_work:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NOT_FOUND_PLANT_WORK"),
+        )
+    request_planter = request_planter_work.planter_work__planter
+
+    # 유저에 등록된 파종기 시리얼넘버와 요청한 Planter_work_id의 파종기 시리얼넘버 비교
+    if (
+        user.user_farm_house.farm_house_planter.serial_number
+        != request_planter.serial_number
+    ):
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NO_MATCH_PLANTER_WORK_WITH_ENROLLED_PLANTER"),
+        )
+
+    last_planter_work_status = (
+        db.query(pws)
+        .filter(
+            pws.is_del == False,
+            pws.planter_work_id == planter_work_id,
+        )
+        .order_by(pws.created_at.desc())
+        .first()
+    )
+
+    # 작업상태를 WORKING으로 변경
+    if status == "WORKING":
+        # 현재 상태가 WAIT일 경우
+        if last_planter_work_status.status == "WAIT":
+            last_planter_work_status_subquery = (
+                db.query(pws.planter_work_id, func.max(pws.id).label("last_pwd_id"))
+                .filter(pws.is_del == False)
+                .group_by(pws.planter_work_id)
+                .subquery()
+            )
+
+            check_working_puase_planter_work = (
+                db.query(pw)
+                .join(
+                    last_planter_work_status_subquery,
+                    last_planter_work_status_subquery.c.planter_work_id == pw.id,
+                )
+                .join(
+                    pws,
+                    (
+                        pws.planter_work_id
+                        == last_planter_work_status_subquery.c.planter_work_id
+                    )
+                    & (pws.id == last_planter_work_status_subquery.c.last_pwd_id),
+                )
+                .filter(
+                    pw.is_del == False,
+                    pw.planter_id == request_planter.id,
+                    pws.status.in_(["WORKING", "PAUSE"]),
+                )
+                .order_by(pw.created_at.desc())
+                .all()
+            )
+
+            # 현재 Planter의 PlanterWork 중 PlanterWorkStatus가 WORKING, PAUSE상태가 아니라면 WORKING으로 변경
+            if not check_working_puase_planter_work:
+                new_planter_work_status = create_(
+                    db,
+                    models.PlanterWorkStatus,
+                    planter_work_id=planter_work_id,
+                    status="WORKING",
+                )
+                db.add(new_planter_work_status)
+                db.commit()
+                db.refresh(new_planter_work_status)
+                return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+            # 이미 Planter에 등록된 PlanterWork 중 WORKING 또는 PAUSE 상태인 작업이 있어 오류 리턴
+            else:
+                return JSONResponse(
+                    status_code=400, content=dict(msg="ALEADY_WORKING_PLANTER")
+                )
+
+        # 현재 상태가 PAUSE일 경우 : WORKING으로 변경
+        elif last_planter_work_status.status == "PAUSE":
+            new_planter_work_status = create_(
+                db,
+                models.PlanterWorkStatus,
+                planter_work_id=planter_work_id,
+                status="WORKING",
+            )
+            db.add(new_planter_work_status)
+            db.commit()
+            db.refresh(new_planter_work_status)
+            return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+        # 현재 상태가 DONE, WOKRING일 경우 : 오류 리턴
+        else:
+            return JSONResponse(
+                status_code=400, content=dict(msg="ALEADY_DONE_OR_WOKRING")
+            )
+    # 현재 PlanterWorkStatus의 상태가 WORKING일 경우에만 동작
+    elif status == "PAUSE":
+        if last_planter_work_status.status == "WORKING":
+            new_planter_work_status = create_(
+                db,
+                models.PlanterWorkStatus,
+                planter_work_id=planter_work_id,
+                status="PAUSE",
+            )
+            db.add(new_planter_work_status)
+            db.commit()
+            db.refresh(new_planter_work_status)
+            return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+        else:
+            return JSONResponse(
+                status_code=400, content=dict(msg="NOT_CHANGE_TO_PAUSE")
+            )
+    # 현재 상태가 WORKING, PAUSE 일 경우에만 동작
+    elif status == "DONE":
+        if (
+            last_planter_work_status.status == "WORKING"
+            or last_planter_work_status.status == "PAUSE"
+        ):
+            new_planter_work_status = create_(
+                db,
+                models.PlanterWorkStatus,
+                planter_work_id=planter_work_id,
+                status="DONE",
+            )
+            db.add(new_planter_work_status)
+            db.commit()
+            db.refresh(new_planter_work_status)
+            return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+        else:
+            return JSONResponse(status_code=422, content=dict(msg="NOT_CHANGE_TO_DONE"))
+    else:
+        return JSONResponse(status_code=422, content=dict(msg="INVALID_REQUEST_VALUE"))
+
+
+@router.get(
+    "/work/info/{planter_work_id}",
+    status_code=200,
+    response_model=schemas.PlanterWorkResponse,
+)
+def get_planter_work_info(
+    request: Request, planter_work_id: int, db: Session = Depends(get_db)
+):
+    user = get_current_user("01", request.cookies, db)
+    user_planter = user.user_farm_house.farm_house_planter
+    request_planter_work = get_(db, models.PlanterWork, id=planter_work_id)
+    if not request_planter_work:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NOT_FOUND_PLANT_WORK"),
+        )
+    request_planter = request_planter_work.planter_work__planter
+
+    if user_planter.serial_number != request_planter.serial_number:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NO_MATCH_PLANTER_WORK_WITH_ENROLLED_PLANTER"),
+        )
+
+    last_planter_work_status = (
+        db.query(models.PlanterWorkStatus)
+        .filter(
+            models.PlanterWorkStatus.is_del == False, planter_work_id == planter_work_id
+        )
+        .order_by(models.PlanterWorkStatus.created_at.desc())
+        .first()
+    )
+
+    return {
+        "crop": request_planter_work.planter_work__crop,
+        "planter_work_status": last_planter_work_status,
+        "planter_tray": request_planter_work.planter_work__planter_tray,
+        "planter_work": request_planter_work,
+    }
+
+
+@router.patch(
+    "/work/info/update/{planter_work_id}",
+    status_code=200,
+)
+def update_planter_work_info(
+    request: Request,
+    planter_work_id: int,
+    planter_work_data: schemas.PlanterWorkUpdate,
+    db: Session = Depends(get_db),
+):
+    user = get_current_user("01", request.cookies, db)
+    user_planter = user.user_farm_house.farm_house_planter
+    request_planter_work = get_(db, models.PlanterWork, id=planter_work_id)
+    if not request_planter_work:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NOT_FOUND_PLANT_WORK"),
+        )
+    request_planter = request_planter_work.planter_work__planter
+
+    if user_planter.serial_number != request_planter.serial_number:
+        return JSONResponse(
+            status_code=404,
+            content=dict(msg="NO_MATCH_PLANTER_WORK_WITH_ENROLLED_PLANTER"),
+        )
+
+    for field in planter_work_data.__dict__:
+        if getattr(planter_work_data, field) is not None:
+            setattr(request_planter_work, field, getattr(planter_work_data, field))
+
+    db.commit()
+    db.refresh(request_planter_work)
+
+    return JSONResponse(status_code=200, content=dict(msg="UPDATE_SUCCESS"))
+
+
+@router.get("/today/dashboard", status_code=200)
+def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user("01", request.cookies, db)
+    user_planter = user.user_farm_house.farm_house_planter
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+    last_plant_work_status_done_subquery = (
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.id).label("last_pws_id"),
+        )
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    base_query = (
+        db.query(pw)
+        .join(
+            last_plant_work_status_done_subquery,
+            last_plant_work_status_done_subquery.c.planter_work_id == pw.id,
+        )
+        .join(
+            pws,
+            (
+                pws.planter_work_id
+                == last_plant_work_status_done_subquery.c.planter_work_id
+            )
+            & (pws.id == last_plant_work_status_done_subquery.c.last_pws_id),
+        )
+        .filter(
+            pw.is_del == False,
+            pw.planter_id == user_planter.id,
+            pws.status == "DONE",
+            func.Date(pws.created_at) == datetime.now(tz=utc).date(),
+        )
+    )
+
+    today_total_seed_quantity = base_query.with_entities(
+        func.sum(pw.seed_quantity)
+    ).scalar()
+
+    today_best_crop_kind = (
+        base_query.with_entities(pw.crop_kind, func.sum(pw.seed_quantity))
+        .group_by(pw.crop_kind)
+        .order_by(func.sum(pw.seed_quantity).desc())
+        .first()
+    )
+
+    today_best_crop_kind_result = None
+
+    if today_best_crop_kind is not None:
+        today_best_crop_kind_result = {
+            "crop_kind": today_best_crop_kind[0],
+            "total_seed_quantity": today_best_crop_kind[1],
+        }
+
+    today_planter_usage = base_query.with_entities(
+        func.count(pw.id), func.sum(pw.operating_time)
+    ).first()
+
+    return {
+        "today_total_seed_quantity": today_total_seed_quantity,
+        "today_best_crop_kind": today_best_crop_kind_result,
+        "today_planter_usage": {
+            "working_times": today_planter_usage[0],
+            "time": today_planter_usage[1],
+        },
+    }
