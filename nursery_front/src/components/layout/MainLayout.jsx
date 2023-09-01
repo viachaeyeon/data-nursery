@@ -92,7 +92,7 @@ const S = {
     position: relative;
     width: 100%;
     height: 100%;
-    background-color: #ffffff;
+    background-color: ${(props) => (props.backgroundColor === "#272727" ? "#272727" : "#ffffff")};
 
     .main-page-name {
       padding: 16px 24px 0px 24px;
@@ -235,7 +235,7 @@ function MainLayout({
           <p className="logo-text">Data Nursery</p>
         </S.WebText>
         <S.MainLayout>
-          <S.MainContent height={mainContentHeight}>
+          <S.MainContent height={mainContentHeight} backgroundColor={backgroundColor}>
             {pageName === "main" && (
               <S.PageNameWrap className="main-page-name" backgroundColor={backgroundColor}>
                 <div className="text-wrap">

@@ -116,7 +116,17 @@ function RegistrationPage() {
   );
 
   return (
-    <MainLayout pageName={"파종기 등록"}>
+    <MainLayout
+      pageName={"파종기 등록"}
+      backIconClickFn={() => {
+        router.push(
+          {
+            pathname: "/QR-scanner",
+            query: { step: "qrCode" },
+          },
+          "/QR-scanner",
+        );
+      }}>
       <S.Wrap>
         <p className="description-text">파종기 시리얼 번호를{"\n"}입력해주세요</p>
         <S.InputWrap>

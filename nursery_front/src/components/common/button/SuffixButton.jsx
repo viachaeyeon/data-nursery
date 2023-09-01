@@ -10,9 +10,9 @@ const S = {
     height: 56px;
     padding: 16px 8px 16px 16px !important;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
 
     border-radius: 8px !important;
 
