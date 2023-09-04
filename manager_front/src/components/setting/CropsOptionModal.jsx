@@ -9,7 +9,8 @@ const S = {
     display: flex;
     justify-content: end;
     position: absolute;
-    right: 30px;
+    /* right: 30px; */
+    left: 820px;
 
     .wrap-inner {
       align-items: center;
@@ -64,22 +65,27 @@ const S = {
   `,
 };
 
-function ManagerOptionModal({
+function CropsOptionModal({
   optionModalOpen,
   setOptionModalOpen,
-  setEditManagerModalOpen,
-  deleteManagerModalOpen,
-  setDeleteManagerModalOpen,
+  deleteCropsModalOpen,
+  setDeleteCropsModalOpen,
+  setEditCropsModalOpen,
+  deleteCropsImgModalOpen,
+  setDeleteCropsImgModalOpen,
+  // setEditTrayModalOpen,
+  // deleteTrayModalOpen,
+  // setDeleteTrayModalOpen,
 }) {
-  // 관리자 수정
+  // 수정
   const handelEditClick = useCallback(() => {
-    setEditManagerModalOpen({ open: true, data: optionModalOpen });
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    setEditCropsModalOpen({ open: true, data: optionModalOpen });
   }, []);
 
   //삭제
   const handleDeleteClick = useCallback(() => {
-    setDeleteManagerModalOpen({ open: true, data: deleteManagerModalOpen });
+    setDeleteCropsModalOpen({ open: true, data: deleteCropsModalOpen });
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
   });
 
@@ -92,17 +98,15 @@ function ManagerOptionModal({
           </div>
           <p>수정</p>
         </div>
-        {optionModalOpen.data.member_type === "second" && (
-          <div className="line" onClick={handleDeleteClick}>
-            <div className="icon">
-              <DeleteIcon width={16} height={16} />
-            </div>
-            <p>삭제</p>
+        <div className="line" onClick={handleDeleteClick}>
+          <div className="icon">
+            <DeleteIcon width={16} height={16} />
           </div>
-        )}
+          <p>삭제</p>
+        </div>
       </div>
     </S.Wrap>
   );
 }
 
-export default ManagerOptionModal;
+export default CropsOptionModal;

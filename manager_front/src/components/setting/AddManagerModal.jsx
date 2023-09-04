@@ -62,6 +62,7 @@ const S = {
       height: 52px;
       display: flex;
       border-radius: 8px;
+      margin-bottom: 8px;
 
       input {
         background-color: ${({ theme }) => theme.basic.lightSky};

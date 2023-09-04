@@ -133,8 +133,9 @@ function ManagementList() {
     useState({ open: false, data: undefined });
 
   //관리자 삭제모달 오픈
-  const [deleteManagerModalOpen,setDeleteManagerModalOpen] = useState({
-    open:false,data:undefined
+  const [deleteManagerModalOpen, setDeleteManagerModalOpen] = useState({
+    open: false,
+    data: undefined,
   });
 
   //관리자 모달 정보
@@ -235,7 +236,7 @@ function ManagementList() {
                   className="option-dot"
                   onClick={() => {
                     handleOptionModalClick(index, data);
-                    setDeleteManagerModalOpen({open:false,data:data})
+                    setDeleteManagerModalOpen({ open: false, data: data });
                   }}
                 >
                   <OptionDot width={32} height={32} />
@@ -301,12 +302,13 @@ function ManagementList() {
       )}
 
       {/* 관리자 삭제모달 */}
-      {deleteManagerModalOpen.open &&(
+      {deleteManagerModalOpen.open && (
         <div className="modal-wrap">
-          <ManagerDeleteModal setDeleteManagerModalOpen={setDeleteManagerModalOpen} />
+          <ManagerDeleteModal
+            setDeleteManagerModalOpen={setDeleteManagerModalOpen}
+          />
         </div>
       )}
-      
     </S.Wrap>
   );
 }
