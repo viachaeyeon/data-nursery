@@ -3,12 +3,13 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
-
 import os
 
+from utils.log_config import logger
 from src.auth import router as AuthRouter
 from src.crops import router as CropRouter
 from src.planter import router as PlanterRouter
+from src.planter.admin import router as PlanterAdminRouter
 from utils.exceptions import AuthenticationException
 from constant.cookie_set import (
     AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN,
@@ -69,6 +70,9 @@ app.mount(
 app.include_router(AuthRouter.router, prefix="/api/auth", tags=["auth"])
 app.include_router(CropRouter.router, prefix="/api/crop", tags=["crop"])
 app.include_router(PlanterRouter.router, prefix="/api/planter", tags=["planter"])
+app.include_router(
+    PlanterAdminRouter.router, prefix="/api/planter", tags=["admin/planter"]
+)
 
 # CORS 설정
 origins = dotenv_values(".env")["CORS_ORIGINS"].split(",")
@@ -98,9 +102,15 @@ app.add_middleware(
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
     response = Response("Internal server error", status_code=500)
+
     try:
         request.state.db = SessionLocal()
         response = await call_next(request)
+
+        logger.info(
+            f"Request: {request.method} - {request.url} / {response.status_code}"
+        )
+
     finally:
         request.state.db.close()
     return response
