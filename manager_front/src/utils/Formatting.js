@@ -33,3 +33,13 @@ export function CountPlusFormatting(number) {
     return formatter.format(number);
   }
 }
+
+//날짜 0000/00/00 형식으로
+export function YYYYMMDDSlash(dateString) {
+  const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+  const date = new Date(dateString);
+  return date
+    .toLocaleDateString(undefined, options)
+    .replace(/. /g, "/")
+    .slice(0, 10);
+}

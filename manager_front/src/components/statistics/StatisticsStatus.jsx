@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 
-import DatePicer from "./DatePicker";
+import DatePickerMain from "./DatePickerMain";
+import { YYYYMMDDSlash } from "@src/utils/Formatting";
 
 import { NumberCommaFormatting } from "@src/utils/Formatting";
 
@@ -12,12 +13,25 @@ import FinCheckIcon from "@images/statistics/fin-check-icon.svg";
 import WaitingIcon from "@images/statistics/waiting-icon.svg";
 import HeaderSelectArrowIcon from "@images/statistics/header-icon-arrow.svg";
 import SelectArrowIcon from "@images/statistics/icon-arrow.svg";
+import PickerIcon from "@images/statistics/date-picker-icon.svg";
 
 const S = {
   Wrap: styled.div`
     display: flex;
     flex-direction: column;
     gap: 40px;
+
+    .modal-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #00000040;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+    }
   `,
   InfoBlock: styled.div`
     background-color: #fff;
@@ -93,7 +107,6 @@ const S = {
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
     background-color: ${({ theme }) => theme.blackWhite.white};
     border-radius: 8px;
-    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
     height: 36px;
     display: flex;
     justify-content: center;
@@ -247,6 +260,23 @@ const S = {
       ${({ theme }) => theme.textStyle.h5Reguler}
     }
   `,
+  ClickPicker: styled.div`
+    padding: 6px 12px 6px 16px;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    border-radius: 8px;
+    background-color: ${({ theme }) => theme.blackWhite.white};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 248px;
+    height: 36px;
+    cursor: pointer;
+
+    p {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h7Reguler}
+    }
+  `,
 };
 
 function StatisticsStatus() {
@@ -255,6 +285,16 @@ function StatisticsStatus() {
   const [sowingCount, setSowingCount] = useState(true);
   const [sowingDate, setSowingDate] = useState(true);
   const [state, setState] = useState(true);
+
+  //달력 모달 오픈
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
+
+  const handlePickerClick = useCallback(() => {
+    setPickerOpen(true);
+  }, [pickerOpen]);
 
   //정렬 토글
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
@@ -370,7 +410,19 @@ function StatisticsStatus() {
                     </select>
                     <SelectArrowIcon width={24} height={24} />
                   </S.DropDown>
-                  <DatePicer />
+                  {startDate === null || endDate === null ? (
+                    <S.ClickPicker onClick={handlePickerClick}>
+                      <p>직접선택</p>
+                      <PickerIcon width={19} height={19} />
+                    </S.ClickPicker>
+                  ) : (
+                    <S.ClickPicker onClick={handlePickerClick}>
+                      <p>
+                        {YYYYMMDDSlash(startDate)} ~ {YYYYMMDDSlash(endDate)}
+                      </p>
+                      <PickerIcon width={19} height={19} />
+                    </S.ClickPicker>
+                  )}
                 </S.DateChooseWrap>
               )}
             </div>
@@ -401,11 +453,9 @@ function StatisticsStatus() {
             <div className="list-table-head">
               <p>NO</p>
               <S.HeaderDropDown>
-                <select className="select-style">
-                  <option value="farm-id">농가 ID</option>
-                </select>
                 <HeaderSelectArrowIcon width={20} height={20} />
               </S.HeaderDropDown>
+
               <S.HeaderDropDown>
                 <select className="select-style">
                   <option value="farm-name">농가명</option>
@@ -516,6 +566,18 @@ function StatisticsStatus() {
           </S.ButtonWrap>
         )}
       </S.ContentList>
+
+      {pickerOpen && (
+        <div className="modal-wrap">
+          <DatePickerMain
+            pickerOpen={pickerOpen}
+            setPickerOpen={setPickerOpen}
+            setDateRange={setDateRange}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </div>
+      )}
     </S.Wrap>
   );
 }
