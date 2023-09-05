@@ -15,9 +15,6 @@ const S = {
     padding: 6px 8px 6px 16px;
     gap: 10px;
 
-    .suffix-text {
-    }
-
     ${(props) =>
       props.readOnly
         ? css`

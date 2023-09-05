@@ -4,15 +4,21 @@ import { useRouter } from "next/router";
 import { Button } from "react-bootstrap";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
+import useCropList from "@hooks/queries/crop/useCropList";
+import useTrayList from "@hooks/queries/planter/useTrayList";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultInput from "@components/common/input/DefaultInput";
 import DefaultCalendar from "@components/common/calendar/DefaultCalendar";
+import SuffixInput from "@components/common/input/SuffixInput";
+import DefaultSelect from "@components/common/select/DefaultSelect";
+import DefaultSelectList from "@components/common/select/DefaultSelectList";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import { defaultButtonColor, disableButtonColor } from "@utils/ButtonColor";
 import CalendarIcon from "@images/work/calendar-icon.svg";
-import SuffixInput from "@components/common/input/SuffixInput";
+import OnRadioBtnIcon from "@images/common/on-radio-btn.svg";
+import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 
 const S = {
   Wrap: styled.div`
@@ -83,11 +89,11 @@ function WorkRegistrationPage() {
     crop_kind: "", // 품종
     sowing_date: new Date(), // 파종일
     deadline: new Date(), // 출하일
-    order_quantity: 0, // 주문수량
+    order_quantity: "", // 주문수량
     seed_quantity: 0, // 파종량
-    operating_time: 0,
-    planter_tray_id: 0, // 트레이
-    crop_id: 0, // 작물
+    operating_time: "",
+    planter_tray: "", // 트레이
+    crop: "", // 작물
   });
 
   // 캘린더
@@ -96,6 +102,12 @@ function WorkRegistrationPage() {
     date: new Date(),
     afterFn: null,
   });
+
+  // 작물 선택
+  const [isCropSelectOpen, setIsCropSelectOpen] = useState(false);
+
+  // 트레이 선택
+  const [isTraySelectOpen, setIsTraySelectOpen] = useState(false);
 
   // 날짜 옵션
   const options = {
@@ -156,6 +168,18 @@ function WorkRegistrationPage() {
     },
   });
 
+  // 작물 목록 API
+  const { data: cropList } = useCropList({
+    successFn: () => {},
+    errorFn: () => {},
+  });
+
+  // 트레이 목록 API
+  const { data: trayList } = useTrayList({
+    successFn: () => {},
+    errorFn: () => {},
+  });
+
   return (
     <MainLayout
       pageName={"작업 등록"}
@@ -200,12 +224,13 @@ function WorkRegistrationPage() {
             <div className="essential-category-icon" />
             <p className="category-text">작물</p>
           </div>
-          <DefaultInput
-            text={inputData.crop_id}
-            setText={(e) => {
-              handleInputChange("crop_id", e.target.value);
+          <DefaultSelect
+            isSelected={!!inputData.crop}
+            text={!!inputData.crop ? inputData.crop.name : "작물을 선택하세요"}
+            isSelectOpen={isCropSelectOpen}
+            onClick={() => {
+              setIsCropSelectOpen(!isCropSelectOpen);
             }}
-            placeholder={"작물을 선택하세요"}
           />
         </S.InputWrap>
         <S.InputWrap>
@@ -226,12 +251,13 @@ function WorkRegistrationPage() {
             <div className="essential-category-icon" />
             <p className="category-text">트레이</p>
           </div>
-          <DefaultInput
-            text={inputData.planter_tray_id}
-            setText={(e) => {
-              handleInputChange("planter_tray_id", e.target.value);
+          <DefaultSelect
+            isSelected={!!inputData.planter_tray}
+            text={!!inputData.planter_tray ? inputData.planter_tray.total : "트레이를 선택하세요"}
+            isSelectOpen={isTraySelectOpen}
+            onClick={() => {
+              setIsTraySelectOpen(!isTraySelectOpen);
             }}
-            placeholder={"트레이를 선택하세요"}
           />
         </S.InputWrap>
         <S.InputWrap>
@@ -256,6 +282,50 @@ function WorkRegistrationPage() {
           <SuffixInput text={inputData.seed_quantity} readOnly={true} suffix={"개"} />
         </S.InputWrap>
         <DefaultCalendar calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
+        {isCropSelectOpen && (
+          <DefaultSelectList>
+            <p className="select-category-text">작물선택</p>
+            <div className="value-list-wrap" id="scroll-wrap">
+              {cropList?.crops.map((crop) => {
+                return (
+                  <div
+                    key={crop.id}
+                    className={`row-layout ${inputData.crop?.id === crop.id && "selected-value"}`}
+                    onClick={() => {
+                      handleInputChange("crop", crop);
+                      setIsCropSelectOpen(false);
+                    }}>
+                    {inputData.crop?.id === crop.id && <OnRadioBtnIcon />}
+                    {inputData.crop?.id !== crop.id && <OffRadioBtnIcon />}
+                    <p className="value-text">{crop.name}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </DefaultSelectList>
+        )}
+        {isTraySelectOpen && (
+          <DefaultSelectList>
+            <p className="select-category-text">트레이 선택</p>
+            <div className="value-list-wrap" id="scroll-wrap">
+              {trayList?.planter_trays.map((tray) => {
+                return (
+                  <div
+                    key={tray.id}
+                    className={`row-layout ${inputData.planter_tray?.id === tray.id && "selected-value"}`}
+                    onClick={() => {
+                      handleInputChange("planter_tray", tray);
+                      setIsTraySelectOpen(false);
+                    }}>
+                    {inputData.planter_tray?.id === tray.id && <OnRadioBtnIcon />}
+                    {inputData.planter_tray?.id !== tray.id && <OffRadioBtnIcon />}
+                    <p className="value-text">{tray.total}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </DefaultSelectList>
+        )}
       </S.Wrap>
     </MainLayout>
   );
