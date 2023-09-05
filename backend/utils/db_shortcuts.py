@@ -17,6 +17,9 @@ def get_current_user(user_type: str, token: dict, db):
         login_id = validate_token(token[AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN])
         user = get_(db, User, login_id=login_id)
 
+        if not user:
+            raise AuthenticationException(name="INVALID_USER")
+
         if user.code != "01":
             raise AuthenticationException(name="INVALID_USER_TYPE")
 
@@ -26,11 +29,12 @@ def get_current_user(user_type: str, token: dict, db):
 
         login_id = validate_token(token[AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN])
         user = get_(db, User, login_id=login_id)
+
+        if not user:
+            raise AuthenticationException(name="INVALID_USER")
+
         if user.code != "99":
             raise AuthenticationException(name="INVALID_USER_TYPE")
-
-    if not user:
-        raise AuthenticationException(name="INVALID_USER")
 
     if user.is_del:
         raise AuthenticationException(name="DELETED_USER")
