@@ -1,17 +1,15 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case
-from starlette.responses import JSONResponse
 
-from datetime import datetime, date
+from datetime import date
 
 import src.auth.models as authModels
 import src.planter.models as planterModels
-import src.planter.schemas as planterSchemas
 import src.planter.admin.schemas as planterAdminSchemas
 import src.crops.models as cropModels
 from utils.database import get_db
-from utils.db_shortcuts import get_, create_, get_current_user
+from utils.db_shortcuts import get_current_user
 
 
 router = APIRouter()
@@ -81,47 +79,6 @@ def get_admin_dashboard_realtime_planter(
         .subquery()
     )
 
-    # planters_data = (
-    #     db.query(
-    #         planterModels.Planter.id,
-    #         authModels.FarmHouse.name.label("farm_house_name"),
-    #         planterModels.PlanterStatus.status.label("planter_status"),
-    #         func.sum(planterModels.PlanterOutput.output).label("planter_output"),
-    #     )
-    #     .join(
-    #         authModels.FarmHouse,
-    #         authModels.FarmHouse.id == planterModels.Planter.farm_house_id,
-    #     )
-    #     .join(
-    #         last_planter_status_subquery,
-    #         last_planter_status_subquery.c.planter_id == planterModels.Planter.id,
-    #     )
-    #     .join(
-    #         planterModels.PlanterStatus,
-    #         planterModels.PlanterStatus.id
-    #         == last_planter_status_subquery.c.last_status_id,
-    #     )
-    #     .join(
-    #         planterModels.PlanterWork,
-    #         planterModels.PlanterWork.planter_id == planterModels.Planter.id,
-    #     )
-    #     .join(
-    #         planterModels.PlanterOutput,
-    #         planterModels.PlanterOutput.planter_work_id == planterModels.PlanterWork.id,
-    #     )
-    #     .filter(
-    #         planterModels.Planter.is_del == False,
-    #         authModels.FarmHouse.is_del == False,
-    #         # planterModels.PlanterOutput.created_at >= date.today(),
-    #         planterModels.PlanterStatus.status.in_(["ON", "PAUSE", "OFF"]),
-    #     )
-    #     .group_by(
-    #         planterModels.Planter.id,
-    #         authModels.FarmHouse.name,
-    #         planterModels.PlanterStatus.status,
-    #     )
-    #     .all()
-    # )
     planters_data = (
         db.query(
             planterModels.Planter.id,
@@ -153,7 +110,7 @@ def get_admin_dashboard_realtime_planter(
         .filter(
             planterModels.Planter.is_del == False,
             authModels.FarmHouse.is_del == False,
-            # planterModels.PlanterOutput.created_at >= date.today(),
+            planterModels.PlanterOutput.created_at >= date.today(),
             # planterModels.PlanterStatus.status.in_(["ON", "PAUSE", "OFF"]),
         )
         .group_by(
@@ -171,7 +128,6 @@ def get_admin_dashboard_realtime_planter(
             ),
             planterModels.PlanterStatus.id.desc(),
         )
-        # .all()
     )
 
     total = planters_data.count()
