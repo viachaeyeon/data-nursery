@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// 파종기 등록
 export const registerPlanter = async (data) => {
   try {
     const res = await axios.post(
@@ -24,5 +25,17 @@ export const getTrayListAPI = async () => {
     return res.data;
   } catch (error) {
     throw new Error(error.response?.status || "트레이 목록을 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+// 작업 등록
+export const registerWorkAPI = async (data) => {
+  try {
+    const res = await axios.post(process.env.NEXT_PUBLIC_END_POINT + `/api/planter/work/create`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "작업을 등록하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };

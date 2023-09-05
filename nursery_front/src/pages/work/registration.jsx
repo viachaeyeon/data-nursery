@@ -2,10 +2,12 @@ import React, { useMemo, useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { Button } from "react-bootstrap";
+import { useRecoilState } from "recoil";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useCropList from "@hooks/queries/crop/useCropList";
 import useTrayList from "@hooks/queries/planter/useTrayList";
+import useRegisterWork from "@hooks/queries/planter/useRegisterWork";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultInput from "@components/common/input/DefaultInput";
@@ -14,11 +16,13 @@ import SuffixInput from "@components/common/input/SuffixInput";
 import DefaultSelect from "@components/common/select/DefaultSelect";
 import DefaultSelectList from "@components/common/select/DefaultSelectList";
 
+import { isDefaultAlertShowState } from "@states/isDefaultAlertShowState";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import { defaultButtonColor, disableButtonColor } from "@utils/ButtonColor";
 import CalendarIcon from "@images/work/calendar-icon.svg";
 import OnRadioBtnIcon from "@images/common/on-radio-btn.svg";
 import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
+import PointIcon from "@images/work/ico-point.svg";
 
 const S = {
   Wrap: styled.div`
@@ -27,7 +31,7 @@ const S = {
     gap: 24px;
     height: 100%;
     overflow-y: auto;
-    padding: 16px 24px;
+    padding: 16px 24px 29px 24px;
   `,
   InputWrap: styled.div`
     display: flex;
@@ -43,6 +47,11 @@ const S = {
 
     .category-text {
       ${({ theme }) => theme.textStyle.h6Bold}
+      color: ${({ theme }) => theme.basic.grey50};
+    }
+
+    .seed-quantity-description-text {
+      ${({ theme }) => theme.textStyle.h7Regular}
       color: ${({ theme }) => theme.basic.grey50};
     }
   `,
@@ -76,6 +85,7 @@ const S = {
 
 function WorkRegistrationPage() {
   const router = useRouter();
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
   // BottomButton 정보
   const [buttonSetting, setButtonSetting] = useState({
@@ -86,14 +96,12 @@ function WorkRegistrationPage() {
 
   // 입력값 정보
   const [inputData, setInputData] = useState({
-    crop_kind: "", // 품종
-    sowing_date: new Date(), // 파종일
-    // deadline: new Date(), // 출하일
+    cropKind: "", // 품종
+    sowingDate: new Date(), // 파종일
     deadline: new Date(new Date().setDate(new Date().getDate() + 45)), // 출하일
-    order_quantity: "", // 주문수량
-    seed_quantity: 0, // 파종량
-    operating_time: "",
-    planter_tray: "", // 트레이
+    orderQuantity: "", // 주문수량
+    seedQuantity: 0, // 파종량
+    planterTray: "", // 트레이
     crop: "", // 작물
   });
 
@@ -131,6 +139,7 @@ function WorkRegistrationPage() {
     return new Intl.DateTimeFormat("ko-KR", options).format(inputData.deadline).replaceAll(".", "/").split(" ");
   }, [inputData.deadline]);
 
+  // 입력값 변경
   const handleInputChange = useCallback(
     (name, value) => {
       setInputData((prev) => ({
@@ -141,6 +150,16 @@ function WorkRegistrationPage() {
     [inputData],
   );
 
+  // 파종량 계산
+  useEffect(() => {
+    if (!!inputData.planterTray && !!inputData.orderQuantity) {
+      handleInputChange("seedQuantity", inputData.planterTray.total * inputData.orderQuantity);
+    } else {
+      handleInputChange("seedQuantity", 0);
+    }
+  }, [inputData.planterTray, inputData.orderQuantity]);
+
+  // BottomButton 활성화 여부
   useEffect(() => {
     // 입력 값 중 빈값이 없을 경우
     if (!Object.values(inputData).includes("")) {
@@ -148,7 +167,17 @@ function WorkRegistrationPage() {
         color: defaultButtonColor,
         text: "등록완료",
         onClickEvent: () => {
-          alert("등록!");
+          registerWorkMutate({
+            data: {
+              crop_kind: inputData.cropKind,
+              sowing_date: inputData.sowingDate,
+              deadline: inputData.deadline,
+              order_quantity: inputData.orderQuantity,
+              seed_quantity: inputData.seedQuantity,
+              planter_tray_id: inputData.planterTray.id,
+              crop_id: inputData.crop.id,
+            },
+          });
         },
       });
     } else {
@@ -180,6 +209,27 @@ function WorkRegistrationPage() {
     successFn: () => {},
     errorFn: () => {},
   });
+
+  // 작업 등록 API
+  const { mutate: registerWorkMutate } = useRegisterWork(
+    () => {
+      router.push("/");
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 등록되었습니다.",
+        okClick: null,
+      });
+    },
+    (error) => {
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
+    },
+  );
 
   return (
     <MainLayout
@@ -240,9 +290,9 @@ function WorkRegistrationPage() {
             <p className="category-text">품종</p>
           </div>
           <DefaultInput
-            text={inputData.crop_kind}
+            text={inputData.cropKind}
             setText={(e) => {
-              handleInputChange("crop_kind", e.target.value);
+              handleInputChange("cropKind", e.target.value.replace(" ", ""));
             }}
             placeholder={"품종명을 입력하세요"}
           />
@@ -253,8 +303,8 @@ function WorkRegistrationPage() {
             <p className="category-text">트레이</p>
           </div>
           <DefaultSelect
-            isSelected={!!inputData.planter_tray}
-            text={!!inputData.planter_tray ? inputData.planter_tray.total : "트레이를 선택하세요"}
+            isSelected={!!inputData.planterTray}
+            text={!!inputData.planterTray ? inputData.planterTray.total : "트레이를 선택하세요"}
             isSelectOpen={isTraySelectOpen}
             onClick={() => {
               setIsTraySelectOpen(!isTraySelectOpen);
@@ -267,20 +317,21 @@ function WorkRegistrationPage() {
             <p className="category-text">주문수량</p>
           </div>
           <SuffixInput
-            text={inputData.order_quantity}
+            text={inputData.orderQuantity}
             setText={(e) => {
-              handleInputChange("order_quantity", e.target.value);
+              handleInputChange("orderQuantity", e.target.value.replace(/[^0-9]/g, ""));
             }}
             placeholder={"작업수량을 입력하세요"}
             suffix={"장"}
           />
         </S.InputWrap>
         <S.InputWrap>
+          <p className="category-text">파종량</p>
+          <SuffixInput text={inputData.seedQuantity} readOnly={true} suffix={"개"} />
           <div className="category-wrap">
-            <div className="essential-category-icon" />
-            <p className="category-text">파종량</p>
+            <PointIcon />
+            <p className="seed-quantity-description-text">자동계산되며, 실제파종량과 다를 수 있습니다.</p>
           </div>
-          <SuffixInput text={inputData.seed_quantity} readOnly={true} suffix={"개"} />
         </S.InputWrap>
         <DefaultCalendar calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         {isCropSelectOpen && (
@@ -313,13 +364,13 @@ function WorkRegistrationPage() {
                 return (
                   <div
                     key={tray.id}
-                    className={`row-layout ${inputData.planter_tray?.id === tray.id && "selected-value"}`}
+                    className={`row-layout ${inputData.planterTray?.id === tray.id && "selected-value"}`}
                     onClick={() => {
-                      handleInputChange("planter_tray", tray);
+                      handleInputChange("planterTray", tray);
                       setIsTraySelectOpen(false);
                     }}>
-                    {inputData.planter_tray?.id === tray.id && <OnRadioBtnIcon />}
-                    {inputData.planter_tray?.id !== tray.id && <OffRadioBtnIcon />}
+                    {inputData.planterTray?.id === tray.id && <OnRadioBtnIcon />}
+                    {inputData.planterTray?.id !== tray.id && <OffRadioBtnIcon />}
                     <p className="value-text">{tray.total}</p>
                   </div>
                 );
