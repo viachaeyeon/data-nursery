@@ -182,17 +182,8 @@ const S = {
       border-radius: 50%;
     }
 
-    .react-datepicker__day--keyboard-selected,
-    .react-datepicker__day--keyboard-selected:hover,
     .react-datepicker__day:hover {
       border-radius: 50%;
-    }
-
-    .react-datepicker__day--keyboard-selected {
-      background-color: #ffffff;
-    }
-    .react-datepicker__day--keyboard-selected:hover {
-      background-color: #f0f0f0;
     }
   `,
   Divider: styled.div`
@@ -204,7 +195,7 @@ const S = {
 };
 
 function DefaultCalendar({ calendarOpen, setCalendarOpen }) {
-  const [selectDate, setSelectDate] = useState(calendarOpen.date);
+  const [selectDate, setSelectDate] = useState("");
 
   const closeModal = useCallback(() => {
     setCalendarOpen({
@@ -226,10 +217,11 @@ function DefaultCalendar({ calendarOpen, setCalendarOpen }) {
           </S.CloseHeader>
           <S.CustomCalendar>
             <DatePicker
-              selected={selectDate}
+              selected={selectDate === "" ? calendarOpen.date : selectDate}
               onChange={(date) => setSelectDate(date)}
               locale={ko}
               inline
+              disabledKeyboardNavigation //다른달에도 해당일자에 색표시되는거 제거
               renderCustomHeader={({ monthDate, decreaseMonth, increaseMonth }) => (
                 <div className="customer-calendar-header">
                   <button

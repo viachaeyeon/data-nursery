@@ -236,7 +236,7 @@ function MainLayout({
   useEffect(() => {
     if (pageName === "main") {
       setMainContentHeight("calc(100% - 160px)");
-    } else if (pageName.includes("작업")) {
+    } else if (pageName?.includes("작업")) {
       setMainContentHeight("calc(100% - 162px)");
     } else if (!!pageName) {
       setMainContentHeight("calc(100% - 72px)");
@@ -280,7 +280,7 @@ function MainLayout({
               </S.PageNameWrap>
             )}
             <div className="content">{children}</div>
-            {pageName.includes("작업") && (
+            {pageName?.includes("작업") && (
               <S.BottomButtonWrap>
                 <DefaultButton
                   customStyle={buttonSetting.color}

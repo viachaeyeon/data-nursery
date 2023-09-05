@@ -88,7 +88,8 @@ function WorkRegistrationPage() {
   const [inputData, setInputData] = useState({
     crop_kind: "", // 품종
     sowing_date: new Date(), // 파종일
-    deadline: new Date(), // 출하일
+    // deadline: new Date(), // 출하일
+    deadline: new Date(new Date().setDate(new Date().getDate() + 45)), // 출하일
     order_quantity: "", // 주문수량
     seed_quantity: 0, // 파종량
     operating_time: "",
