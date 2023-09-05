@@ -9,6 +9,8 @@ import MoreIcon from "@images/common/more-icon.svg";
 import MyInfoIcon from "@images/common/my-info-icon.svg";
 import theme from "@src/styles/theme";
 import DefaultAlert from "@components/common/alert/DefaultAlert";
+import DefaultButton from "@components/common/button/DefaultButton";
+import { defaultButtonColor } from "@utils/ButtonColor";
 
 const S = {
   BackgroundWrap: styled.div`
@@ -181,6 +183,18 @@ const S = {
             }
           `}
   `,
+  BottomButtonWrap: styled.div`
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    position: sticky;
+    bottom: 0px;
+    background: #ffffff;
+    box-shadow: 0px -4px 10px 0px rgba(165, 166, 168, 0.16);
+    padding: 8px 24px;
+  `,
 };
 
 // pageName : 헤더에서 나타낼 페이지이름, 아무값도 넘겨주지 않으면 헤더 비활성화
@@ -188,6 +202,7 @@ const S = {
 // backIconClickFn : 뒤로가기 아이콘 클릭 시 실행되는 함수
 // isMoreIcon : 헤더에서 ... 표시 유무
 // backgroundColor : 헤더 배경 색상
+// buttonSetting : color은 표시할 버튼의 색(호버, 포커스 등 포함), text는 버튼에 표시될 값, onClickEvent는 버튼 클릭 시 실행될 함수
 function MainLayout({
   children,
   pageName,
@@ -195,6 +210,7 @@ function MainLayout({
   backIconClickFn,
   isMoreIcon = false,
   backgroundColor = "#ffffff",
+  buttonSetting = { color: defaultButtonColor, text: "", onClickEvent: null },
 }) {
   const router = useRouter();
 
@@ -220,6 +236,8 @@ function MainLayout({
   useEffect(() => {
     if (pageName === "main") {
       setMainContentHeight("calc(100% - 160px)");
+    } else if (pageName.includes("작업")) {
+      setMainContentHeight("calc(100% - 162px)");
     } else if (!!pageName) {
       setMainContentHeight("calc(100% - 72px)");
     } else {
@@ -262,6 +280,15 @@ function MainLayout({
               </S.PageNameWrap>
             )}
             <div className="content">{children}</div>
+            {pageName.includes("작업") && (
+              <S.BottomButtonWrap>
+                <DefaultButton
+                  customStyle={buttonSetting.color}
+                  text={buttonSetting.text}
+                  onClick={buttonSetting.onClickEvent}
+                />
+              </S.BottomButtonWrap>
+            )}
             {pageName === "main" && <BottomBar />}
             <DefaultAlert />
           </S.MainContent>

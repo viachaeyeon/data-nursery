@@ -22,7 +22,9 @@ const S = {
 
     color: ${(props) => props.fontColor} !important;
     background-color: ${(props) => props.backgroundColor} !important;
-    border: 2px solid ${(props) => props.borderColor} !important;
+    border-width: ${(props) => (props.fontColor === `#C2D6E1` ? "1px" : "2px")} !important;
+    border-style: solid !important;
+    border-color: ${(props) => props.borderColor} !important;
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
 
     cursor: ${(props) => (props.fontColor === `#C2D6E1` ? "auto" : "pointer")} !important;
@@ -49,7 +51,7 @@ function FontSmallDefaultButton({ type = "text", text, onClick, customStyle }) {
       focusBackgroundColor={customStyle.focusBackgroundColor}
       focusBorderColor={customStyle.focusBorderColor}
       fontColor={customStyle.fontColor}
-      onClick={customStyle.fontColor === "#DEDEDE" ? () => {} : onClick}>
+      onClick={customStyle.fontColor === "#C2D6E1" ? () => {} : onClick}>
       {type === "text" && text}
       {type === "pause" && <PauseIcon />}
       {type === "play" && <PlayIcon />}

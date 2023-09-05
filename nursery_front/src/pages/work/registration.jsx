@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { Button } from "react-bootstrap";
@@ -10,6 +10,7 @@ import DefaultInput from "@components/common/input/DefaultInput";
 import DefaultCalendar from "@components/common/calendar/DefaultCalendar";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
+import { defaultButtonColor, disableButtonColor } from "@utils/ButtonColor";
 import CalendarIcon from "@images/work/calendar-icon.svg";
 
 const S = {
@@ -69,10 +70,26 @@ const S = {
 function WorkRegistrationPage() {
   const router = useRouter();
 
-  const [inputData, setInputData] = useState({
-    deadline: new Date(),
+  // BottomButton 정보
+  const [buttonSetting, setButtonSetting] = useState({
+    color: disableButtonColor,
+    text: "등록완료",
+    onClickEvent: () => {},
   });
 
+  // 입력값 정보
+  const [inputData, setInputData] = useState({
+    crop_kind: "", // 품종
+    sowing_date: new Date(), // 파종일
+    deadline: new Date(), // 출하일
+    order_quantity: 0, // 주문수량
+    seed_quantity: 0, // 파종량
+    operating_time: 0,
+    planter_tray_id: 0, // 트레이
+    crop_id: 0, // 작물
+  });
+
+  // 캘린더
   const [calendarOpen, setCalendarOpen] = useState({
     open: false,
     date: new Date(),
@@ -110,6 +127,26 @@ function WorkRegistrationPage() {
     [inputData],
   );
 
+  useEffect(() => {
+    // 입력 값 중 빈값이 없을 경우
+    if (!Object.values(inputData).includes("")) {
+      setButtonSetting({
+        color: defaultButtonColor,
+        text: "등록완료",
+        onClickEvent: () => {
+          alert("등록!");
+        },
+      });
+    } else {
+      // 입력 값 중 빈값이 있을 경우
+      setButtonSetting({
+        color: disableButtonColor,
+        text: "등록완료",
+        onClickEvent: () => {},
+      });
+    }
+  }, [inputData]);
+
   // 유저 정보 API
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
@@ -123,7 +160,8 @@ function WorkRegistrationPage() {
       pageName={"작업 등록"}
       backIconClickFn={() => {
         router.push("/");
-      }}>
+      }}
+      buttonSetting={buttonSetting}>
       <S.Wrap>
         <S.InputWrap>
           <p className="category-text">육묘업 등록번호</p>
@@ -155,6 +193,65 @@ function WorkRegistrationPage() {
             {deadLineDate[0] + deadLineDate[1] + deadLineDate[2].replace("/", " ") + deadLineDate[3]}
             <CalendarIcon />
           </S.CustomCalendarButton>
+        </S.InputWrap>
+        <S.InputWrap>
+          <div className="category-wrap">
+            <div className="essential-category-icon" />
+            <p className="category-text">작물</p>
+          </div>
+          <DefaultInput
+            text={inputData.crop_id}
+            setText={(e) => {
+              handleInputChange("crop_id", e.target.value);
+            }}
+            placeholder={"작물을 선택하세요"}
+          />
+        </S.InputWrap>
+        <S.InputWrap>
+          <div className="category-wrap">
+            <div className="essential-category-icon" />
+            <p className="category-text">품종</p>
+          </div>
+          <DefaultInput
+            text={inputData.crop_kind}
+            setText={(e) => {
+              handleInputChange("crop_kind", e.target.value);
+            }}
+            placeholder={"품종명을 입력하세요"}
+          />
+        </S.InputWrap>
+        <S.InputWrap>
+          <div className="category-wrap">
+            <div className="essential-category-icon" />
+            <p className="category-text">트레이</p>
+          </div>
+          <DefaultInput
+            text={inputData.planter_tray_id}
+            setText={(e) => {
+              handleInputChange("planter_tray_id", e.target.value);
+            }}
+            placeholder={"트레이를 선택하세요"}
+          />
+        </S.InputWrap>
+        <S.InputWrap>
+          <div className="category-wrap">
+            <div className="essential-category-icon" />
+            <p className="category-text">주문수량</p>
+          </div>
+          <DefaultInput
+            text={inputData.order_quantity}
+            setText={(e) => {
+              handleInputChange("order_quantity", e.target.value);
+            }}
+            placeholder={"작업수량을 입력하세요"}
+          />
+        </S.InputWrap>
+        <S.InputWrap>
+          <div className="category-wrap">
+            <div className="essential-category-icon" />
+            <p className="category-text">파종량</p>
+          </div>
+          <DefaultInput text={inputData.seed_quantity} readOnly={true} />
         </S.InputWrap>
         <DefaultCalendar calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
       </S.Wrap>
