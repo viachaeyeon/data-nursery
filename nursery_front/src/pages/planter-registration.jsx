@@ -56,7 +56,7 @@ const S = {
   `,
 };
 
-function RegistrationPage() {
+function PlanterRegistrationPage() {
   const router = useRouter();
 
   const [serialNumber, setSerialNumber] = useState("");
@@ -158,4 +158,4 @@ export const getServerSideProps = requireAuthentication((context) => {
   return { props: {} };
 });
 
-export default RegistrationPage;
+export default PlanterRegistrationPage;

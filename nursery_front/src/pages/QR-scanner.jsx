@@ -259,7 +259,7 @@ function QRScannerPage() {
                   setStep("first");
                   cameraClose();
                 }}>
-                <CloseIcon />
+                <CloseIcon fill={"#ffffff"} />
               </div>
               <div className="please-scan-text">QR코드를 인식해주세요.</div>
             </S.ScanTopSection>
@@ -270,7 +270,7 @@ function QRScannerPage() {
               <FontSmallDefaultButton
                 text={"직접 등록"}
                 onClick={() => {
-                  router.push("registration");
+                  router.push("planter-registration");
                   cameraClose();
                 }}
                 customStyle={greyButtonColor}

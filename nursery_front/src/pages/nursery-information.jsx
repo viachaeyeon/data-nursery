@@ -9,6 +9,7 @@ import MainLayout from "@components/layout/MainLayout";
 import DefaultModal from "@components/common/modal/DefaultModal";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
+import DefaultInput from "@components/common/input/DefaultInput";
 
 const S = {
   Wrap: styled.div`
@@ -59,22 +60,6 @@ const S = {
     .title-text {
       color: ${({ theme }) => theme.basic.grey50};
     }
-
-    .value-box {
-      border: 1px solid ${({ theme }) => theme.basic.lightSky};
-      border-radius: 8px;
-      padding: 6px 8px 6px 16px;
-      height: 52px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-
-      p {
-        color: ${({ theme }) => theme.basic.grey60};
-      }
-    }
   `,
   LogoutButtonWrap: styled.div`
     display: flex;
@@ -87,9 +72,9 @@ const S = {
     height: 44px;
     padding: 12px 24px !important;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
     ${({ theme }) => theme.textStyle.h6Bold}
     border-radius: 8px !important;
@@ -134,39 +119,27 @@ function NurseryInfomationPage() {
         <S.InfoWrap>
           <S.InfoContent>
             <p className="title-text">파종기 S/N</p>
-            <div className="value-box">
-              <p>{userInfo?.planter.serial_number}</p>
-            </div>
+            <DefaultInput text={userInfo?.planter.serial_number} readOnly={true} />
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">농가 ID</p>
-            <div className="value-box">
-              <p>{userInfo?.farm_house.farm_house_id}</p>
-            </div>
+            <DefaultInput text={userInfo?.farm_house.farm_house_id} readOnly={true} />
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">육묘업 등록번호</p>
-            <div className="value-box">
-              <p>{userInfo?.farm_house.nursery_number}</p>
-            </div>
+            <DefaultInput text={userInfo?.farm_house.nursery_number} readOnly={true} />
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">주소</p>
-            <div className="value-box">
-              <p>{userInfo?.farm_house.address}</p>
-            </div>
+            <DefaultInput text={userInfo?.farm_house.address} readOnly={true} />
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">생산자명</p>
-            <div className="value-box">
-              <p>{userInfo?.farm_house.producer_name}</p>
-            </div>
+            <DefaultInput text={userInfo?.farm_house.producer_name} readOnly={true} />
           </S.InfoContent>
           <S.InfoContent>
             <p className="title-text">연락처</p>
-            <div className="value-box">
-              <p>{userInfo?.farm_house.phone}</p>
-            </div>
+            <DefaultInput text={userInfo?.farm_house.phone} readOnly={true} />
           </S.InfoContent>
           <S.LogoutButtonWrap>
             <S.LogoutButton
