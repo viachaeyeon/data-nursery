@@ -233,7 +233,7 @@ function QRScannerPage() {
           <S.Wrap>
             <p className="welcome-text">환영합니다.</p>
             <p className="description-text">
-              {userInfo?.farm_house.name}님의{"\n"}생산량 관리를 시작해볼까요?{"\n"}
+              DataNursery님의{"\n"}생산량 관리를 시작해볼까요?{"\n"}
               {"\n"}먼저 <span>QR코드를 준비해주세요!</span>
             </p>
             <S.QRCodeImageWrap>

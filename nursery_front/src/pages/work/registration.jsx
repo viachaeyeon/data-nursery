@@ -12,6 +12,7 @@ import DefaultCalendar from "@components/common/calendar/DefaultCalendar";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import { defaultButtonColor, disableButtonColor } from "@utils/ButtonColor";
 import CalendarIcon from "@images/work/calendar-icon.svg";
+import SuffixInput from "@components/common/input/SuffixInput";
 
 const S = {
   Wrap: styled.div`
@@ -238,12 +239,13 @@ function WorkRegistrationPage() {
             <div className="essential-category-icon" />
             <p className="category-text">주문수량</p>
           </div>
-          <DefaultInput
+          <SuffixInput
             text={inputData.order_quantity}
             setText={(e) => {
               handleInputChange("order_quantity", e.target.value);
             }}
             placeholder={"작업수량을 입력하세요"}
+            suffix={"장"}
           />
         </S.InputWrap>
         <S.InputWrap>
@@ -251,7 +253,7 @@ function WorkRegistrationPage() {
             <div className="essential-category-icon" />
             <p className="category-text">파종량</p>
           </div>
-          <DefaultInput text={inputData.seed_quantity} readOnly={true} />
+          <SuffixInput text={inputData.seed_quantity} readOnly={true} suffix={"개"} />
         </S.InputWrap>
         <DefaultCalendar calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
       </S.Wrap>

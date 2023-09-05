@@ -11,9 +11,6 @@ const S = {
     border-radius: 8px;
     padding: 6px 8px 6px 16px;
     ${({ theme }) => theme.textStyle.h6Bold}
-    /* font-size: 18px;
-    line-height: 20px;
-    font-weight: 700; */
     outline: none;
     box-shadow: none !important;
     color: ${({ theme }) => theme.basic.grey60};
