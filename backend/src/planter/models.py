@@ -59,6 +59,7 @@ class PlanterStatus(BaseModel):
     id = Column(Integer, primary_key=True, index=True)
     planter_id = Column(Integer, ForeignKey("planters.id"))
     status = Column(String(length=5))  # OFF, ON, PAUSE
+    operating_time = Column(BigInteger, default=0)
 
     planter_status__planter = relationship(
         "Planter", back_populates="planter__planter_status"
@@ -77,7 +78,7 @@ class PlanterWork(BaseModel):
     deadline = Column(DateTime(timezone=True))
     order_quantity = Column(BigInteger)
     seed_quantity = Column(BigInteger)
-    operating_time = Column(BigInteger, nullable=True, default=0)
+    # operating_time = Column(BigInteger, nullable=True, default=0)
 
     planter_work__planter = relationship(
         "Planter", back_populates="planter__planter_work"
@@ -116,7 +117,9 @@ class PlanterOutput(BaseModel):
 
     id = Column(Integer, primary_key=True, index=True)
     planter_work_id = Column(Integer, ForeignKey("planter_works.id"))
-    output = Column(BigInteger)
+    start_count = Column(Integer, nullable=True, default=None)
+    end_count = Column(Integer, nullable=True, default=None)
+    output = Column(BigInteger, default=0)
 
     planter_output__planter_works = relationship(
         "PlanterWork", back_populates="planter_works__planter_output"

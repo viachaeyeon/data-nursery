@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy import func
-from sqlalchemy.orm import Session, joinedload, aliased
+from sqlalchemy.orm import Session, aliased
 from starlette.responses import JSONResponse
 
 from datetime import datetime
@@ -17,61 +17,56 @@ from utils.db_shortcuts import get_, create_, get_current_user
 router = APIRouter()
 
 
-@router.get("/test")
-def get_planter():
-    return {"message": "Planter endpoint"}
+# @router.get(
+#     "/{planter_sn}/latest-work",
+#     status_code=200,
+#     response_model=schemas.PlanterWorkResponse,
+# )
+# def get_lastest_work(planter_sn: str, db: Session = Depends(get_db)):
+#     planter = (
+#         db.query(models.Planter)
+#         .filter(
+#             models.Planter.is_del == False,
+#             models.Planter.serial_number == planter_sn,
+#         )
+#         .first()
+#     )
 
+#     if not planter:
+#         return JSONResponse(status_code=404, content=dict(msg="NO_MATCH_PLANTER"))
 
-@router.get(
-    "/{planter_sn}/latest-work",
-    status_code=200,
-    response_model=schemas.PlanterWorkResponse,
-)
-def get_lastest_work(planter_sn: str, db: Session = Depends(get_db)):
-    planter = (
-        db.query(models.Planter)
-        .filter(
-            models.Planter.is_del == False,
-            models.Planter.serial_number == planter_sn,
-        )
-        .first()
-    )
+#     planter_works = (
+#         db.query(models.PlanterWork)
+#         .options(joinedload(models.PlanterWork.planter_work__planter_work_status))
+#         .filter(models.PlanterWork.planter_id == planter.id)
+#         .order_by(models.PlanterWork.created_at.desc())
+#         .all()
+#     )
 
-    if not planter:
-        return JSONResponse(status_code=404, content=dict(msg="NO_MATCH_PLANTER"))
+#     if not planter_works:
+#         return JSONResponse(
+#             status_code=404, content=dict(msg="NO_WORK_FOUND_FOR_THIS_PLANTER")
+#         )
 
-    planter_works = (
-        db.query(models.PlanterWork)
-        .options(joinedload(models.PlanterWork.planter_work__planter_work_status))
-        .filter(models.PlanterWork.planter_id == planter.id)
-        .order_by(models.PlanterWork.created_at.desc())
-        .all()
-    )
+#     latest_on_work = None
 
-    if not planter_works:
-        return JSONResponse(
-            status_code=404, content=dict(msg="NO_WORK_FOUND_FOR_THIS_PLANTER")
-        )
+#     for work in planter_works:
+#         latest_status = work.planter_work__planter_work_status[-1]
+#         # latest_status = work.planter_work__planter_work_status[0]
 
-    latest_on_work = None
+#         if latest_status.status == "WORKING":
+#             latest_on_work = work
+#             break
 
-    for work in planter_works:
-        latest_status = work.planter_work__planter_work_status[-1]
-        # latest_status = work.planter_work__planter_work_status[0]
+#     if not latest_on_work:
+#         return JSONResponse(status_code=404, content=dict(msg="NO_WORK_STATUS_ON"))
 
-        if latest_status.status == "WORKING":
-            latest_on_work = work
-            break
-
-    if not latest_on_work:
-        return JSONResponse(status_code=404, content=dict(msg="NO_WORK_STATUS_ON"))
-
-    return {
-        "crop": latest_on_work.planter_work__crop,
-        "planter_work_status": latest_on_work.planter_work__planter_work_status[-1],
-        "planter_tray": latest_on_work.planter_work__planter_tray,
-        "planter_work": latest_on_work,
-    }
+#     return {
+#         "crop": latest_on_work.planter_work__crop,
+#         "planter_work_status": latest_on_work.planter_work__planter_work_status[-1],
+#         "planter_tray": latest_on_work.planter_work__planter_tray,
+#         "planter_work": latest_on_work,
+#     }
 
 
 @router.post("/work/{planter_work_id}/output")
@@ -168,48 +163,48 @@ def create_planter_output(
 
 
 # FIXME: 테스트 끝났을때 삭제하기
-@router.post(
-    "/test/planter/status/change",
-    status_code=200,
-    description="파종기 시리얼번호로 해당 api 요청 시 작업 상태가 WORKING으로 변경됩니다.\n테스트 종료 시 제거 예정",
-)
-def test_planter_status_change(serial_number: str, db: Session = Depends(get_db)):
-    planter_work_status = (
-        db.query(models.PlanterWorkStatus)
-        .join(models.PlanterWorkStatus.planter_work_status__planter_work)
-        .join(models.PlanterWork.planter_work__planter)
-        .filter(
-            models.Planter.is_del == False,
-            models.Planter.serial_number == serial_number,
-            models.PlanterWork.is_del == False,
-            models.PlanterWorkStatus.is_del == False,
-        )
-        .order_by(models.PlanterWorkStatus.created_at.desc())
-        .all()
-    )
+# @router.post(
+#     "/test/planter/status/change",
+#     status_code=200,
+#     description="파종기 시리얼번호로 해당 api 요청 시 작업 상태가 WORKING으로 변경됩니다.\n테스트 종료 시 제거 예정",
+# )
+# def test_planter_status_change(serial_number: str, db: Session = Depends(get_db)):
+#     planter_work_status = (
+#         db.query(models.PlanterWorkStatus)
+#         .join(models.PlanterWorkStatus.planter_work_status__planter_work)
+#         .join(models.PlanterWork.planter_work__planter)
+#         .filter(
+#             models.Planter.is_del == False,
+#             models.Planter.serial_number == serial_number,
+#             models.PlanterWork.is_del == False,
+#             models.PlanterWorkStatus.is_del == False,
+#         )
+#         .order_by(models.PlanterWorkStatus.created_at.desc())
+#         .all()
+#     )
 
-    if not planter_work_status:
-        return JSONResponse(status_code=404, content=dict(msg="NO_PLANTER_WORK_STATUS"))
+#     if not planter_work_status:
+#         return JSONResponse(status_code=404, content=dict(msg="NO_PLANTER_WORK_STATUS"))
 
-    if planter_work_status[0].status != "WORKING":
-        planter_work = (
-            db.query(models.PlanterWork)
-            .join(models.PlanterWork.planter_work__planter)
-            .filter(
-                models.PlanterWork.is_del == False,
-                models.Planter.serial_number == serial_number,
-            )
-            .order_by(models.PlanterWork.created_at.desc())
-            .all()
-        )
-        new_planter_work_status = models.PlanterWorkStatus(
-            planter_work_status__planter_work=planter_work[0], status="WORKING"
-        )
-        db.add(new_planter_work_status)
-        db.commit()
-        db.refresh(new_planter_work_status)
+#     if planter_work_status[0].status != "WORKING":
+#         planter_work = (
+#             db.query(models.PlanterWork)
+#             .join(models.PlanterWork.planter_work__planter)
+#             .filter(
+#                 models.PlanterWork.is_del == False,
+#                 models.Planter.serial_number == serial_number,
+#             )
+#             .order_by(models.PlanterWork.created_at.desc())
+#             .all()
+#         )
+#         new_planter_work_status = models.PlanterWorkStatus(
+#             planter_work_status__planter_work=planter_work[0], status="WORKING"
+#         )
+#         db.add(new_planter_work_status)
+#         db.commit()
+#         db.refresh(new_planter_work_status)
 
-    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+#     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
 
 
 @router.post("/farmhouse/register", status_code=200, description="농가에서 파종기 등록 시 사용")
@@ -322,18 +317,14 @@ def planter_work_working_pause_list(
     pws = aliased(models.PlanterWorkStatus)
 
     recent_status_subquery = (
-        db.query(
-            pws.planter_work_id,
-            func.max(pws.id).label("last_pws_id"),
-            # func.max(pws.created_at).label("max_created_at"),
-        )
+        db.query(pws.planter_work_id, func.max(pws.id).label("last_pws_id"), pws.status)
         .filter(pws.is_del == False)
-        .group_by(pws.planter_work_id)
+        .group_by(pws.planter_work_id, pws.status)
         .subquery()
     )
 
     planter_works_with_recent_working_or_pause_status = (
-        db.query(pw)
+        db.query(pw, pws.status.label("status"))
         .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
         .join(
             pws,
@@ -352,17 +343,23 @@ def planter_work_working_pause_list(
     if not planter_works_with_recent_working_or_pause_status:
         return None
 
-    planter_work_output = (
-        planter_works_with_recent_working_or_pause_status.planter_works__planter_output
-    )
+    planter_work_output = planter_works_with_recent_working_or_pause_status[
+        0
+    ].planter_works__planter_output
+
     return {
-        "id": planter_works_with_recent_working_or_pause_status.id,
-        "crop_img": planter_works_with_recent_working_or_pause_status.planter_work__crop.image,
-        "crop_kind": planter_works_with_recent_working_or_pause_status.crop_kind,
+        "id": planter_works_with_recent_working_or_pause_status[0].id,
+        "crop_img": planter_works_with_recent_working_or_pause_status[
+            0
+        ].planter_work__crop.image,
+        "crop_kind": planter_works_with_recent_working_or_pause_status[0].crop_kind,
         "planter_work_output": planter_work_output.output
         if planter_work_output is not None
         else 0,
-        "tray_total": planter_works_with_recent_working_or_pause_status.planter_work__planter_tray.total,
+        "planter_status": planter_works_with_recent_working_or_pause_status[1],
+        "tray_total": planter_works_with_recent_working_or_pause_status[
+            0
+        ].planter_work__planter_tray.total,
     }
 
 
@@ -514,6 +511,7 @@ def planter_work_done_datetime_list(
     }
 
 
+# TODO: planter_work_id -> serial_number로 변경
 @router.patch(
     "/work/status/update/{planter_work_id}",
     status_code=200,
