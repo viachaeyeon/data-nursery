@@ -14,6 +14,9 @@ import WaitingIcon from "@images/statistics/waiting-icon.svg";
 import HeaderSelectArrowIcon from "@images/statistics/header-icon-arrow.svg";
 import SelectArrowIcon from "@images/statistics/icon-arrow.svg";
 import PickerIcon from "@images/statistics/date-picker-icon.svg";
+import CheckBoxOff from "@images/common/check-icon-off.svg";
+import CheckBoxOn from "@images/common/check-icon-on.svg";
+import SearchIcon from "@images/statistics/icon-search.svg";
 
 const S = {
   Wrap: styled.div`
@@ -147,7 +150,6 @@ const S = {
     justify-content: space-between;
     align-items: center;
     padding: 6px 6px 6px 16px;
-
     select {
       cursor: pointer;
       -webkit-appearance: none;
@@ -156,17 +158,48 @@ const S = {
       width: 100%;
       background-color: #f7f7f9;
     }
+
+    p {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h7Reguler};
+    }
   `,
+
   ContentList: styled.div`
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
 
     .list-table-head {
       display: flex;
+      width: 100%;
       justify-content: space-between;
       align-items: center;
       padding: 6px 32px 6px 24px;
+      min-width: 1500px;
+      p {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .no {
+        width: 42px;
+      }
+      .farm-name {
+        width: 125px;
+      }
+
+      .order-count {
+        width: 115px;
+      }
+      .sowing {
+        width: 115px;
+      }
+      .state {
+        width: 98px;
+      }
     }
     p {
       ${({ theme }) => theme.textStyle.h7Reguler};
@@ -205,23 +238,59 @@ const S = {
     p {
       ${({ theme }) => theme.textStyle.h7Bold};
       color: ${({ theme }) => theme.basic.gray50};
+      display: flex;
+      align-items: center;
     }
-    .ellipsis_text {
-      width: 132px;
+
+    .list_id {
+      /* width: 36px; */
+      width: 42px;
+      justify-content: center;
+    }
+    .farm_id {
+      width: 168px;
+      justify-content: center;
+    }
+    .farm_name {
+      width: 180px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .list_text {
+    .farm_plant {
+      width: 100px;
+      justify-content: start;
+    }
+    .plant_name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 109px;
+      justify-content: start;
+    }
+    .tray {
+      width: 24px;
       justify-content: center;
-      display: flex;
+    }
+    .order_count {
+      width: 115px;
+      justify-content: end;
+    }
+    .sowing_count {
+      width: 126px;
+      justify-content: end;
+    }
+    .sowing_date {
+      width: 126px;
+      justify-content: center;
     }
 
     .farm_name_wrap {
       display: flex;
       gap: 8px;
-      align-items: center;
-      justify-content: center;
+      /* align-items: center; */
+      width: 224px;
+      justify-content: start;
     }
 
     .farm-name-frist {
@@ -359,6 +428,79 @@ const S = {
       border-radius: 4px;
     }
   `,
+
+  SearchSelectBox: styled.div`
+    border-radius: 8px;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    background-color: #f7f7f9;
+    padding: 6px 6px 6px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  `,
+
+  DotBorder: styled.div`
+    border: 1px dashed ${({ theme }) => theme.basic.recOutline};
+    height: 1px;
+    width: 100%;
+  `,
+  Dropdown: styled.div`
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    background-color: ${({ theme }) => theme.basic.whiteGray};
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    position: absolute;
+    top: 359px;
+
+    .input-wrap {
+      border-radius: 4px;
+      padding: 6px 8px 6px 12px;
+      height: 30px;
+      background-color: ${({ theme }) => theme.blackWhite.white};
+      display: flex;
+      gap: 6px;
+      align-items: center;
+
+      input {
+        border: none;
+        width: 100%;
+      }
+      input:focus-visible {
+        outline: none;
+      }
+      input::placeholder {
+        color: ${({ theme }) => theme.basic.gray60};
+        ${({ theme }) => theme.textStyle.h7Reguler};
+      }
+    }
+    .drop-down-list-wrap {
+      max-height: 272px;
+      overflow-y: auto;
+    }
+    .drop-down-list {
+      display: flex;
+      padding: 4px;
+      gap: 8px;
+      border-radius: 4px;
+      align-items: center;
+
+      p {
+        color: ${({ theme }) => theme.basic.gray60};
+        ${({ theme }) => theme.textStyle.h7Reguler};
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    .drop-down-list:hover {
+      background-color: ${({ theme }) => theme.basic.gray20};
+    }
+  `,
 };
 
 function StatisticsStatus() {
@@ -375,8 +517,24 @@ function StatisticsStatus() {
 
   //연도별 drop down 모달 오픈
   const [yearModalOpen, setYearModalOpen] = useState(false);
+
   //월별 drop down 모달 오픈
   const [monthModalOpen, setMonthModalOpen] = useState(false);
+
+  //달력 모달 오픈
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  //농가 id 드롭다운 모달 오픈
+  const [isFarmId, setIsFarmId] = useState(false);
+
+  //농가명 드롭다운 모달 오픈
+  const [isFarmName, setIsFarmName] = useState(false);
+
+  //작물명 드롭다운 모달 오픈
+  const [isCropsName, setIsCropsName] = useState(false);
+
+  //트레이 드롭다운 모달 오픈
+  const [isTrayCount, setIsTrayCount] = useState(false);
 
   // 연도별 클릭시
   const handelYearDropDown = useCallback(() => {
@@ -384,8 +542,20 @@ function StatisticsStatus() {
       setYearModalOpen(false);
     } else {
       setYearModalOpen(true);
+      setMonthModalOpen(false);
+      setIsFarmId(false);
+      setIsFarmName(false);
+      setIsCropsName(false);
+      setIsTrayCount(false);
     }
-  }, [yearModalOpen]);
+  }, [
+    yearModalOpen,
+    monthModalOpen,
+    isFarmId,
+    isFarmName,
+    isCropsName,
+    isTrayCount,
+  ]);
 
   //월별 클릭시
   const handelMonthDropDown = useCallback(() => {
@@ -393,8 +563,20 @@ function StatisticsStatus() {
       setMonthModalOpen(false);
     } else {
       setMonthModalOpen(true);
+      setYearModalOpen(false);
+      setIsFarmId(false);
+      setIsFarmName(false);
+      setIsCropsName(false);
+      setIsTrayCount(false);
     }
-  }, [monthModalOpen]);
+  }, [
+    monthModalOpen,
+    yearModalOpen,
+    isCropsName,
+    isFarmId,
+    isFarmName,
+    isTrayCount,
+  ]);
 
   //연도별 drop down 내용 클릭
   const handleClickYearDropList = useCallback(
@@ -414,15 +596,112 @@ function StatisticsStatus() {
     [selectMonth, monthModalOpen],
   );
 
-  //달력 모달 오픈
-  const [pickerOpen, setPickerOpen] = useState(false);
-
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
 
+  //달력 클릭
   const handlePickerClick = useCallback(() => {
     setPickerOpen(true);
-  }, [pickerOpen]);
+    setYearModalOpen(false);
+    setMonthModalOpen(false);
+    setIsFarmId(false);
+    setIsFarmName(false);
+    setIsCropsName(false);
+    setIsTrayCount(false);
+  }, [
+    pickerOpen,
+    yearModalOpen,
+    monthModalOpen,
+    isFarmId,
+    isFarmName,
+    isCropsName,
+    isTrayCount,
+  ]);
+
+  // 농가 id 드롭다운 클릭
+  const handleFarmIdClick = useCallback(() => {
+    if (isFarmId) {
+      setIsFarmId(false);
+    } else {
+      setIsFarmId(true);
+      setYearModalOpen(false);
+      setMonthModalOpen(false);
+      setIsFarmName(false);
+      setIsCropsName(false);
+      setIsTrayCount(false);
+    }
+  }, [
+    isFarmId,
+    yearModalOpen,
+    monthModalOpen,
+    isFarmName,
+    isCropsName,
+    isTrayCount,
+  ]);
+
+  // 농가명 드롭다운 클릭
+  const handleFarmNameClick = useCallback(() => {
+    if (isFarmName) {
+      setIsFarmName(false);
+    } else {
+      setIsFarmName(true);
+      setYearModalOpen(false);
+      setMonthModalOpen(false);
+      setIsFarmId(false);
+      setIsCropsName(false);
+      setIsTrayCount(false);
+    }
+  }, [
+    isFarmName,
+    yearModalOpen,
+    monthModalOpen,
+    isFarmId,
+    isCropsName,
+    isTrayCount,
+  ]);
+
+  // 작물명 드롭다운 클릭
+  const handleCropsNameClick = useCallback(() => {
+    if (isCropsName) {
+      setIsCropsName(false);
+    } else {
+      setIsCropsName(true);
+      setIsFarmName(false);
+      setYearModalOpen(false);
+      setMonthModalOpen(false);
+      setIsFarmId(false);
+      setIsTrayCount(false);
+    }
+  }, [
+    isFarmName,
+    yearModalOpen,
+    monthModalOpen,
+    isFarmId,
+    isCropsName,
+    isTrayCount,
+  ]);
+
+  // 트레이 드롭다운 클릭
+  const handleTrayCountClick = useCallback(() => {
+    if (isTrayCount) {
+      setIsTrayCount(false);
+    } else {
+      setIsTrayCount(true);
+      setIsCropsName(false);
+      setIsFarmName(false);
+      setYearModalOpen(false);
+      setMonthModalOpen(false);
+      setIsFarmId(false);
+    }
+  }, [
+    isFarmName,
+    yearModalOpen,
+    monthModalOpen,
+    isFarmId,
+    isCropsName,
+    isTrayCount,
+    isTrayCount,
+  ]);
 
   //정렬 토글
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
@@ -514,6 +793,7 @@ function StatisticsStatus() {
 
   //연도 데이터
   const yearList = [
+    ,
     "2014",
     "2015",
     "2016",
@@ -529,6 +809,56 @@ function StatisticsStatus() {
   ];
   //월 데이터
   const monthList = ["1", "2", "3", "1", "2", "3", "1", "2", "3"];
+
+  //농가 ID 데이터
+  const farmIdList = [
+    "PF_0021350",
+    "PF_0021351",
+    "PF_0021352",
+    "PF_0021352",
+    "PF_0021353",
+    "PF_0021354",
+    "PF_0021355",
+    "PF_0021356",
+  ];
+
+  //농가명 데이터
+  const farmNameList = [
+    "하나공정육묘장영농조합법인",
+    "김해고송육묘",
+    "보천육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
+  ];
+
+  //작물명 데이터
+  const cropsName = [
+    "토마토",
+    "수박",
+    "오이",
+    "고추",
+    "상추",
+    "복숭아",
+    "마늘",
+    "당근",
+  ];
+
+  //트레이 데이터
+  const trayCount = [
+    "128",
+    "64",
+    "128",
+    "64",
+    "128",
+    "64",
+    "128",
+    "64",
+    "128",
+    "64",
+  ];
 
   return (
     <S.Wrap>
@@ -569,9 +899,9 @@ function StatisticsStatus() {
                   </S.DateChooseWrap>
                   {yearModalOpen && (
                     <S.YearDropDownList>
-                      {yearList.map((data,index) => {
+                      {yearList.map((data) => {
                         return (
-                          <div key={`year${index}`}
+                          <div
                             className="drop-down-list"
                             onClick={() => handleClickYearDropList(data)}
                           >
@@ -584,9 +914,9 @@ function StatisticsStatus() {
 
                   {monthModalOpen && (
                     <S.MonthDropDownList>
-                      {monthList.map((data,index) => {
+                      {monthList.map((data) => {
                         return (
-                          <div key={`month${index}`}
+                          <div
                             className="drop-down-list"
                             onClick={() => handleClickMonthDropList(data)}
                           >
@@ -624,24 +954,29 @@ function StatisticsStatus() {
         ) : (
           <>
             <div className="list-table-head">
-              <p>NO</p>
-              <S.HeaderDropDown>
+              <p className="no">NO</p>
+              <S.HeaderDropDown
+                style={{ width: "168px" }}
+                onClick={handleFarmIdClick}
+              >
+                <p>농가 ID</p>
                 <HeaderSelectArrowIcon width={20} height={20} />
               </S.HeaderDropDown>
-              <S.HeaderDropDown>
-                <select className="select-style">
-                  <option value="farm-name">농가명</option>
-                </select>
+              <S.HeaderDropDown
+                style={{ width: "224px" }}
+                onClick={handleFarmNameClick}
+              >
+                <p>농가명</p>
                 <HeaderSelectArrowIcon width={20} height={20} />
               </S.HeaderDropDown>
-              <S.HeaderDropDown>
-                <select className="select-style">
-                  <option value="farm-plant">작물명</option>
-                </select>
+              <S.HeaderDropDown
+                style={{ width: "154px" }}
+                onClick={handleCropsNameClick}
+              >
+                <p>작물명</p>
                 <HeaderSelectArrowIcon width={20} height={20} />
               </S.HeaderDropDown>
-
-              <div className="arrow-wrap">
+              <div className="arrow-wrap farm-name">
                 <p>품종명</p>
                 <div className="icon-wrap" onClick={sortByFarmName}>
                   {plantName ? (
@@ -651,13 +986,14 @@ function StatisticsStatus() {
                   )}
                 </div>
               </div>
-              <S.HeaderDropDown>
-                <select className="select-style">
-                  <option value="tray">트레이</option>
-                </select>
+              <S.HeaderDropDown
+                style={{ width: "154px" }}
+                onClick={handleTrayCountClick}
+              >
+                <p>트레이</p>
                 <HeaderSelectArrowIcon width={20} height={20} />
               </S.HeaderDropDown>
-              <div className="arrow-wrap">
+              <div className="arrow-wrap order-count">
                 <p>주문수량</p>
                 <div className="icon-wrap" onClick={sortByStatus}>
                   {orderCount ? (
@@ -667,7 +1003,7 @@ function StatisticsStatus() {
                   )}
                 </div>
               </div>
-              <div className="arrow-wrap">
+              <div className="arrow-wrap sowing">
                 <p>파종량</p>
                 <div className="icon-wrap" onClick={sortBySowingCount}>
                   {sowingCount ? (
@@ -677,7 +1013,7 @@ function StatisticsStatus() {
                   )}
                 </div>
               </div>
-              <div className="arrow-wrap">
+              <div className="arrow-wrap sowing">
                 <p>파종일자</p>
                 <div className="icon-wrap" onClick={sortBySowingDate}>
                   {sowingDate ? (
@@ -687,7 +1023,7 @@ function StatisticsStatus() {
                   )}
                 </div>
               </div>
-              <div className="arrow-wrap">
+              <div className="arrow-wrap state">
                 <p>출하상태</p>
                 <div className="icon-wrap" onClick={sortByState}>
                   {state ? (
@@ -699,27 +1035,111 @@ function StatisticsStatus() {
               </div>
             </div>
 
+            {isFarmId && (
+              <S.Dropdown style={{ width: "168px", left: "423px" }}>
+                <div className="input-wrap">
+                  <SearchIcon width={18} height={18} />
+                  <input placeholder="검색어 입력" />
+                </div>
+                <S.DotBorder />
+                <div className="drop-down-list-wrap">
+                  {farmIdList.map((data, index) => {
+                    return (
+                      <div className="drop-down-list" key={`farmId${index}`}>
+                        <CheckBoxOff width={24} height={24} />
+                        <p style={{ width: "120px" }}>{data}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </S.Dropdown>
+            )}
+
+            {isFarmName && (
+              <S.Dropdown style={{ width: "224px", left: "630px" }}>
+                <div className="input-wrap">
+                  <SearchIcon width={18} height={18} />
+                  <input placeholder="검색어 입력" />
+                </div>
+                <S.DotBorder />
+                <div className="drop-down-list-wrap">
+                  {farmNameList.map((data, index) => {
+                    return (
+                      <div className="drop-down-list" key={`farmName${index}`}>
+                        <CheckBoxOff width={24} height={24} />
+                        <p style={{ width: "120px" }}>{data}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </S.Dropdown>
+            )}
+
+            {isCropsName && (
+              <S.Dropdown
+                style={{ width: "154px", height: "270px", left: "894px" }}
+              >
+                <div className="input-wrap">
+                  <SearchIcon width={18} height={18} />
+                  <input placeholder="검색어 입력" />
+                </div>
+                <S.DotBorder />
+                <div className="drop-down-list-wrap">
+                  {cropsName.map((data, index) => {
+                    return (
+                      <div className="drop-down-list" key={`cropsName${index}`}>
+                        <CheckBoxOff width={24} height={24} />
+                        <p style={{ width: "120px" }}>{data}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </S.Dropdown>
+            )}
+
+            {isTrayCount && (
+              <S.Dropdown
+                style={{ width: "154px", height: "350px", left: "1193px" }}
+              >
+                <div className="input-wrap">
+                  <SearchIcon width={18} height={18} />
+                  <input placeholder="검색어 입력" />
+                </div>
+                <S.DotBorder />
+                <div className="drop-down-list-wrap">
+                  {trayCount.map((data, index) => {
+                    return (
+                      <div className="drop-down-list" key={`trayCount${index}`}>
+                        <CheckBoxOff width={24} height={24} />
+                        <p style={{ width: "120px" }}>{data}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </S.Dropdown>
+            )}
+
             {listData.map((data, index) => {
               return (
                 <S.ListBlock key={`map${index}`}>
-                  <p>{data.id}</p>
-                  <p className="list_text">{data.farm_id}</p>
+                  <p className="list_id">{data.id}</p>
+                  <p className="farm_id">{data.farm_id}</p>
                   <div className="farm_name_wrap">
                     <div className="farm-name-frist">
                       {data.farm_name.slice(0, 1)}
                     </div>
-                    <p className="ellipsis_text">{data.farm_name}</p>
+                    <p className="farm_name">{data.farm_name}</p>
                   </div>
-                  <p className="list_text">{data.farm_plant}</p>
-                  <p className="ellipsis_text">{data.plant_name}</p>
-                  <p className="name">{data.tray}</p>
-                  <p className="list_text">
+                  <p className="farm_plant">{data.farm_plant}</p>
+                  <p className="plant_name">{data.plant_name}</p>
+                  <p className="tray">{data.tray}</p>
+                  <p className="order_count">
                     {NumberCommaFormatting(data.order_count)}
                   </p>
-                  <p className="list_text">
+                  <p className="sowing_count">
                     {NumberCommaFormatting(data.sowing_count)}
                   </p>
-                  <p className="list_text">{data.sowingDate}</p>
+                  <p className="sowing_date">{data.sowingDate}</p>
                   {data.state === "fin" ? (
                     <FinCheckIcon width={98} height={40} />
                   ) : (
