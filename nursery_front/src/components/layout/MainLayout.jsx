@@ -11,6 +11,7 @@ import theme from "@src/styles/theme";
 import DefaultAlert from "@components/common/alert/DefaultAlert";
 import DefaultButton from "@components/common/button/DefaultButton";
 import { defaultButtonColor } from "@utils/ButtonColor";
+import DefaultDropdown from "@components/common/dropdown/DefaultDropdown";
 
 const S = {
   BackgroundWrap: styled.div`
@@ -219,6 +220,7 @@ function MainLayout({
   buttonSetting = { color: defaultButtonColor, text: "", onClickEvent: null },
 }) {
   const router = useRouter();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // 오늘 날짜
   const today = useMemo(() => {
@@ -284,7 +286,7 @@ function MainLayout({
                 <MoreIcon
                   className="more-icon-wrap"
                   onClick={() => {
-                    router.push("/");
+                    setDropdownOpen(true);
                   }}
                 />
               </S.PageNameWrap>
@@ -302,6 +304,7 @@ function MainLayout({
             )}
             {pageName === "main" && <BottomBar />}
             <DefaultAlert />
+            <DefaultDropdown dropdownOpen={dropdownOpen} setDropdownOpen={setDropdownOpen} />
           </S.MainContent>
         </S.MainLayout>
       </S.Wrap>
