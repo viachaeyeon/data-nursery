@@ -102,23 +102,38 @@ const S = {
     display: flex;
     gap: 8px;
   `,
-  DropDown: styled.div`
+  YearDropDown: styled.div`
     cursor: pointer;
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
     background-color: ${({ theme }) => theme.blackWhite.white};
     border-radius: 8px;
     height: 36px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     padding: 6px 12px 6px 16px;
+    width: 138px;
 
-    select {
-      -webkit-appearance: none;
-      cursor: pointer;
-      border: none;
-      outline: none;
-      width: 100%;
+    p {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h7Reguler};
+    }
+  `,
+  MonthDropDown: styled.div`
+    cursor: pointer;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    background-color: ${({ theme }) => theme.blackWhite.white};
+    border-radius: 8px;
+    height: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px 6px 16px;
+    width: 120px;
+
+    p {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h7Reguler};
     }
   `,
   HeaderDropDown: styled.div`
@@ -277,6 +292,73 @@ const S = {
       ${({ theme }) => theme.textStyle.h7Reguler}
     }
   `,
+  YearDropDownList: styled.div`
+    position: absolute;
+    background-color: ${({ theme }) => theme.basic.whiteGray};
+    height: 300px;
+    top: 247px;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    width: 138px;
+    overflow-y: auto;
+
+    .drop-down-list {
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      cursor: pointer;
+      background-color: ${({ theme }) => theme.basic.whiteGray};
+
+      p {
+        color: ${({ theme }) => theme.basic.gray60};
+        ${({ theme }) => theme.textStyle.h7Reguler};
+      }
+    }
+    .drop-down-list:hover {
+      background-color: ${({ theme }) => theme.basic.gray20};
+      border-radius: 4px;
+    }
+  `,
+  MonthDropDownList: styled.div`
+    position: absolute;
+    background-color: ${({ theme }) => theme.basic.whiteGray};
+    height: 300px;
+    top: 247px;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    width: 138px;
+    overflow-y: auto;
+    left: 542px;
+
+    .drop-down-list {
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      cursor: pointer;
+      background-color: ${({ theme }) => theme.basic.whiteGray};
+
+      p {
+        color: ${({ theme }) => theme.basic.gray60};
+        ${({ theme }) => theme.textStyle.h7Reguler};
+      }
+    }
+    .drop-down-list:hover {
+      background-color: ${({ theme }) => theme.basic.gray20};
+      border-radius: 4px;
+    }
+  `,
 };
 
 function StatisticsStatus() {
@@ -285,6 +367,52 @@ function StatisticsStatus() {
   const [sowingCount, setSowingCount] = useState(true);
   const [sowingDate, setSowingDate] = useState(true);
   const [state, setState] = useState(true);
+
+  // 선택된 연도
+  const [selectYear, setSelectYear] = useState("");
+  //선택된 월
+  const [selectMonth, setSelectMonth] = useState("");
+
+  //연도별 drop down 모달 오픈
+  const [yearModalOpen, setYearModalOpen] = useState(false);
+  //월별 drop down 모달 오픈
+  const [monthModalOpen, setMonthModalOpen] = useState(false);
+
+  // 연도별 클릭시
+  const handelYearDropDown = useCallback(() => {
+    if (yearModalOpen) {
+      setYearModalOpen(false);
+    } else {
+      setYearModalOpen(true);
+    }
+  }, [yearModalOpen]);
+
+  //월별 클릭시
+  const handelMonthDropDown = useCallback(() => {
+    if (monthModalOpen) {
+      setMonthModalOpen(false);
+    } else {
+      setMonthModalOpen(true);
+    }
+  }, [monthModalOpen]);
+
+  //연도별 drop down 내용 클릭
+  const handleClickYearDropList = useCallback(
+    (data) => {
+      setSelectYear(data);
+      setYearModalOpen(false);
+    },
+    [selectYear, yearModalOpen],
+  );
+
+  //월별 drop down 내용 클릭
+  const handleClickMonthDropList = useCallback(
+    (data) => {
+      setSelectMonth(data);
+      setMonthModalOpen(false);
+    },
+    [selectMonth, monthModalOpen],
+  );
 
   //달력 모달 오픈
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -384,6 +512,24 @@ function StatisticsStatus() {
     },
   ]);
 
+  //연도 데이터
+  const yearList = [
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025",
+  ];
+  //월 데이터
+  const monthList = ["1", "2", "3", "1", "2", "3", "1", "2", "3"];
+
   return (
     <S.Wrap>
       <S.InfoBlock>
@@ -397,33 +543,60 @@ function StatisticsStatus() {
                 <p className="info-sub">정렬기능 )</p>
               </div>
               {listData.length !== 0 && (
-                <S.DateChooseWrap>
-                  <S.DropDown>
-                    <select className="select-style">
-                      <option value="year">연도별</option>
-                    </select>
-                    <SelectArrowIcon width={24} height={24} />
-                  </S.DropDown>
-                  <S.DropDown>
-                    <select className="select-style">
-                      <option value="month">월별</option>
-                    </select>
-                    <SelectArrowIcon width={24} height={24} />
-                  </S.DropDown>
-                  {startDate === null || endDate === null ? (
-                    <S.ClickPicker onClick={handlePickerClick}>
-                      <p>직접선택</p>
-                      <PickerIcon width={19} height={19} />
-                    </S.ClickPicker>
-                  ) : (
-                    <S.ClickPicker onClick={handlePickerClick}>
-                      <p>
-                        {YYYYMMDDSlash(startDate)} ~ {YYYYMMDDSlash(endDate)}
-                      </p>
-                      <PickerIcon width={19} height={19} />
-                    </S.ClickPicker>
+                <>
+                  <S.DateChooseWrap>
+                    <S.YearDropDown onClick={handelYearDropDown}>
+                      <p>연도별</p>
+                      <SelectArrowIcon width={24} height={24} />
+                    </S.YearDropDown>
+                    <S.MonthDropDown onClick={handelMonthDropDown}>
+                      <p>월별</p>
+                      <SelectArrowIcon width={24} height={24} />
+                    </S.MonthDropDown>
+                    {startDate === null || endDate === null ? (
+                      <S.ClickPicker onClick={handlePickerClick}>
+                        <p>직접선택</p>
+                        <PickerIcon width={19} height={19} />
+                      </S.ClickPicker>
+                    ) : (
+                      <S.ClickPicker onClick={handlePickerClick}>
+                        <p>
+                          {YYYYMMDDSlash(startDate)} ~ {YYYYMMDDSlash(endDate)}
+                        </p>
+                        <PickerIcon width={19} height={19} />
+                      </S.ClickPicker>
+                    )}
+                  </S.DateChooseWrap>
+                  {yearModalOpen && (
+                    <S.YearDropDownList>
+                      {yearList.map((data,index) => {
+                        return (
+                          <div key={`year${index}`}
+                            className="drop-down-list"
+                            onClick={() => handleClickYearDropList(data)}
+                          >
+                            <p>{data}</p>
+                          </div>
+                        );
+                      })}
+                    </S.YearDropDownList>
                   )}
-                </S.DateChooseWrap>
+
+                  {monthModalOpen && (
+                    <S.MonthDropDownList>
+                      {monthList.map((data,index) => {
+                        return (
+                          <div key={`month${index}`}
+                            className="drop-down-list"
+                            onClick={() => handleClickMonthDropList(data)}
+                          >
+                            <p>{data}</p>
+                          </div>
+                        );
+                      })}
+                    </S.MonthDropDownList>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -455,7 +628,6 @@ function StatisticsStatus() {
               <S.HeaderDropDown>
                 <HeaderSelectArrowIcon width={20} height={20} />
               </S.HeaderDropDown>
-
               <S.HeaderDropDown>
                 <select className="select-style">
                   <option value="farm-name">농가명</option>
