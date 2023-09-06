@@ -104,7 +104,7 @@ function DefaultAlert() {
       <S.StyledAlert show={isDefaultAlertShow.isShow} type={isDefaultAlertShow.type}>
         <div className="text-wrap">
           {isDefaultAlertShow.type === "success" && <SuccessIcon />}
-          {isDefaultAlertShow.type === "error" && <ErrorIcon />}
+          {isDefaultAlertShow.type === "error" && <ErrorIcon width={24} height={24} fill={"#FF7D60"} />}
           <p>{isDefaultAlertShow.text}</p>
         </div>
         {isDefaultAlertShow.type === "error" && <S.OkButton onClick={handleOkClick}>OK</S.OkButton>}

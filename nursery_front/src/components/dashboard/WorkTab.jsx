@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled, { css } from "styled-components";
 import Image from "next/image";
+import { useInView } from "react-intersection-observer";
+
+import useUserInfo from "@hooks/queries/auth/useUserInfo";
+import useWorkingWorkList from "@hooks/queries/planter/useWorkingWorkList";
+import useWaitWorkList from "@hooks/queries/planter/useWaitWorkList";
+
+import WorkContent from "@components/dashboard/WorkContent";
+import WaitContent from "@components/dashboard/WaitContent";
 
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import theme from "@src/styles/theme";
-import WorkContent from "@components/dashboard/WorkContent";
-import WaitContent from "@components/dashboard/WaitContent";
 
 const S = {
   Wrap: styled.div`
@@ -89,8 +95,55 @@ const S = {
 function WorkTab() {
   const [selectTab, setSelectTab] = useState("working");
   const [isWork, setIsWork] = useState(false);
+  const [waitWorkListPage, setWaitWorkListPage] = useState(1);
+  const [waitWorkList, setWaitWorkList] = useState([]);
 
-  return (
+  // inView : 요소가 뷰포트에 진입했는지 여부
+  const { ref, inView, entry } = useInView({
+    threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
+  });
+
+  // 페이지 변경
+  const pageChange = useCallback(() => {
+    setWaitWorkListPage(waitWorkListPage + 1);
+  }, [waitWorkListPage]);
+
+  useEffect(() => {
+    if (inView) {
+      pageChange();
+    }
+  }, [inView]);
+
+  // 유저 정보 API
+  const { data: userInfo } = useUserInfo({
+    successFn: () => {},
+    errorFn: () => {
+      // userLogout(router, clearQueries);
+    },
+  });
+
+  // 진행중인 주문 목록 API
+  const { data: workingWorkList } = useWorkingWorkList({
+    serialNumber: userInfo?.planter.serial_number,
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 대기중인 주문 목록 API
+  const { data: waitWorkListData } = useWaitWorkList({
+    serialNumber: userInfo?.planter.serial_number,
+    page: waitWorkListPage,
+    successFn: (res) => {
+      setWaitWorkList((prev) => [...prev, ...res.planter_works]);
+    },
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  return !!workingWorkList || waitWorkListData?.total !== 0 ? (
     <S.Wrap>
       <S.TabWrap>
         <S.TabContent
@@ -110,20 +163,29 @@ function WorkTab() {
           <div className="waiting-count-wrap">
             <p className="tab-text">대기중</p>
             <div className="waiting-count-box">
-              <p>1건</p>
+              <p>{waitWorkListData?.total}건</p>
             </div>
           </div>
           <div className="tab-bar" />
         </S.TabContent>
       </S.TabWrap>
-      {/* <div className="no-work">
-        <NoneIcon width={50} height={50} fill={theme.basic.grey20} />
-        {selectTab === "working" && <p>진행중인 작업이 없습니다</p>}
-        {selectTab === "waiting" && <p>대기중인 작업이 없습니다</p>}
-    </div> */}
-      {selectTab === "working" && <WorkContent isWork={isWork} setIsWork={setIsWork} />}
-      {selectTab === "waiting" && <WaitContent />}
+      {selectTab === "working" && (
+        <WorkContent isWork={isWork} setIsWork={setIsWork} workingWorkList={workingWorkList} />
+      )}
+      {selectTab === "waiting" && (
+        <WaitContent
+          waitWorkList={waitWorkList}
+          isWorking={!!workingWorkList}
+          setSelectTab={setSelectTab}
+          intersectionRef={ref}
+        />
+      )}
     </S.Wrap>
+  ) : (
+    <div className="no-work">
+      <NoneIcon width={50} height={50} fill={theme.basic.grey20} />
+      <p>새 작업을 등록하세요!</p>
+    </div>
   );
 }
 

@@ -1,11 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import styled, { css } from "styled-components";
-
-import SmallButton from "../button/SmallButton";
-
-import { borderButtonColor, defaultButtonColor } from "@utils/ButtonColor";
-import WarningIcon from "@images/common/icon-warning.svg";
-import PositiveIcon from "@images/common/icon-positive.svg";
+import React from "react";
+import styled from "styled-components";
 
 const S = {
   BackGroundWrap: styled.div`

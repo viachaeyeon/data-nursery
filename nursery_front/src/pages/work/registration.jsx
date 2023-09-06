@@ -8,6 +8,7 @@ import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useCropList from "@hooks/queries/crop/useCropList";
 import useTrayList from "@hooks/queries/planter/useTrayList";
 import useRegisterWork from "@hooks/queries/planter/useRegisterWork";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultInput from "@components/common/input/DefaultInput";
@@ -23,6 +24,7 @@ import CalendarIcon from "@images/work/calendar-icon.svg";
 import OnRadioBtnIcon from "@images/common/on-radio-btn.svg";
 import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 import PointIcon from "@images/work/ico-point.svg";
+import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -85,6 +87,7 @@ const S = {
 
 function WorkRegistrationPage() {
   const router = useRouter();
+  const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
   // BottomButton 정보
@@ -201,25 +204,31 @@ function WorkRegistrationPage() {
   // 작물 목록 API
   const { data: cropList } = useCropList({
     successFn: () => {},
-    errorFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
   });
 
   // 트레이 목록 API
   const { data: trayList } = useTrayList({
     successFn: () => {},
-    errorFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
   });
 
   // 작업 등록 API
   const { mutate: registerWorkMutate } = useRegisterWork(
     () => {
-      router.push("/");
+      // 대기중인 작업 목록 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([waitWorkListKey]);
       setIsDefaultAlertShowState({
         isShow: true,
         type: "success",
         text: "정상적으로 등록되었습니다.",
         okClick: null,
       });
+      router.push("/");
     },
     (error) => {
       setIsDefaultAlertShowState({

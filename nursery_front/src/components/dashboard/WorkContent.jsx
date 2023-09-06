@@ -1,6 +1,7 @@
-import { NumberFormatting } from "@utils/Formatting";
+import { ImagePathCheck, NumberFormatting } from "@utils/Formatting";
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
+import Image from "next/image";
 
 import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
 import DefaultModal from "@components/common/modal/DefaultModal";
@@ -8,6 +9,7 @@ import DefaultModal from "@components/common/modal/DefaultModal";
 import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/ButtonColor";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
+import theme from "@src/styles/theme";
 
 const S = {
   Wrap: styled.div`
@@ -55,6 +57,7 @@ const S = {
 
     .count-text {
       ${({ theme }) => theme.textStyle.h2BoldThin}
+      flex:1;
     }
 
     .suffix-text {
@@ -112,7 +115,7 @@ const S = {
   `,
 };
 
-function WorkContent({ isWork, setIsWork }) {
+function WorkContent({ isWork, setIsWork, workingWorkList }) {
   const [modalOpen, setModalOpen] = useState({
     open: false,
     title: "",
@@ -121,22 +124,26 @@ function WorkContent({ isWork, setIsWork }) {
     afterFn: null,
   });
 
-  return (
+  return !!workingWorkList ? (
     <S.Wrap>
       <S.WorkInfo>
         <div className="text-wrap">
-          <p className="crop-name">미인풋고추</p>
+          <p className="crop-name">{workingWorkList?.crop_kind}</p>
           <div className="count-text-wrap">
-            <p className="count-text">{NumberFormatting(520000)}</p>
+            <p className="count-text">{NumberFormatting(workingWorkList?.planter_work_output)}</p>
             <p className="suffix-text">개</p>
           </div>
           <div className="count-text-wrap seed-quantity-wrap">
             <BoxIcon />
-            <p className="suffix-text seed-quantity-text">520공</p>
+            <p className="suffix-text seed-quantity-text">{workingWorkList?.tray_total}공</p>
           </div>
         </div>
-        <S.CropImage isCropImage={false}>
-          <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
+        <S.CropImage isCropImage={!!workingWorkList?.crop_img}>
+          {!!workingWorkList?.crop_img ? (
+            <Image src={ImagePathCheck(workingWorkList?.crop_img)} layout="fill" alt="crop image" />
+          ) : (
+            <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
+          )}
         </S.CropImage>
       </S.WorkInfo>
       <S.ButtonWrap>
@@ -206,6 +213,11 @@ function WorkContent({ isWork, setIsWork }) {
       </S.ButtonWrap>
       <DefaultModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </S.Wrap>
+  ) : (
+    <div className="no-work">
+      <NoneIcon width={50} height={50} fill={theme.basic.grey20} />
+      <p>진행중인 작업이 없습니다</p>
+    </div>
   );
 }
 
