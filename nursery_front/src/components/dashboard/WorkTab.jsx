@@ -169,9 +169,7 @@ function WorkTab() {
           <div className="tab-bar" />
         </S.TabContent>
       </S.TabWrap>
-      {selectTab === "working" && (
-        <WorkContent isWork={isWork} setIsWork={setIsWork} workingWorkList={workingWorkList} />
-      )}
+      {selectTab === "working" && <WorkContent isWork={isWork} workingWorkList={workingWorkList} />}
       {selectTab === "waiting" && (
         <WaitContent
           waitWorkList={waitWorkList}

@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import Image from "next/image";
 
+import useUpdateWorkStatus from "@hooks/queries/planter/useWorkStatusUpdate";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+
 import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
 import DefaultModal from "@components/common/modal/DefaultModal";
 
@@ -10,6 +13,7 @@ import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/B
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import theme from "@src/styles/theme";
+import { workingWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -115,7 +119,9 @@ const S = {
   `,
 };
 
-function WorkContent({ isWork, setIsWork, workingWorkList }) {
+function WorkContent({ isWork, workingWorkList }) {
+  const invalidateQueries = useInvalidateQueries();
+
   const [modalOpen, setModalOpen] = useState({
     open: false,
     title: "",
@@ -123,6 +129,17 @@ function WorkContent({ isWork, setIsWork, workingWorkList }) {
     btnType: "",
     afterFn: null,
   });
+
+  // 작업 상태 변경 API
+  const { mutate: updateWorkStatusMutate } = useUpdateWorkStatus(
+    () => {
+      // 작업중인 작업 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([workingWorkListKey]);
+    },
+    (error) => {
+      alert(error);
+    },
+  );
 
   return !!workingWorkList ? (
     <S.Wrap>
@@ -153,7 +170,12 @@ function WorkContent({ isWork, setIsWork, workingWorkList }) {
               <FontSmallDefaultButton
                 type={"pause"}
                 onClick={() => {
-                  setIsWork(false);
+                  updateWorkStatusMutate({
+                    data: {
+                      planter_work_id: workingWorkList?.id,
+                      status: "PAUSE",
+                    },
+                  });
                 }}
                 customStyle={whiteButtonColor}
               />
@@ -161,7 +183,12 @@ function WorkContent({ isWork, setIsWork, workingWorkList }) {
               <FontSmallDefaultButton
                 type={"play"}
                 onClick={() => {
-                  setIsWork(true);
+                  updateWorkStatusMutate({
+                    data: {
+                      planter_work_id: workingWorkList?.id,
+                      status: "WORKING",
+                    },
+                  });
                 }}
                 customStyle={purpleButtonColor}
               />
@@ -182,7 +209,12 @@ function WorkContent({ isWork, setIsWork, workingWorkList }) {
                     ),
                     btnType: "two",
                     afterFn: () => {
-                      setIsWork(false);
+                      updateWorkStatusMutate({
+                        data: {
+                          planter_work_id: workingWorkList?.id,
+                          status: "PAUSE",
+                        },
+                      });
                       alert("작업정보 페이지로 이동 예정");
                     },
                   });
@@ -204,7 +236,12 @@ function WorkContent({ isWork, setIsWork, workingWorkList }) {
               description: "완료된 작업은 이력조회에서\n확인 할 수 있습니다.",
               btnType: "one",
               afterFn: () => {
-                alert("준비중입니다.");
+                updateWorkStatusMutate({
+                  data: {
+                    planter_work_id: workingWorkList?.id,
+                    status: "DONE",
+                  },
+                });
               },
             });
           }}
