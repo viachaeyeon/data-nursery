@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useRouter } from "next/router";
 
 import useUpdateWorkStatus from "@hooks/queries/planter/useWorkStatusUpdate";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
@@ -9,7 +10,7 @@ import SmallButton from "@components/common/button/SmallButton";
 
 import { NumberFormatting } from "@utils/Formatting";
 import { borderButtonColor, purpleButtonColor } from "@utils/ButtonColor";
-import { waitWorkListKey, workingWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
+import { waitWorkListKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import ErrorIcon from "@images/common/alert-error.svg";
 import theme from "@src/styles/theme";
@@ -94,13 +95,14 @@ const S = {
 };
 
 function WaitContent({ waitWorkList, isWorking, setSelectTab, intersectionRef }) {
+  const router = useRouter();
   const invalidateQueries = useInvalidateQueries();
 
   // 작업 상태 변경 API
   const { mutate: updateWorkStatusMutate } = useUpdateWorkStatus(
     () => {
       // 작업중인 작업 정보 다시 불러오기 위해 쿼리키 삭제
-      invalidateQueries([workingWorkListKey]);
+      invalidateQueries([workingWorkInfoKey]);
       // 대기중인 작업 목록 다시 불러오기 위해 쿼리키 삭제
       invalidateQueries([waitWorkListKey]);
       setSelectTab("working");
@@ -129,7 +131,7 @@ function WaitContent({ waitWorkList, isWorking, setSelectTab, intersectionRef })
             <S.Content
               key={`work${work.id}`}
               onClick={() => {
-                alert("작업정보 페이지로 이동");
+                router.push(`/work/${work.id}`);
               }}>
               <div className="info-wrap">
                 <p className="crop-text">

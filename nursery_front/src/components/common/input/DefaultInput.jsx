@@ -27,7 +27,7 @@ const S = {
           `
         : css`
             background-color: ${({ theme }) => theme.basic.lightSky};
-            border: 1px solid ${({ theme }) => theme.mobile.inputOutline};
+            border: 2px solid ${({ theme }) => theme.mobile.inputOutline};
 
             &:focus {
               border: 2px solid #5899fb;

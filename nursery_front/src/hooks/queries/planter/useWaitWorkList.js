@@ -11,7 +11,7 @@ export default function useWaitWorkList({ serialNumber, page, errorFn, successFn
     retry: 0,
     enabled: !!serialNumber ? true : false,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
+    refetchOnMount: "always",
     refetchOnReconnect: false,
     refetchInterval: false,
     onError: (error) => errorFn(error),

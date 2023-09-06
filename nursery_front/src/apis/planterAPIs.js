@@ -41,7 +41,7 @@ export const getDashBoardAPI = async () => {
 };
 
 // 진행중인 작업 목록
-export const getWorkingWorkListListAPI = async (serialNumber) => {
+export const getWorkingWorkInfoAPI = async (serialNumber) => {
   try {
     const res = await axios.get(process.env.NEXT_PUBLIC_END_POINT + `/api/planter/work/working/list/${serialNumber}`, {
       withCredentials: true,
@@ -71,18 +71,6 @@ export const getWaitWorkListListAPI = async (serialNumber, page) => {
   }
 };
 
-// 작업 등록
-export const registerWorkAPI = async (data) => {
-  try {
-    const res = await axios.post(process.env.NEXT_PUBLIC_END_POINT + `/api/planter/work/create`, data, {
-      withCredentials: true,
-    });
-    return res.data;
-  } catch (error) {
-    throw new Error(error.response?.status || "작업을 등록하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
-  }
-};
-
 // 작업 상태 변경
 export const updateWorkStatusAPI = async (data) => {
   try {
@@ -97,5 +85,29 @@ export const updateWorkStatusAPI = async (data) => {
     return res.data;
   } catch (error) {
     throw new Error(error.response?.status || "작업 상태를 변경하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+// 작업 등록
+export const registerWorkAPI = async (data) => {
+  try {
+    const res = await axios.post(process.env.NEXT_PUBLIC_END_POINT + `/api/planter/work/create`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "작업을 등록하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+// 작업 정보
+export const getWorkInfoAPI = async (workId) => {
+  try {
+    const res = await axios.get(process.env.NEXT_PUBLIC_END_POINT + `/api/planter/work/info/${workId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "작업 정보를 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };

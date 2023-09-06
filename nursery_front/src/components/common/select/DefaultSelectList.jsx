@@ -95,10 +95,6 @@ const S = {
       ${({ theme }) => theme.textStyle.h5Regular}
       color: ${({ theme }) => theme.basic.grey60};
     }
-
-    .selected-value {
-      background-color: ${({ theme }) => theme.basic.grey20};
-    }
   `,
 };
 

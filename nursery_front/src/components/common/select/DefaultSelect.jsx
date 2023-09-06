@@ -33,7 +33,7 @@ const S = {
             border: 2px solid #5899fb;
           `
         : css`
-            border: 1px solid ${({ theme }) => theme.mobile.inputOutline};
+            border: 2px solid ${({ theme }) => theme.mobile.inputOutline};
           `}
 
     ${(props) =>

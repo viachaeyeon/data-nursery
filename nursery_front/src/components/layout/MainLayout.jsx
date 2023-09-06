@@ -184,16 +184,22 @@ const S = {
           `}
   `,
   BottomButtonWrap: styled.div`
-    height: 90px;
+    height: ${(props) => props.height};
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+    justify-content: center;
+    gap: 16px;
     position: sticky;
     bottom: 0px;
     background: #ffffff;
     box-shadow: 0px -4px 10px 0px rgba(165, 166, 168, 0.16);
     padding: 8px 24px;
+
+    .work-start-text {
+      ${({ theme }) => theme.textStyle.h6Bold}
+      color: ${({ theme }) => theme.basic.warning};
+    }
   `,
 };
 
@@ -236,14 +242,18 @@ function MainLayout({
   useEffect(() => {
     if (pageName === "main") {
       setMainContentHeight("calc(100% - 160px)");
-    } else if (pageName?.includes("작업")) {
+    } else if (pageName?.includes("작업") && isMoreIcon && !!buttonSetting) {
+      // 작업 정보 페이지의 시작버튼 있을 경우
+      setMainContentHeight("calc(100% - 196px)");
+    } else if (pageName === "작업 등록" || pageName === "작업정보수정") {
+      // 작업 등록, 작업정보 수정 페이지
       setMainContentHeight("calc(100% - 162px)");
     } else if (!!pageName) {
       setMainContentHeight("calc(100% - 72px)");
     } else {
       setMainContentHeight("100%");
     }
-  }, [pageName]);
+  }, [pageName, isMoreIcon, buttonSetting]);
 
   return (
     <S.BackgroundWrap>
@@ -280,8 +290,9 @@ function MainLayout({
               </S.PageNameWrap>
             )}
             <div className="content">{children}</div>
-            {pageName?.includes("작업") && (
-              <S.BottomButtonWrap>
+            {pageName?.includes("작업") && !!buttonSetting && (
+              <S.BottomButtonWrap height={isMoreIcon ? "124px" : "90px"}>
+                {isMoreIcon && <p className="work-start-text">시작을 눌러 작업을 시작하세요!</p>}
                 <DefaultButton
                   customStyle={buttonSetting.color}
                   text={buttonSetting.text}

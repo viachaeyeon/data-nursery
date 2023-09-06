@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 
 import PauseIcon from "@images/dashboard/icon-pause.svg";
 import PlayIcon from "@images/dashboard/icon-play.svg";
+import theme from "@src/styles/theme";
 
 const S = {
   ButtonWrap: styled(Button)`
@@ -53,7 +54,7 @@ function FontSmallDefaultButton({ type = "text", text, onClick, customStyle }) {
       fontColor={customStyle.fontColor}
       onClick={customStyle.fontColor === "#C2D6E1" ? () => {} : onClick}>
       {type === "text" && text}
-      {type === "pause" && <PauseIcon />}
+      {type === "pause" && <PauseIcon fill={theme.basic.grey60} />}
       {type === "play" && <PlayIcon />}
     </S.ButtonWrap>
   );

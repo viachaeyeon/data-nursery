@@ -20,11 +20,12 @@ import DefaultSelectList from "@components/common/select/DefaultSelectList";
 import { isDefaultAlertShowState } from "@states/isDefaultAlertShowState";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import { defaultButtonColor, disableButtonColor } from "@utils/ButtonColor";
-import CalendarIcon from "@images/work/calendar-icon.svg";
 import OnRadioBtnIcon from "@images/common/on-radio-btn.svg";
 import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 import PointIcon from "@images/work/ico-point.svg";
 import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
+import CalendarButton from "@components/common/button/CalendarButton";
+import { DateFormatting } from "@utils/Formatting";
 
 const S = {
   Wrap: styled.div`
@@ -55,32 +56,6 @@ const S = {
     .seed-quantity-description-text {
       ${({ theme }) => theme.textStyle.h7Regular}
       color: ${({ theme }) => theme.basic.grey50};
-    }
-  `,
-  CustomCalendarButton: styled(Button)`
-    width: 100%;
-    height: 52px;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-
-    background-color: ${({ theme }) => theme.basic.lightSky} !important;
-    border: 1px solid ${({ theme }) => theme.mobile.inputOutline} !important;
-    border-radius: 8px !important;
-
-    padding: 6px 8px 6px 16px !important;
-    font-size: 18px !important;
-    font-weight: 700 !important;
-    line-height: 20px !important;
-    color: ${({ theme }) => theme.basic.grey60} !important;
-
-    &:focus {
-      border: 2px solid #5899fb !important;
-    }
-
-    svg {
-      margin-right: 6px;
     }
   `,
 };
@@ -130,17 +105,6 @@ function WorkRegistrationPage() {
     timeZone: "Asia/Seoul",
     calendar: "korean",
   };
-
-  // 오늘 날짜
-  const today = useMemo(() => {
-    const date = new Date();
-    return new Intl.DateTimeFormat("ko-KR", options).format(date).replaceAll(".", "/").split(" ");
-  }, []);
-
-  // 출하일
-  const deadLineDate = useMemo(() => {
-    return new Intl.DateTimeFormat("ko-KR", options).format(inputData.deadline).replaceAll(".", "/").split(" ");
-  }, [inputData.deadline]);
 
   // 입력값 변경
   const handleInputChange = useCallback(
@@ -258,14 +222,15 @@ function WorkRegistrationPage() {
         </S.InputWrap>
         <S.InputWrap>
           <p className="category-text">파종일</p>
-          <DefaultInput text={today[0] + today[1] + today[2].replace("/", "") + today[3]} readOnly={true} />
+          <DefaultInput text={DateFormatting(new Date())} readOnly={true} />
         </S.InputWrap>
         <S.InputWrap>
           <div className="category-wrap">
             <div className="essential-category-icon" />
             <p className="category-text">출하일</p>
           </div>
-          <S.CustomCalendarButton
+          <CalendarButton
+            text={DateFormatting(inputData.deadline)}
             onClick={() => {
               setCalendarOpen({
                 open: true,
@@ -274,10 +239,8 @@ function WorkRegistrationPage() {
                   handleInputChange("deadline", date);
                 },
               });
-            }}>
-            {deadLineDate[0] + deadLineDate[1] + deadLineDate[2].replace("/", " ") + deadLineDate[3]}
-            <CalendarIcon />
-          </S.CustomCalendarButton>
+            }}
+          />
         </S.InputWrap>
         <S.InputWrap>
           <div className="category-wrap">

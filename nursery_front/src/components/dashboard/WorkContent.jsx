@@ -2,6 +2,7 @@ import { ImagePathCheck, NumberFormatting } from "@utils/Formatting";
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 import useUpdateWorkStatus from "@hooks/queries/planter/useWorkStatusUpdate";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
@@ -13,7 +14,7 @@ import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/B
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import theme from "@src/styles/theme";
-import { workingWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
+import { workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -119,7 +120,8 @@ const S = {
   `,
 };
 
-function WorkContent({ isWork, workingWorkList }) {
+function WorkContent({ isWork, workingWorkInfo }) {
+  const router = useRouter();
   const invalidateQueries = useInvalidateQueries();
 
   const [goWorkInfo, setGoWorkInfo] = useState(false); // 작업정보 클릭 여부
@@ -137,10 +139,10 @@ function WorkContent({ isWork, workingWorkList }) {
   const { mutate: updateWorkStatusMutate } = useUpdateWorkStatus(
     () => {
       // 작업중인 작업 정보 다시 불러오기 위해 쿼리키 삭제
-      invalidateQueries([workingWorkListKey]);
+      invalidateQueries([workingWorkInfoKey]);
 
       if (goWorkInfo) {
-        alert("작업정보 페이지로 이동 예정");
+        router.push(`/work/${workingWorkInfo?.id}`);
         setGoWorkInfo(!goWorkInfo);
       }
     },
@@ -149,23 +151,23 @@ function WorkContent({ isWork, workingWorkList }) {
     },
   );
 
-  return !!workingWorkList ? (
+  return !!workingWorkInfo ? (
     <S.Wrap>
       <S.WorkInfo>
         <div className="text-wrap">
-          <p className="crop-name">{workingWorkList?.crop_kind}</p>
+          <p className="crop-name">{workingWorkInfo?.crop_kind}</p>
           <div className="count-text-wrap">
-            <p className="count-text">{NumberFormatting(workingWorkList?.planter_work_output)}</p>
+            <p className="count-text">{NumberFormatting(workingWorkInfo?.planter_work_output)}</p>
             <p className="suffix-text">개</p>
           </div>
           <div className="count-text-wrap seed-quantity-wrap">
             <BoxIcon />
-            <p className="suffix-text seed-quantity-text">{workingWorkList?.tray_total}공</p>
+            <p className="suffix-text seed-quantity-text">{workingWorkInfo?.tray_total}공</p>
           </div>
         </div>
-        <S.CropImage isCropImage={!!workingWorkList?.crop_img}>
-          {!!workingWorkList?.crop_img ? (
-            <Image src={ImagePathCheck(workingWorkList?.crop_img)} layout="fill" alt="crop image" />
+        <S.CropImage isCropImage={!!workingWorkInfo?.crop_img}>
+          {!!workingWorkInfo?.crop_img ? (
+            <Image src={ImagePathCheck(workingWorkInfo?.crop_img)} layout="fill" alt="crop image" />
           ) : (
             <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
           )}
@@ -180,7 +182,7 @@ function WorkContent({ isWork, workingWorkList }) {
                 onClick={() => {
                   updateWorkStatusMutate({
                     data: {
-                      planter_work_id: workingWorkList?.id,
+                      planter_work_id: workingWorkInfo?.id,
                       status: "PAUSE",
                     },
                   });
@@ -193,7 +195,7 @@ function WorkContent({ isWork, workingWorkList }) {
                 onClick={() => {
                   updateWorkStatusMutate({
                     data: {
-                      planter_work_id: workingWorkList?.id,
+                      planter_work_id: workingWorkInfo?.id,
                       status: "WORKING",
                     },
                   });
@@ -220,7 +222,7 @@ function WorkContent({ isWork, workingWorkList }) {
                     afterFn: () => {
                       updateWorkStatusMutate({
                         data: {
-                          planter_work_id: workingWorkList?.id,
+                          planter_work_id: workingWorkInfo?.id,
                           status: "PAUSE",
                         },
                       });
@@ -230,7 +232,7 @@ function WorkContent({ isWork, workingWorkList }) {
                     },
                   });
                 } else {
-                  alert("작업정보 페이지로 이동 예정");
+                  router.push(`/work/${workingWorkInfo?.id}`);
                 }
               }}
               customStyle={whiteButtonColor}
@@ -249,7 +251,7 @@ function WorkContent({ isWork, workingWorkList }) {
               afterFn: () => {
                 updateWorkStatusMutate({
                   data: {
-                    planter_work_id: workingWorkList?.id,
+                    planter_work_id: workingWorkInfo?.id,
                     status: "DONE",
                   },
                 });

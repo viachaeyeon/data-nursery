@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
-import useWorkingWorkList from "@hooks/queries/planter/useWorkingWorkList";
+import useWorkingWorkInfo from "@hooks/queries/planter/useWorkingWorkInfo";
 import useWaitWorkList from "@hooks/queries/planter/useWaitWorkList";
 
 import WorkContent from "@components/dashboard/WorkContent";
@@ -123,7 +123,7 @@ function WorkTab() {
   });
 
   // 진행중인 주문 목록 API
-  const { data: workingWorkList } = useWorkingWorkList({
+  const { data: workingWorkInfo } = useWorkingWorkInfo({
     serialNumber: userInfo?.planter.serial_number,
     successFn: () => {},
     errorFn: (err) => {
@@ -143,7 +143,7 @@ function WorkTab() {
     },
   });
 
-  return !!workingWorkList || waitWorkListData?.total !== 0 ? (
+  return !!workingWorkInfo || waitWorkListData?.total !== 0 ? (
     <S.Wrap>
       <S.TabWrap>
         <S.TabContent
@@ -169,11 +169,11 @@ function WorkTab() {
           <div className="tab-bar" />
         </S.TabContent>
       </S.TabWrap>
-      {selectTab === "working" && <WorkContent isWork={isWork} workingWorkList={workingWorkList} />}
+      {selectTab === "working" && <WorkContent isWork={isWork} workingWorkInfo={workingWorkInfo} />}
       {selectTab === "waiting" && (
         <WaitContent
           waitWorkList={waitWorkList}
-          isWorking={!!workingWorkList}
+          isWorking={!!workingWorkInfo}
           setSelectTab={setSelectTab}
           intersectionRef={ref}
         />
