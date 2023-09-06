@@ -122,12 +122,15 @@ const S = {
 function WorkContent({ isWork, workingWorkList }) {
   const invalidateQueries = useInvalidateQueries();
 
+  const [goWorkInfo, setGoWorkInfo] = useState(false); // 작업정보 클릭 여부
+
   const [modalOpen, setModalOpen] = useState({
     open: false,
     title: "",
     description: "",
     btnType: "",
     afterFn: null,
+    cancelFn: null,
   });
 
   // 작업 상태 변경 API
@@ -135,6 +138,11 @@ function WorkContent({ isWork, workingWorkList }) {
     () => {
       // 작업중인 작업 정보 다시 불러오기 위해 쿼리키 삭제
       invalidateQueries([workingWorkListKey]);
+
+      if (goWorkInfo) {
+        alert("작업정보 페이지로 이동 예정");
+        setGoWorkInfo(!goWorkInfo);
+      }
     },
     (error) => {
       alert(error);
@@ -199,6 +207,7 @@ function WorkContent({ isWork, workingWorkList }) {
               text={"작업정보"}
               onClick={() => {
                 if (isWork) {
+                  setGoWorkInfo(true);
                   setModalOpen({
                     open: true,
                     title: "작업정보 확인",
@@ -215,7 +224,9 @@ function WorkContent({ isWork, workingWorkList }) {
                           status: "PAUSE",
                         },
                       });
-                      alert("작업정보 페이지로 이동 예정");
+                    },
+                    cancelFn: () => {
+                      setGoWorkInfo(false);
                     },
                   });
                 } else {
@@ -243,6 +254,7 @@ function WorkContent({ isWork, workingWorkList }) {
                   },
                 });
               },
+              cancelFn: null,
             });
           }}
           customStyle={borderButtonColor}
