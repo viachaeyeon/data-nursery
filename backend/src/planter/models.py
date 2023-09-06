@@ -118,7 +118,7 @@ class PlanterOutput(BaseModel):
     id = Column(Integer, primary_key=True, index=True)
     planter_work_id = Column(Integer, ForeignKey("planter_works.id"))
     start_count = Column(Integer, nullable=True, default=None)
-    end_count = Column(Integer, nullable=True, default=None)
+    end_count = Column(Integer, nullable=True, default=0)
     output = Column(BigInteger, default=0)
 
     planter_output__planter_works = relationship(
