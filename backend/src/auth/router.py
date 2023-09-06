@@ -26,38 +26,38 @@ from constant.cookie_set import (
 router = APIRouter()
 
 
-@router.post(
-    "/test/sign-up",
-    description="test 유저 생성용입니다.<br/>파종기 정보가 같이 생성되지 않습니다.",
-    status_code=201,
-    response_model=schemas.User,
-)
-def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    if not user.login_id or not user.password:
-        return JSONResponse(
-            status_code=400, content=dict(msg="ID and password must be provide")
-        )
+# @router.post(
+#     "/test/sign-up",
+#     description="test 유저 생성용입니다.<br/>파종기 정보가 같이 생성되지 않습니다.",
+#     status_code=201,
+#     response_model=schemas.User,
+# )
+# def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+#     if not user.login_id or not user.password:
+#         return JSONResponse(
+#             status_code=400, content=dict(msg="ID and password must be provide")
+#         )
 
-    db_user = (
-        db.query(models.User).filter(models.User.login_id == user.login_id).first()
-    )
-    if db_user:
-        return JSONResponse(
-            status_code=400, content=dict(msg="This ID is already taken")
-        )
+#     db_user = (
+#         db.query(models.User).filter(models.User.login_id == user.login_id).first()
+#     )
+#     if db_user:
+#         return JSONResponse(
+#             status_code=400, content=dict(msg="This ID is already taken")
+#         )
 
-    # TODO: 실제 회원가입 시 FarmHouse도 같이 생성
-    hash_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
-    new_user = models.User(
-        login_id=user.login_id,
-        name=user.name,
-        password=hash_pw.decode("utf-8"),
-        code=user.code,
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+#     # TODO: 실제 회원가입 시 FarmHouse도 같이 생성
+#     hash_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
+#     new_user = models.User(
+#         login_id=user.login_id,
+#         name=user.name,
+#         password=hash_pw.decode("utf-8"),
+#         code=user.code,
+#     )
+#     db.add(new_user)
+#     db.commit()
+#     db.refresh(new_user)
+#     return new_user
 
 
 @router.post(

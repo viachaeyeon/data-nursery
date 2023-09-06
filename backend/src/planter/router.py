@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy import func
-from sqlalchemy.orm import Session, joinedload, aliased
+from sqlalchemy.orm import Session, aliased
 from starlette.responses import JSONResponse
 
 from datetime import datetime
@@ -17,199 +17,327 @@ from utils.db_shortcuts import get_, create_, get_current_user
 router = APIRouter()
 
 
-@router.get("/test")
-def get_planter():
-    return {"message": "Planter endpoint"}
+# @router.get(
+#     "/{planter_sn}/latest-work",
+#     status_code=200,
+#     response_model=schemas.PlanterWorkResponse,
+# )
+# def get_lastest_work(planter_sn: str, db: Session = Depends(get_db)):
+#     planter = (
+#         db.query(models.Planter)
+#         .filter(
+#             models.Planter.is_del == False,
+#             models.Planter.serial_number == planter_sn,
+#         )
+#         .first()
+#     )
+
+#     if not planter:
+#         return JSONResponse(status_code=404, content=dict(msg="NO_MATCH_PLANTER"))
+
+#     planter_works = (
+#         db.query(models.PlanterWork)
+#         .options(joinedload(models.PlanterWork.planter_work__planter_work_status))
+#         .filter(models.PlanterWork.planter_id == planter.id)
+#         .order_by(models.PlanterWork.created_at.desc())
+#         .all()
+#     )
+
+#     if not planter_works:
+#         return JSONResponse(
+#             status_code=404, content=dict(msg="NO_WORK_FOUND_FOR_THIS_PLANTER")
+#         )
+
+#     latest_on_work = None
+
+#     for work in planter_works:
+#         latest_status = work.planter_work__planter_work_status[-1]
+#         # latest_status = work.planter_work__planter_work_status[0]
+
+#         if latest_status.status == "WORKING":
+#             latest_on_work = work
+#             break
+
+#     if not latest_on_work:
+#         return JSONResponse(status_code=404, content=dict(msg="NO_WORK_STATUS_ON"))
+
+#     return {
+#         "crop": latest_on_work.planter_work__crop,
+#         "planter_work_status": latest_on_work.planter_work__planter_work_status[-1],
+#         "planter_tray": latest_on_work.planter_work__planter_tray,
+#         "planter_work": latest_on_work,
+#     }
 
 
-@router.get(
-    "/{planter_sn}/latest-work",
-    status_code=200,
-    response_model=schemas.PlanterWorkResponse,
-)
-def get_lastest_work(planter_sn: str, db: Session = Depends(get_db)):
-    planter = (
-        db.query(models.Planter)
+@router.post("/work/{serial_number}/output")
+def create_planter_output(
+    serial_number: str,
+    planter_data: schemas.PlanterOperatingDataCreate,
+    db: Session = Depends(get_db),
+):
+    planter = get_(db, models.Planter, serial_number=serial_number)
+
+    pw = aliased(models.PlanterWork)
+    pws = aliased(models.PlanterWorkStatus)
+
+    recent_status_subquery = (
+        db.query(pws.planter_work_id, func.max(pws.id).label("last_pws_id"))
+        .filter(pws.is_del == False)
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    planter_work_status_in_working = (
+        db.query(pw)
+        .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
+            & (pws.id == recent_status_subquery.c.last_pws_id),
+        )
         .filter(
-            models.Planter.is_del == False,
-            models.Planter.serial_number == planter_sn,
+            pw.is_del == False,
+            pw.planter_id == planter.id,
+            pws.status.in_(["WORKING", "PAUSE"]),
         )
         .first()
     )
 
-    if not planter:
-        return JSONResponse(status_code=404, content=dict(msg="NO_MATCH_PLANTER"))
+    if not planter_work_status_in_working:
+        return JSONResponse(status_code=404, content=dict(msg="NOT_WORKING_STATUS"))
 
-    planter_works = (
-        db.query(models.PlanterWork)
-        .options(joinedload(models.PlanterWork.planter_work__planter_work_status))
-        .filter(models.PlanterWork.planter_id == planter.id)
-        .order_by(models.PlanterWork.created_at.desc())
-        .all()
-    )
+    planter_status, operating_count, operating_time = planter_data.data.split("||")
 
-    if not planter_works:
-        return JSONResponse(
-            status_code=404, content=dict(msg="NO_WORK_FOUND_FOR_THIS_PLANTER")
-        )
+    planter_output = planter_work_status_in_working.planter_works__planter_output
 
-    latest_on_work = None
-
-    for work in planter_works:
-        latest_status = work.planter_work__planter_work_status[-1]
-        # latest_status = work.planter_work__planter_work_status[0]
-
-        if latest_status.status == "WORKING":
-            latest_on_work = work
-            break
-
-    if not latest_on_work:
-        return JSONResponse(status_code=404, content=dict(msg="NO_WORK_STATUS_ON"))
-
-    return {
-        "crop": latest_on_work.planter_work__crop,
-        "planter_work_status": latest_on_work.planter_work__planter_work_status[-1],
-        "planter_tray": latest_on_work.planter_work__planter_tray,
-        "planter_work": latest_on_work,
-    }
-
-
-@router.post("/work/{planter_work_id}/output")
-def create_planter_output(
-    planter_work_id: int,
-    planter_data: schemas.PlanterOperatingDataCreate,
-    db: Session = Depends(get_db),
-):
-    planter_work = get_(db, models.PlanterWork, id=planter_work_id)
-
-    if not planter_work:
-        return JSONResponse(status_code=404, content=dict(msg="NO_MATCH_PLANTER_WORK"))
-
-    planter_work_output = get_(
-        db,
-        models.PlanterOutput,
-        planter_work_id=planter_work_id,
-    )
-
-    if not planter_work_output:
-        planter_work_output = create_(
-            db,
-            models.PlanterOutput,
-            planter_work_id=planter_work_id,
-        )
-
-    # 파종기 마지막 동작상태 가져오기 (PlanterStatus)
-    planter_status = (
+    # 현재 파종기 동작 상태
+    current_planter_status = (
         db.query(models.PlanterStatus)
-        .join(models.PlanterStatus.planter_status__planter)
-        .filter(models.Planter.id == planter_work.planter_id)
+        .filter(models.PlanterStatus.planter_id == planter.id)
         .order_by(models.PlanterStatus.created_at.desc())
-        .all()
+        .first()
     )
-    status, output, operating_time = planter_data.data.split("||")
-    # status가 0일 경우 파종기 상태(PlanterStatus) 및 작업 상태(PlanterWorkStatus) 완료 저장
-    # status -> "1": 작업중("WORKING"), "0" : 작업완료("DONE")
-    save_planter_stauts = None
-    save_planter_work_status = None
-    if status == "0":
-        if not planter_status or planter_status[0].status != "OFF":
-            save_planter_stauts = create_(
+
+    new_planter_status = None
+
+    # planter_status == 0 : 파종기 전원 상태가 OFF 상태
+    if planter_status == "0":
+        # 현재 파종기 동작 상태가 ON일 경우에는 OFF로 변경
+        if current_planter_status.status == "ON":
+            new_planter_status = create_(
                 db,
                 models.PlanterStatus,
-                planter_id=planter_work.planter_id,
                 status="OFF",
-            )
-            db.add(save_planter_stauts)
-
-        if planter_work.planter_work__planter_work_status[-1].status != "DONE":
-            save_planter_work_status = create_(
-                db,
-                models.PlanterWorkStatus,
-                planter_work_id=planter_work_id,
-                status="DONE",
+                operating_time=operating_time,
+                planter_status__planter=planter,
             )
 
-            if not save_planter_work_status:
-                return JSONResponse(
-                    status_code=400,
-                    content=dict(msg="ERROR_CREATE_PLANTER_WORK_STATUS"),
-                )
+        new_planter_work_status = create_(
+            db,
+            models.PlanterWorkStatus,
+            status="DONE",
+            planter_work_status__planter_work=planter_work_status_in_working,
+        )
 
-            db.add(save_planter_work_status)
+        # 파종기 종료시 혹시 PlanterOutput.start_count값이 None일 경우 0 저장
+        if not planter_output.start_count:
+            planter_output.start_count = 0
+        # PlanterOutput.end_count에 파종기 동작 count값 저장
+        planter_output.end_count = int(operating_count)
 
-    elif status == "1":
-        if not planter_status or planter_status[0].status != "ON":
-            save_planter_stauts = create_(
+        # PlanterOutput.end_count - PlanterOutput.start_count 값이 0이하일 경우에는 PlanterOutput.output에 0 저장
+        operating_count_in_planter_work_working = (
+            planter_output.end_count - planter_output.start_count
+        )
+        if operating_count_in_planter_work_working < 0:
+            planter_output.output = 0
+
+        # 값이 0이상일 경우에
+        else:
+            planter_output.output = (
+                planter_work_status_in_working.planter_work__planter_tray.height
+                * operating_count_in_planter_work_working
+            )
+
+        if new_planter_status != None:
+            db.add(new_planter_status)
+        # db.add(new_planter_work_status)
+        # db.add(planter_output)
+        # db.commit()
+        if new_planter_status != None:
+            db.refresh(new_planter_status)
+        # db.refresh(new_planter_work_status)
+        # db.refresh(planter_output)
+
+    # planter_status == 1 : 파종기 전원 상태가 ON 상태
+    else:
+        # 현재 파종기 동작 상태가 OFF일 경우에는 ON으로 변경
+        if current_planter_status.status == "OFF":
+            new_planter_status = create_(
                 db,
                 models.PlanterStatus,
-                planter_id=planter_work.planter_id,
                 status="ON",
+                operating_time=operating_time,
+                planter_status__planter=planter,
             )
-            db.add(save_planter_stauts)
-    else:
-        return JSONResponse(status_code=422, content=dict(msg="INVALID_STATUS_VALUE"))
-    # output은 planter_work_output에 저장
-    planter_work_output.output = output
 
-    # operating_time 저장
-    planter_work.operating_time = operating_time
+        # PlanterOutput.start_count값이 None일 경우 operating_count 저장 -> 파종기 동작 중 작업상태를 WORKING(혹시나 WORKING 변경 후 바로 PAUSE)으로 변경했을 경우 파종량 계산 시작 값 저장
+        if not planter_output.start_count:
+            planter_output.start_count = int(operating_count)
 
-    db.add(planter_work)
-    db.add(planter_work_output)
-    db.commit()
-    db.refresh(planter_work)
-    db.refresh(planter_work_output)
-    if save_planter_stauts != None:
-        db.refresh(save_planter_stauts)
-    if save_planter_work_status != None:
-        db.refresh(save_planter_work_status)
+        planter_output.end_count = int(operating_count)
+
+        # PlanterOutput.end_count - PlanterOutput.start_count 값이 0미만일 경우에는 PlanterOutput.output에 0 저장
+        operating_count_in_planter_work_working = (
+            planter_output.end_count - planter_output.start_count
+        )
+        if operating_count_in_planter_work_working < 0:
+            planter_output.output = 0
+        # 값이 0이상일 경우에
+        else:
+            planter_output.output = (
+                planter_work_status_in_working.planter_work__planter_tray.height
+                * operating_count_in_planter_work_working
+            )
+
+        if new_planter_status != None:
+            db.add(new_planter_status)
+        db.add(planter_output)
+        db.commit()
+        if new_planter_status != None:
+            db.refresh(new_planter_status)
+        db.refresh(planter_output)
+
+    # planter_work = get_(db, models.PlanterWork, id=planter_work_id)
+
+    # if not planter_work:
+    #     return JSONResponse(status_code=404, content=dict(msg="NO_MATCH_PLANTER_WORK"))
+
+    # planter_work_output = get_(
+    #     db,
+    #     models.PlanterOutput,
+    #     planter_work_id=planter_work_id,
+    # )
+
+    # if not planter_work_output:
+    #     planter_work_output = create_(
+    #         db,
+    #         models.PlanterOutput,
+    #         planter_work_id=planter_work_id,
+    #     )
+
+    # # 파종기 마지막 동작상태 가져오기 (PlanterStatus)
+    # planter_status = (
+    #     db.query(models.PlanterStatus)
+    #     .join(models.PlanterStatus.planter_status__planter)
+    #     .filter(models.Planter.id == planter_work.planter_id)
+    #     .order_by(models.PlanterStatus.created_at.desc())
+    #     .all()
+    # )
+    # status, output, operating_time = planter_data.data.split("||")
+    # # status가 0일 경우 파종기 상태(PlanterStatus) 및 작업 상태(PlanterWorkStatus) 완료 저장
+    # # status -> "1": 작업중("WORKING"), "0" : 작업완료("DONE")
+    # save_planter_stauts = None
+    # save_planter_work_status = None
+    # if status == "0":
+    #     if not planter_status or planter_status[0].status != "OFF":
+    #         save_planter_stauts = create_(
+    #             db,
+    #             models.PlanterStatus,
+    #             planter_id=planter_work.planter_id,
+    #             status="OFF",
+    #         )
+    #         db.add(save_planter_stauts)
+
+    #     if planter_work.planter_work__planter_work_status[-1].status != "DONE":
+    #         save_planter_work_status = create_(
+    #             db,
+    #             models.PlanterWorkStatus,
+    #             planter_work_id=planter_work_id,
+    #             status="DONE",
+    #         )
+
+    #         if not save_planter_work_status:
+    #             return JSONResponse(
+    #                 status_code=400,
+    #                 content=dict(msg="ERROR_CREATE_PLANTER_WORK_STATUS"),
+    #             )
+
+    #         db.add(save_planter_work_status)
+
+    # elif status == "1":
+    #     if not planter_status or planter_status[0].status != "ON":
+    #         save_planter_stauts = create_(
+    #             db,
+    #             models.PlanterStatus,
+    #             planter_id=planter_work.planter_id,
+    #             status="ON",
+    #         )
+    #         db.add(save_planter_stauts)
+    # else:
+    #     return JSONResponse(status_code=422, content=dict(msg="INVALID_STATUS_VALUE"))
+    # # output은 planter_work_output에 저장
+    # planter_work_output.output = output
+
+    # # operating_time 저장
+    # planter_work.operating_time = operating_time
+
+    # db.add(planter_work)
+    # db.add(planter_work_output)
+    # db.commit()
+    # db.refresh(planter_work)
+    # db.refresh(planter_work_output)
+    # if save_planter_stauts != None:
+    #     db.refresh(save_planter_stauts)
+    # if save_planter_work_status != None:
+    #     db.refresh(save_planter_work_status)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
 
 
 # FIXME: 테스트 끝났을때 삭제하기
-@router.post(
-    "/test/planter/status/change",
-    status_code=200,
-    description="파종기 시리얼번호로 해당 api 요청 시 작업 상태가 WORKING으로 변경됩니다.\n테스트 종료 시 제거 예정",
-)
-def test_planter_status_change(serial_number: str, db: Session = Depends(get_db)):
-    planter_work_status = (
-        db.query(models.PlanterWorkStatus)
-        .join(models.PlanterWorkStatus.planter_work_status__planter_work)
-        .join(models.PlanterWork.planter_work__planter)
-        .filter(
-            models.Planter.is_del == False,
-            models.Planter.serial_number == serial_number,
-            models.PlanterWork.is_del == False,
-            models.PlanterWorkStatus.is_del == False,
-        )
-        .order_by(models.PlanterWorkStatus.created_at.desc())
-        .all()
-    )
+# @router.post(
+#     "/test/planter/status/change",
+#     status_code=200,
+#     description="파종기 시리얼번호로 해당 api 요청 시 작업 상태가 WORKING으로 변경됩니다.\n테스트 종료 시 제거 예정",
+# )
+# def test_planter_status_change(serial_number: str, db: Session = Depends(get_db)):
+#     planter_work_status = (
+#         db.query(models.PlanterWorkStatus)
+#         .join(models.PlanterWorkStatus.planter_work_status__planter_work)
+#         .join(models.PlanterWork.planter_work__planter)
+#         .filter(
+#             models.Planter.is_del == False,
+#             models.Planter.serial_number == serial_number,
+#             models.PlanterWork.is_del == False,
+#             models.PlanterWorkStatus.is_del == False,
+#         )
+#         .order_by(models.PlanterWorkStatus.created_at.desc())
+#         .all()
+#     )
 
-    if not planter_work_status:
-        return JSONResponse(status_code=404, content=dict(msg="NO_PLANTER_WORK_STATUS"))
+#     if not planter_work_status:
+#         return JSONResponse(status_code=404, content=dict(msg="NO_PLANTER_WORK_STATUS"))
 
-    if planter_work_status[0].status != "WORKING":
-        planter_work = (
-            db.query(models.PlanterWork)
-            .join(models.PlanterWork.planter_work__planter)
-            .filter(
-                models.PlanterWork.is_del == False,
-                models.Planter.serial_number == serial_number,
-            )
-            .order_by(models.PlanterWork.created_at.desc())
-            .all()
-        )
-        new_planter_work_status = models.PlanterWorkStatus(
-            planter_work_status__planter_work=planter_work[0], status="WORKING"
-        )
-        db.add(new_planter_work_status)
-        db.commit()
-        db.refresh(new_planter_work_status)
+#     if planter_work_status[0].status != "WORKING":
+#         planter_work = (
+#             db.query(models.PlanterWork)
+#             .join(models.PlanterWork.planter_work__planter)
+#             .filter(
+#                 models.PlanterWork.is_del == False,
+#                 models.Planter.serial_number == serial_number,
+#             )
+#             .order_by(models.PlanterWork.created_at.desc())
+#             .all()
+#         )
+#         new_planter_work_status = models.PlanterWorkStatus(
+#             planter_work_status__planter_work=planter_work[0], status="WORKING"
+#         )
+#         db.add(new_planter_work_status)
+#         db.commit()
+#         db.refresh(new_planter_work_status)
 
-    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+#     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
 
 
 @router.post("/farmhouse/register", status_code=200, description="농가에서 파종기 등록 시 사용")
@@ -295,11 +423,17 @@ def create_planter_work(
         status="WAIT",
     )
 
+    new_planter_output = create_(
+        db, models.PlanterOutput, planter_output__planter_works=new_work
+    )
+
     db.add(new_work)
     db.add(new_work_status)
+    db.add(new_planter_output)
     db.commit()
     db.refresh(new_work)
     db.refresh(new_work_status)
+    db.refresh(new_planter_output)
     return JSONResponse(status_code=201, content=dict(msg="CREATED_WORK"))
 
 
@@ -322,18 +456,14 @@ def planter_work_working_pause_list(
     pws = aliased(models.PlanterWorkStatus)
 
     recent_status_subquery = (
-        db.query(
-            pws.planter_work_id,
-            func.max(pws.id).label("last_pws_id"),
-            # func.max(pws.created_at).label("max_created_at"),
-        )
+        db.query(pws.planter_work_id, func.max(pws.id).label("last_pws_id"), pws.status)
         .filter(pws.is_del == False)
-        .group_by(pws.planter_work_id)
+        .group_by(pws.planter_work_id, pws.status)
         .subquery()
     )
 
     planter_works_with_recent_working_or_pause_status = (
-        db.query(pw)
+        db.query(pw, pws.status.label("status"))
         .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
         .join(
             pws,
@@ -352,17 +482,23 @@ def planter_work_working_pause_list(
     if not planter_works_with_recent_working_or_pause_status:
         return None
 
-    planter_work_output = (
-        planter_works_with_recent_working_or_pause_status.planter_works__planter_output
-    )
+    planter_work_output = planter_works_with_recent_working_or_pause_status[
+        0
+    ].planter_works__planter_output
+
     return {
-        "id": planter_works_with_recent_working_or_pause_status.id,
-        "crop_img": planter_works_with_recent_working_or_pause_status.planter_work__crop.image,
-        "crop_kind": planter_works_with_recent_working_or_pause_status.crop_kind,
+        "id": planter_works_with_recent_working_or_pause_status[0].id,
+        "crop_img": planter_works_with_recent_working_or_pause_status[
+            0
+        ].planter_work__crop.image,
+        "crop_kind": planter_works_with_recent_working_or_pause_status[0].crop_kind,
         "planter_work_output": planter_work_output.output
         if planter_work_output is not None
         else 0,
-        "tray_total": planter_works_with_recent_working_or_pause_status.planter_work__planter_tray.total,
+        "planter_status": planter_works_with_recent_working_or_pause_status[1],
+        "tray_total": planter_works_with_recent_working_or_pause_status[
+            0
+        ].planter_work__planter_tray.total,
     }
 
 
@@ -646,6 +782,26 @@ def update_planter_work_status(
             last_planter_work_status.status == "WORKING"
             or last_planter_work_status.status == "PAUSE"
         ):
+            planter_output = (
+                last_planter_work_status.planter_work_status__planter_work.planter_works__planter_output
+            )
+            # PlanterOutput.start_count값이 None일 경우 start_count = 0 저장
+            if not planter_output.start_count:
+                planter_output.start_count = 0
+
+            # PlanterOutput.end_count - PlanterOutput.start_count 값이 0미만일 경우에는 PlanterOutput.output에 0 저장
+            operating_count_in_planter_work_working = (
+                planter_output.end_count - planter_output.start_count
+            )
+            if operating_count_in_planter_work_working < 0:
+                planter_output.output = 0
+            # 값이 0이상일 경우에
+            else:
+                planter_output.output = (
+                    last_planter_work_status.planter_work_status__planter_work.planter_work__planter_tray.height
+                    * operating_count_in_planter_work_working
+                )
+
             new_planter_work_status = create_(
                 db,
                 models.PlanterWorkStatus,
@@ -653,8 +809,10 @@ def update_planter_work_status(
                 status="DONE",
             )
             db.add(new_planter_work_status)
+            db.add(planter_output)
             db.commit()
             db.refresh(new_planter_work_status)
+            db.refresh(planter_output)
             return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
         else:
             return JSONResponse(status_code=422, content=dict(msg="NOT_CHANGE_TO_DONE"))
@@ -689,7 +847,8 @@ def get_planter_work_info(
     last_planter_work_status = (
         db.query(models.PlanterWorkStatus)
         .filter(
-            models.PlanterWorkStatus.is_del == False, planter_work_id == planter_work_id
+            models.PlanterWorkStatus.is_del == False,
+            models.PlanterWorkStatus.planter_work_id == planter_work_id,
         )
         .order_by(models.PlanterWorkStatus.created_at.desc())
         .first()

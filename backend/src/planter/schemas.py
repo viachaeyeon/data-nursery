@@ -61,7 +61,7 @@ class PlanterWorkBase(TimezoneSchema):
     deadline: datetime
     order_quantity: int | None = None
     seed_quantity: int | None = None
-    operating_time: int | None = None
+    # operating_time: int | None = None
 
 
 class PlanterWorkCreate(PlanterWorkBase):
