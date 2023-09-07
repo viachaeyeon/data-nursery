@@ -122,8 +122,8 @@ function WorkInfoPage({ workId }) {
         router.push("/");
       }}
       isMoreIcon={true}
-      //TODO: 작업중인 정보 가져왔을 때 작업 상태가 일시정지인지 작업중인지 판단하는것도 조건에 추가
-      buttonSetting={!!workingWorkInfo ? null : buttonSetting}>
+      // 작업중이 아닌 경우에만 버튼 노출
+      buttonSetting={!!workingWorkInfo && workingWorkInfo?.planter_status === "WORKING" ? null : buttonSetting}>
       <S.Wrap>
         <S.InputWrap>
           <p className="category-text">작업상태</p>

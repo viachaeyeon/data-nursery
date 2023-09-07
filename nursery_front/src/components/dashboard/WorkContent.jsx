@@ -120,7 +120,7 @@ const S = {
   `,
 };
 
-function WorkContent({ isWork, workingWorkInfo }) {
+function WorkContent({ isWorking, workingWorkInfo }) {
   const router = useRouter();
   const invalidateQueries = useInvalidateQueries();
 
@@ -176,7 +176,7 @@ function WorkContent({ isWork, workingWorkInfo }) {
       <S.ButtonWrap>
         <S.ButtonWrap className="row-layout">
           <div className="flex-one">
-            {isWork ? (
+            {isWorking ? (
               <FontSmallDefaultButton
                 type={"pause"}
                 onClick={() => {
@@ -208,7 +208,7 @@ function WorkContent({ isWork, workingWorkInfo }) {
             <FontSmallDefaultButton
               text={"작업정보"}
               onClick={() => {
-                if (isWork) {
+                if (isWorking) {
                   setGoWorkInfo(true);
                   setModalOpen({
                     open: true,

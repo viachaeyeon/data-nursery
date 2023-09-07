@@ -94,7 +94,6 @@ const S = {
 
 function WorkTab() {
   const [selectTab, setSelectTab] = useState("working");
-  const [isWork, setIsWork] = useState(false);
   const [waitWorkListPage, setWaitWorkListPage] = useState(1);
   const [waitWorkList, setWaitWorkList] = useState([]);
 
@@ -143,8 +142,6 @@ function WorkTab() {
     },
   });
 
-  // console.log(workingWorkInfo);
-
   return !!workingWorkInfo || waitWorkListData?.total !== 0 ? (
     <S.Wrap>
       <S.TabWrap>
@@ -153,7 +150,9 @@ function WorkTab() {
           onClick={() => {
             setSelectTab("working");
           }}>
-          {isWork && <Image src={"/images/dashboard/working-ani.gif"} width={31} height={16} alt="working gif" />}
+          {workingWorkInfo?.planter_status === "WORKING" && (
+            <Image src={"/images/dashboard/working-ani.gif"} width={31} height={16} alt="working gif" />
+          )}
           <p className="tab-text">작업중</p>
           <div className="tab-bar" />
         </S.TabContent>
@@ -171,7 +170,9 @@ function WorkTab() {
           <div className="tab-bar" />
         </S.TabContent>
       </S.TabWrap>
-      {selectTab === "working" && <WorkContent isWork={isWork} workingWorkInfo={workingWorkInfo} />}
+      {selectTab === "working" && (
+        <WorkContent isWorking={workingWorkInfo?.planter_status === "WORKING"} workingWorkInfo={workingWorkInfo} />
+      )}
       {selectTab === "waiting" && (
         <WaitContent
           waitWorkList={waitWorkList}
