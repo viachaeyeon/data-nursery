@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case, extract
+from sqlalchemy import func, case, extract, desc
 from starlette.responses import JSONResponse
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from collections import defaultdict
 
 
@@ -275,7 +275,7 @@ def get_crop_total_output(
 
 @router.get(
     "/farmhouse/output",
-    description="농가별 생산령을 당일, 당월 기준으로 조회하는 api<br/>query_type='day': 당일 조회<br/>query_type='month': 당월 조회",
+    description="농가별 생산량을 당일, 당월 기준으로 조회하는 api<br/>query_type='day': 당일 조회<br/>query_type='month': 당월 조회",
     status_code=200,
 )
 def get_farmhouse_output(
@@ -343,7 +343,7 @@ def get_farmhouse_output(
                 == utc_now.month,
             )
             .group_by(authModels.FarmHouse.id, authModels.FarmHouse.name)
-            .order_by(authModels.FarmHouse.name.asc())
+            .order_by(desc("total_output"))
             .all()
         )
 
@@ -358,3 +358,135 @@ def get_farmhouse_output(
     else:
         return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
     return farmhouse_output_response
+
+
+@router.get(
+    "/planter/total-operating-time",
+    description="파종기 가동시간을 전일, 전원을 기준으로 조회하는 api<br/>query_type='day': 전일 조회<br/>query_type='month': 전월 조회",
+    status_code=200,
+)
+def get_planter_total_operating_time(
+    request: Request, query_type: str, db: Session = Depends(get_db)
+):
+    utc_now = datetime.utcnow()
+
+    if query_type == "day":
+        yesterday = utc_now.date() - timedelta(days=1)
+        total_planter_status_operating_time = (
+            db.query(
+                func.avg(planterModels.PlanterStatus.operating_time).label("total_avg")
+            )
+            .filter(
+                planterModels.PlanterStatus.status == "OFF",
+                planterModels.PlanterStatus.operating_time != 0,
+                func.Date(planterModels.PlanterStatus.updated_at) == yesterday,
+            )
+            .scalar()
+        )
+
+        if not total_planter_status_operating_time:
+            total_avg = 0
+        else:
+            total_avg = int(total_planter_status_operating_time)
+
+        operating_time_farmhouse = (
+            db.query(
+                authModels.FarmHouse.name,
+                func.sum(planterModels.PlanterStatus.operating_time).label(
+                    "sum_operating_time"
+                ),
+            )
+            .join(
+                planterModels.Planter,
+                authModels.FarmHouse.id == planterModels.Planter.farm_house_id,
+            )
+            .join(
+                planterModels.PlanterStatus,
+                planterModels.Planter.id == planterModels.PlanterStatus.planter_id,
+            )
+            .filter(
+                planterModels.PlanterStatus.status == "OFF",
+                planterModels.PlanterStatus.operating_time != 0,
+                func.Date(planterModels.PlanterStatus.updated_at) == yesterday,
+            )
+            .group_by(authModels.FarmHouse.name)
+            .order_by(desc("sum_operating_time"))
+            .all()
+        )
+
+    elif query_type == "month":
+        this_month_first_day = utc_now.date().replace(day=1)
+        last_month = this_month_first_day - timedelta(days=1)
+
+        total_planter_status_operating_time = (
+            db.query(
+                func.avg(planterModels.PlanterStatus.operating_time).label("total_avg")
+            )
+            .filter(
+                planterModels.PlanterStatus.status == "OFF",
+                planterModels.PlanterStatus.operating_time != 0,
+                extract("year", planterModels.PlanterStatus.updated_at)
+                == last_month.year,
+                extract("month", planterModels.PlanterStatus.updated_at)
+                == last_month.month,
+            )
+            .scalar()
+        )
+
+        if not total_planter_status_operating_time:
+            total_avg = 0
+        else:
+            total_avg = int(total_planter_status_operating_time)
+
+        operating_time_farmhouse = (
+            db.query(
+                authModels.FarmHouse.name,
+                func.sum(planterModels.PlanterStatus.operating_time).label(
+                    "sum_operating_time"
+                ),
+            )
+            .join(
+                planterModels.Planter,
+                authModels.FarmHouse.id == planterModels.Planter.farm_house_id,
+            )
+            .join(
+                planterModels.PlanterStatus,
+                planterModels.Planter.id == planterModels.PlanterStatus.planter_id,
+            )
+            .filter(
+                planterModels.PlanterStatus.status == "OFF",
+                planterModels.PlanterStatus.operating_time != 0,
+                extract("year", planterModels.PlanterStatus.updated_at)
+                == last_month.year,
+                extract("month", planterModels.PlanterStatus.updated_at)
+                == last_month.month,
+            )
+            .group_by(authModels.FarmHouse.name)
+            .order_by(desc("sum_operating_time"))
+            .all()
+        )
+    else:
+        return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
+
+    if not operating_time_farmhouse:
+        max_farmhouse_name = None
+        max_farmhouse_sum_operating_time = 0
+        min_farmhouse_name = None
+        min_farmhouse_sum_operating_time = 0
+    else:
+        max_farmhouse_name = operating_time_farmhouse[0][0]
+        max_farmhouse_sum_operating_time = operating_time_farmhouse[0][1]
+        min_farmhouse_name = operating_time_farmhouse[-1][0]
+        min_farmhouse_sum_operating_time = operating_time_farmhouse[-1][1]
+
+    return {
+        "total_avg": total_avg,
+        "max": {
+            "farmhouse_name": max_farmhouse_name,
+            "operating_time": max_farmhouse_sum_operating_time,
+        },
+        "min": {
+            "farmhouse_name": min_farmhouse_name,
+            "operating_time": min_farmhouse_sum_operating_time,
+        },
+    }
