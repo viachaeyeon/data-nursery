@@ -248,7 +248,7 @@ function MainLayout({
       // 작업 정보 페이지의 시작버튼 있을 경우
       setMainContentHeight("calc(100% - 196px)");
     } else if (pageName === "작업 등록" || pageName === "작업정보수정") {
-      // 작업 등록, 작업정보 수정 페이지
+      // 작업 등록, 작업정보수정 페이지
       setMainContentHeight("calc(100% - 162px)");
     } else if (!!pageName) {
       setMainContentHeight("calc(100% - 72px)");

@@ -150,7 +150,7 @@ function WaitContent({ waitWorkList, isWorking, setSelectTab, intersectionRef })
                   width="84px"
                   text={"수정"}
                   onClick={(e) => {
-                    alert("준비중입니다.");
+                    router.push(`/work/${work.id}/edit`);
                     e.stopPropagation();
                   }}
                   customStyle={borderButtonColor}

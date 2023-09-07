@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 
-import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useCropList from "@hooks/queries/crop/useCropList";
 import useTrayList from "@hooks/queries/planter/useTrayList";
 import useRegisterWork from "@hooks/queries/planter/useRegisterWork";
@@ -25,6 +24,8 @@ import PointIcon from "@images/work/ico-point.svg";
 import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 import CalendarButton from "@components/common/button/CalendarButton";
 import { DateFormatting } from "@utils/Formatting";
+import useWorkInfo from "@hooks/queries/planter/useWorkInfo";
+import useUpdateWork from "@hooks/queries/planter/useUpdateWork";
 
 const S = {
   Wrap: styled.div`
@@ -59,7 +60,7 @@ const S = {
   `,
 };
 
-function WorkRegistrationPage() {
+function WorkEditPage({ workId }) {
   const router = useRouter();
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
@@ -67,15 +68,15 @@ function WorkRegistrationPage() {
   // BottomButton 정보
   const [buttonSetting, setButtonSetting] = useState({
     color: disableButtonColor,
-    text: "등록완료",
+    text: "수정완료",
     onClickEvent: () => {},
   });
 
   // 입력값 정보
   const [inputData, setInputData] = useState({
     cropKind: "", // 품종
-    sowingDate: new Date(), // 파종일
-    deadline: new Date(new Date().setDate(new Date().getDate() + 45)), // 출하일
+    sowingDate: "", // 파종일
+    deadline: "", // 출하일
     orderQuantity: "", // 주문수량
     seedQuantity: 0, // 파종량
     planterTray: "", // 트레이
@@ -122,17 +123,18 @@ function WorkRegistrationPage() {
     if (!Object.values(inputData).includes("")) {
       setButtonSetting({
         color: defaultButtonColor,
-        text: "등록완료",
+        text: "수정완료",
         onClickEvent: () => {
-          registerWorkMutate({
+          updateWorkMutate({
             data: {
-              crop_kind: inputData.cropKind,
+              workId: workId,
               sowing_date: inputData.sowingDate,
               deadline: inputData.deadline,
+              crop_id: inputData.crop.id.toString(),
+              crop_kind: inputData.cropKind,
+              planter_tray_id: inputData.planterTray.id,
               order_quantity: inputData.orderQuantity,
               seed_quantity: inputData.seedQuantity,
-              planter_tray_id: inputData.planterTray.id,
-              crop_id: inputData.crop.id,
             },
           });
         },
@@ -141,17 +143,28 @@ function WorkRegistrationPage() {
       // 입력 값 중 빈값이 있을 경우
       setButtonSetting({
         color: disableButtonColor,
-        text: "등록완료",
+        text: "수정완료",
         onClickEvent: () => {},
       });
     }
   }, [inputData]);
 
-  // 유저 정보 API
-  const { data: userInfo } = useUserInfo({
-    successFn: () => {},
-    errorFn: () => {
-      // userLogout(router, clearQueries);
+  // 작업 정보 API
+  const { data: workInfo } = useWorkInfo({
+    workId: workId,
+    successFn: (res) => {
+      setInputData({
+        cropKind: res.planter_work.crop_kind, // 품종
+        sowingDate: new Date(res.planter_work.sowing_date), // 파종일
+        deadline: new Date(res.planter_work.deadline), // 출하일
+        orderQuantity: res.planter_work.order_quantity, // 주문수량
+        seedQuantity: res.planter_work.seed_quantity, // 파종량
+        planterTray: res.planter_tray, // 트레이
+        crop: res.crop, // 작물
+      });
+    },
+    errorFn: (err) => {
+      alert(err);
     },
   });
 
@@ -171,18 +184,20 @@ function WorkRegistrationPage() {
     },
   });
 
-  // 작업 등록 API
-  const { mutate: registerWorkMutate } = useRegisterWork(
+  // 작업 수정 API
+  const { mutate: updateWorkMutate } = useUpdateWork(
     () => {
       // 대기중인 작업 목록 다시 불러오기 위해 쿼리키 삭제
       invalidateQueries([waitWorkListKey]);
+      // 작업 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([workInfo, workId]);
       setIsDefaultAlertShowState({
         isShow: true,
         type: "success",
-        text: "정상적으로 등록되었습니다.",
+        text: "정상적으로 저장되었습니다.",
         okClick: null,
       });
-      router.push("/");
+      router.push(`/work/${workId}`);
     },
     (error) => {
       setIsDefaultAlertShowState({
@@ -196,23 +211,27 @@ function WorkRegistrationPage() {
 
   return (
     <MainLayout
-      pageName={"작업 등록"}
+      pageName={"작업정보수정"}
       backIconClickFn={() => {
-        router.push("/");
+        router.push(`/work/${workId}`);
       }}
       buttonSetting={buttonSetting}>
       <S.Wrap>
         <S.InputWrap>
-          <p className="category-text">육묘업 등록번호</p>
-          <DefaultInput text={userInfo?.farm_house.nursery_number} readOnly={true} />
-        </S.InputWrap>
-        <S.InputWrap>
-          <p className="category-text">주문자</p>
-          <DefaultInput text={"개인"} readOnly={true} />
-        </S.InputWrap>
-        <S.InputWrap>
           <p className="category-text">파종일</p>
-          <DefaultInput text={DateFormatting(new Date())} readOnly={true} />
+          <CalendarButton
+            text={DateFormatting(inputData.sowingDate)}
+            onClick={() => {
+              setCalendarOpen({
+                open: true,
+                type: "파종일",
+                date: inputData.sowingDate,
+                afterFn: (date) => {
+                  handleInputChange("sowingDate", date);
+                },
+              });
+            }}
+          />
         </S.InputWrap>
         <S.InputWrap>
           <div className="category-wrap">
@@ -347,8 +366,21 @@ function WorkRegistrationPage() {
 }
 
 // 로그인 안되어 있을 경우 로그인 페이지로 이동
-export const getServerSideProps = requireAuthentication((context) => {
-  return { props: {} };
+export const getServerSideProps = requireAuthentication(async (context) => {
+  if (!context.query.workId) {
+    return {
+      redirect: {
+        destination: "/",
+        statusCode: 302,
+      },
+    };
+  } else {
+    return {
+      props: {
+        workId: context.query.workId,
+      },
+    };
+  }
 });
 
-export default WorkRegistrationPage;
+export default WorkEditPage;

@@ -11,7 +11,7 @@ export default function useWorkInfo({ workId, errorFn, successFn }) {
     retry: 0,
     enabled: !!workId ? true : false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: "always",
     refetchOnReconnect: false,
     refetchInterval: false,
     onError: (error) => errorFn(error),

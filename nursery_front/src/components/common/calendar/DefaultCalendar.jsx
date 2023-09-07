@@ -198,19 +198,31 @@ function DefaultCalendar({ calendarOpen, setCalendarOpen }) {
   const [selectDate, setSelectDate] = useState("");
 
   const closeModal = useCallback(() => {
+    setSelectDate("");
     setCalendarOpen({
       open: false, // 오픈 여부
+      type: "", // 파종일, 출하일
       date: "", // 선택한 날짜
       afterFn: null, // 선택완료 버튼 클릭 시 실행
     });
   }, []);
+
+  const selectComplete = useCallback(() => {
+    if (selectDate === "") {
+      calendarOpen.afterFn(calendarOpen.date);
+    } else {
+      calendarOpen.afterFn(selectDate);
+    }
+
+    closeModal();
+  }, [selectDate, calendarOpen]);
 
   return (
     calendarOpen.open && (
       <S.BackGroundWrap>
         <S.Wrap>
           <S.CloseHeader>
-            <p>출하일을 선택하세요</p>
+            <p>{calendarOpen.type}을 선택하세요</p>
             <div className="close-icon-wrap">
               <CloseIcon fill={"#000000"} onClick={closeModal} />
             </div>
@@ -249,14 +261,7 @@ function DefaultCalendar({ calendarOpen, setCalendarOpen }) {
             />
           </S.CustomCalendar>
           <S.Divider />
-          <FontSmallDefaultButton
-            text={"선택완료"}
-            onClick={() => {
-              calendarOpen.afterFn(selectDate);
-              closeModal();
-            }}
-            customStyle={borderButtonColor}
-          />
+          <FontSmallDefaultButton text={"선택완료"} onClick={selectComplete} customStyle={borderButtonColor} />
         </S.Wrap>
       </S.BackGroundWrap>
     )

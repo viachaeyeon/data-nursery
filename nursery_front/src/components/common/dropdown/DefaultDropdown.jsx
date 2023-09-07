@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useRouter } from "next/router";
 
 import UpdateIcon from "@images/work/icon-update.svg";
 import DeleteIcon from "@images/work/icon-delete.svg";
@@ -74,6 +75,8 @@ const S = {
 };
 
 function DefaultDropdown({ dropdownOpen, setDropdownOpen }) {
+  const router = useRouter();
+
   const [modalOpen, setModalOpen] = useState({
     open: false,
     type: "",
@@ -82,8 +85,6 @@ function DefaultDropdown({ dropdownOpen, setDropdownOpen }) {
     btnType: "",
     afterFn: null,
   });
-
-  console.log(modalOpen);
 
   return (
     <>
@@ -98,7 +99,7 @@ function DefaultDropdown({ dropdownOpen, setDropdownOpen }) {
               <p
                 className="drop-down-text"
                 onClick={() => {
-                  alert("준비중입니다.");
+                  router.push(`/work/${router.query.workId}/edit`);
                   setDropdownOpen(false);
                 }}>
                 수정

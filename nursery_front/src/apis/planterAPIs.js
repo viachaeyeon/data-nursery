@@ -100,6 +100,22 @@ export const registerWorkAPI = async (data) => {
   }
 };
 
+// 작업정보수정
+export const updateWorkAPI = async (data) => {
+  try {
+    const res = await axios.patch(
+      process.env.NEXT_PUBLIC_END_POINT + `/api/planter/work/info/update/${data.workId}`,
+      data,
+      {
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "작업정보를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
 // 작업 정보
 export const getWorkInfoAPI = async (workId) => {
   try {
