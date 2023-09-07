@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case, extract, desc
+from sqlalchemy import func, case, extract, desc, asc
 from starlette.responses import JSONResponse
 from datetime import date, datetime, timedelta
+from pytz import timezone
 from collections import defaultdict
 
 
@@ -281,6 +282,7 @@ def get_crop_total_output(
 def get_farmhouse_output(
     request: Request, query_type: str, db: Session = Depends(get_db)
 ):
+    get_current_user("99", request.cookies, db)
     utc_now = datetime.utcnow()
     if query_type == "day":
         farmhouse_output = (
@@ -368,6 +370,7 @@ def get_farmhouse_output(
 def get_planter_total_operating_time(
     request: Request, query_type: str, db: Session = Depends(get_db)
 ):
+    get_current_user("99", request.cookies, db)
     utc_now = datetime.utcnow()
 
     if query_type == "day":
@@ -490,3 +493,183 @@ def get_planter_total_operating_time(
             "operating_time": min_farmhouse_sum_operating_time,
         },
     }
+
+
+@router.get(
+    "/planter-work/statics", description=("관리자 통계현황 페이지 파종기 작업 조회 api"), status_code=200
+)
+def get_planter_work_statics(
+    request: Request,
+    year: int = None,
+    month: int = None,
+    day: int = None,
+    farm_house_id: str = None,
+    farmhouse_name: str = None,
+    crop_name: str = None,
+    crop_kind_order_type: int = 0,  # 0: 내림차순, 1: 올림차순
+    tray_total: str = None,
+    seed_quantity_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
+    planter_output_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
+    sowing_date_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
+    is_shipment_completed_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
+    page: int = 1,
+    size: int = 10,
+    db: Session = Depends(get_db),
+):
+    get_current_user("99", request.cookies, db)
+
+    if page - 1 < 0:
+        page = 0
+    else:
+        page -= 1
+
+    base_query = (
+        db.query(
+            planterModels.PlanterWork.id,
+            planterModels.PlanterWork.crop_kind,
+            planterModels.PlanterWork.order_quantity,
+            planterModels.PlanterWork.sowing_date,
+            planterModels.PlanterWork.is_shipment_completed,
+            authModels.FarmHouse.farm_house_id,
+            authModels.FarmHouse.name.label("farmhouse_name"),
+            authModels.FarmHouse.is_del.label("farmhouse_is_del"),
+            cropModels.Crop.name.label("crop_name"),
+            planterModels.PlanterTray.total,
+            planterModels.PlanterOutput.output,
+        )
+        .join(
+            planterModels.Planter,
+            planterModels.PlanterWork.planter_id == planterModels.Planter.id,
+        )
+        .join(
+            authModels.FarmHouse,
+            planterModels.Planter.farm_house_id == authModels.FarmHouse.id,
+        )
+        .join(cropModels.Crop, planterModels.PlanterWork.crop_id == cropModels.Crop.id)
+        .join(
+            planterModels.PlanterTray,
+            planterModels.PlanterWork.planter_id == planterModels.PlanterTray.id,
+        )
+        .join(
+            planterModels.PlanterOutput,
+            planterModels.PlanterWork.id == planterModels.PlanterOutput.planter_work_id,
+        )
+    )
+
+    delimiter = "||"
+
+    if day:
+        base_query = base_query.filter(
+            extract(
+                "year",
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+            )
+            == year,
+            extract(
+                "month",
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+            )
+            == month,
+            extract(
+                "day",
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+            )
+            == day,
+        )
+    elif month:
+        base_query = base_query.filter(
+            extract(
+                "year",
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+            )
+            == year,
+            extract(
+                "month",
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+            )
+            == month,
+        )
+    elif year:
+        base_query = base_query.filter(
+            extract(
+                "year",
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+            )
+            == year,
+        )
+
+    if farm_house_id:
+        # search_farm_house_ids = farm_house_id.split(delimiter)
+        # farm_house_id_filter_conditions = [
+        #     authModels.FarmHouse.farm_house_id.like(f"%{word}%")
+        #     for word in search_farm_house_ids
+        # ]
+        search_farm_house_ids = farm_house_id.split(delimiter)
+        base_query = base_query.filter(
+            authModels.FarmHouse.farm_house_id.in_(search_farm_house_ids)
+        )
+
+    if farmhouse_name:
+        search_farmhouse_names = farmhouse_name.split(delimiter)
+        base_query = base_query.filter(
+            authModels.FarmHouse.name.in_(search_farmhouse_names)
+        )
+    if crop_name:
+        search_crop_names = crop_name.split(delimiter)
+        base_query = base_query.filter(cropModels.Crop.name.in_(search_crop_names))
+    if tray_total:
+        search_tray_totals = tray_total.split(delimiter)
+        base_query = base_query.filter(
+            planterModels.PlanterTray.total.in_(search_tray_totals)
+        )
+
+    order_conditions = []
+    if crop_kind_order_type == 0:
+        order_conditions.append(desc(planterModels.PlanterWork.crop_kind))
+    else:
+        order_conditions.append(asc(planterModels.PlanterWork.crop_kind))
+    if seed_quantity_order_type == 0:
+        order_conditions.append(desc(planterModels.PlanterWork.seed_quantity))
+    else:
+        order_conditions.append(asc(planterModels.PlanterWork.seed_quantity))
+    if planter_output_order_type == 0:
+        order_conditions.append(desc(planterModels.PlanterOutput.output))
+    else:
+        order_conditions.append(asc(planterModels.PlanterOutput.output))
+    if sowing_date_order_type == 0:
+        order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
+    else:
+        order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
+    if sowing_date_order_type == 0:
+        order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
+    else:
+        order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
+    if is_shipment_completed_order_type == 0:
+        order_conditions.append(asc(planterModels.PlanterWork.is_shipment_completed))
+    else:
+        order_conditions.append(desc(planterModels.PlanterWork.is_shipment_completed))
+
+    base_query = base_query.order_by(*order_conditions)
+
+    total = base_query.count()
+    result_data = []
+    for result in base_query.offset(page * size).limit(size).all():
+        result_data.append(
+            {
+                "id": result.id,
+                "crop_kind": result.crop_kind,
+                "order_quantity": result.order_quantity,
+                "sowing_date": result.sowing_date,
+                "is_shipment_completed": result.is_shipment_completed,
+                "farmhouse": {
+                    "farm_house_id": result.farm_house_id,
+                    "name": result.farmhouse_name,
+                    "is_del": result.farmhouse_is_del,
+                },
+                "crop": {"name": result.crop_name},
+                "planter_tray": {"total": result.total},
+                "planter_output": {"output": result.output},
+            }
+        )
+
+    return {"total": total, "data": result_data}
