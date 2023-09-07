@@ -105,12 +105,16 @@ def get_admin_dashboard_realtime_planter(
         )
         .outerjoin(
             planterModels.PlanterOutput,
-            planterModels.PlanterOutput.planter_work_id == planterModels.PlanterWork.id,
+            (
+                planterModels.PlanterOutput.planter_work_id
+                == planterModels.PlanterWork.id
+            )
+            & (planterModels.PlanterOutput.created_at >= date.today()),
         )
         .filter(
             planterModels.Planter.is_del == False,
             authModels.FarmHouse.is_del == False,
-            planterModels.PlanterOutput.created_at >= date.today(),
+            # planterModels.PlanterOutput.created_at >= date.today(),
             # planterModels.PlanterStatus.status.in_(["ON", "PAUSE", "OFF"]),
         )
         .group_by(
