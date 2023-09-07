@@ -107,6 +107,9 @@ const S = {
       flex-direction: column;
       gap: 10px;
     }
+    .option-modal-wrap {
+      position: relative;
+    }
   `,
   ListBlock: styled.div`
     align-items: center;
@@ -172,6 +175,11 @@ function CropsList() {
     index: undefined,
     data: undefined,
   });
+
+  // 선택삭제 클릭
+  const handelSelectDeleteClick = useCallback(() => {
+    alert("선택삭제");
+  }, []);
 
   //작물 추가 정보
   const [cropsName, setCropsName] = useState("");
@@ -372,7 +380,7 @@ function CropsList() {
               ) : (
                 <>
                   <div className="btn-wrap">
-                    <S.SelectDeleteBtn>
+                    <S.SelectDeleteBtn onClick={handelSelectDeleteClick}>
                       <DeleteIcon width={12} height={12} />
                       <p>선택삭제</p>
                     </S.SelectDeleteBtn>
@@ -412,28 +420,31 @@ function CropsList() {
                         style={{ backgroundColor: CorpsColorList[index] }}
                       />
                       <p>{data.crops_name}</p>
-                      <div
-                        className="option-dot"
-                        onClick={() => {
-                          handleCropsOptionModalClick(index, data);
-                        }}
-                      >
-                        <OptionDot width={32} height={32} />
+
+                      <div className="option-modal-wrap">
+                        <div
+                          className="option-dot"
+                          onClick={() => {
+                            handleCropsOptionModalClick(index, data);
+                          }}
+                        >
+                          <OptionDot width={32} height={32} />
+                        </div>
+                        {index === optionModalOpen.index && (
+                          <CropsOptionModal
+                            optionModalOpen={optionModalOpen}
+                            setOptionModalOpen={setOptionModalOpen}
+                            deleteCropsModalOpen={deleteCropsModalOpen}
+                            setDeleteCropsModalOpen={setDeleteCropsModalOpen}
+                            // editCropsModalOpen={editCropsModalOpen}
+                            setEditCropsModalOpen={setEditCropsModalOpen}
+                            deleteCropsImgModalOpen={deleteCropsImgModalOpen}
+                            setDeleteCropsImgModalOpen={
+                              setDeleteCropsImgModalOpen
+                            }
+                          />
+                        )}
                       </div>
-                      {index === optionModalOpen.index && (
-                        <CropsOptionModal
-                          optionModalOpen={optionModalOpen}
-                          setOptionModalOpen={setOptionModalOpen}
-                          deleteCropsModalOpen={deleteCropsModalOpen}
-                          setDeleteCropsModalOpen={setDeleteCropsModalOpen}
-                          // editCropsModalOpen={editCropsModalOpen}
-                          setEditCropsModalOpen={setEditCropsModalOpen}
-                          deleteCropsImgModalOpen={deleteCropsImgModalOpen}
-                          setDeleteCropsImgModalOpen={
-                            setDeleteCropsImgModalOpen
-                          }
-                        />
-                      )}
                     </S.ListBlock>
                   );
                 })}

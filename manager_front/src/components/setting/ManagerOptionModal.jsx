@@ -9,12 +9,14 @@ const S = {
     display: flex;
     justify-content: end;
     position: absolute;
-    right: 30px;
+    /* right: 30px; */
+    right: -83px;
+    z-index: 1;
 
     .wrap-inner {
       align-items: center;
       position: absolute;
-      top: 10px;
+      /* top: 10px; */
       background-color: #fff;
       border-radius: 8px;
       padding: 8px;

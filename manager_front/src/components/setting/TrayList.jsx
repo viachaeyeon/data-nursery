@@ -107,6 +107,9 @@ const S = {
       flex-direction: column;
       gap: 10px;
     }
+    .option-modal-wrap {
+      position: relative;
+    }
   `,
   ListBlock: styled.div`
     align-items: center;
@@ -210,6 +213,11 @@ function TrayList() {
   const handleAddTrayModalClick = useCallback(() => {
     setAddTrayModalOpen(true);
   }, [addTrayModalOpen]);
+
+  // 선택삭제 클릭
+  const handelSelectDeleteClick = useCallback(() => {
+    alert("선택삭제");
+  }, []);
 
   const [listData, setListData] = useState([
     {
@@ -336,7 +344,7 @@ function TrayList() {
               ) : (
                 <>
                   <div className="btn-wrap">
-                    <S.SelectDeleteBtn>
+                    <S.SelectDeleteBtn onClick={handelSelectDeleteClick}>
                       <DeleteIcon width={12} height={12} />
                       <p>선택삭제</p>
                     </S.SelectDeleteBtn>
@@ -377,24 +385,26 @@ function TrayList() {
                       </div>
                       <p>{data.width_count}</p>
                       <p>{data.height_count}</p>
-                      <div
-                        className="option-dot"
-                        onClick={() => {
-                          handleCropsOptionModalClick(index, data);
-                          setDeleteTrayModalOpen({ open: false, data: data });
-                        }}
-                      >
-                        <OptionDot width={32} height={32} />
+                      <div className="option-modal-wrap">
+                        <div
+                          className="option-dot"
+                          onClick={() => {
+                            handleCropsOptionModalClick(index, data);
+                            setDeleteTrayModalOpen({ open: false, data: data });
+                          }}
+                        >
+                          <OptionDot width={32} height={32} />
+                        </div>
+                        {index === optionModalOpen.index && (
+                          <OptionModal
+                            optionModalOpen={optionModalOpen}
+                            setOptionModalOpen={setOptionModalOpen}
+                            setEditTrayModalOpen={setEditTrayModalOpen}
+                            deleteTrayModalOpen={deleteTrayModalOpen}
+                            setDeleteTrayModalOpen={setDeleteTrayModalOpen}
+                          />
+                        )}
                       </div>
-                      {index === optionModalOpen.index && (
-                        <OptionModal
-                          optionModalOpen={optionModalOpen}
-                          setOptionModalOpen={setOptionModalOpen}
-                          setEditTrayModalOpen={setEditTrayModalOpen}
-                          deleteTrayModalOpen={deleteTrayModalOpen}
-                          setDeleteTrayModalOpen={setDeleteTrayModalOpen}
-                        />
-                      )}
                     </S.ListBlock>
                   );
                 })}

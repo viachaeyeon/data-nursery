@@ -107,6 +107,10 @@ const S = {
       flex-direction: column;
       gap: 10px;
     }
+
+    .option-modal-wrap {
+      position: relative;
+    }
   `,
   ListBlock: styled.div`
     align-items: center;
@@ -196,6 +200,11 @@ function ManagementList() {
     },
     [optionModalOpen],
   );
+
+  // 선택삭제 클릭
+  const handelSelectDeleteClick = useCallback(() => {
+    alert("선택삭제");
+  }, []);
 
   const [listData, setListData] = useState([
     {
@@ -385,7 +394,7 @@ function ManagementList() {
           ) : (
             <>
               <div className="btn-wrap">
-                <S.SelectDeleteBtn>
+                <S.SelectDeleteBtn onClick={handelSelectDeleteClick}>
                   <DeleteIcon width={12} height={12} />
                   <p>선택삭제</p>
                 </S.SelectDeleteBtn>
@@ -433,24 +442,26 @@ function ManagementList() {
                   <p>{data.position}</p>
                   <p>{data.name}</p>
                   <p>{data.phone}</p>
-                  <div
-                    className="option-dot"
-                    onClick={() => {
-                      handleOptionModalClick(index, data);
-                      setDeleteManagerModalOpen({ open: false, data: data });
-                    }}
-                  >
-                    <OptionDot width={32} height={32} />
+                  <div className="option-modal-wrap">
+                    <div
+                      className="option-dot"
+                      onClick={() => {
+                        handleOptionModalClick(index, data);
+                        setDeleteManagerModalOpen({ open: false, data: data });
+                      }}
+                    >
+                      <OptionDot width={32} height={32} />
+                    </div>
+                    {index === optionModalOpen.index && (
+                      <OptionModal
+                        optionModalOpen={optionModalOpen}
+                        setOptionModalOpen={setOptionModalOpen}
+                        setEditManagerModalOpen={setEditManagerModalOpen}
+                        deleteManagerModalOpen={deleteManagerModalOpen}
+                        setDeleteManagerModalOpen={setDeleteManagerModalOpen}
+                      />
+                    )}
                   </div>
-                  {index === optionModalOpen.index && (
-                    <OptionModal
-                      optionModalOpen={optionModalOpen}
-                      setOptionModalOpen={setOptionModalOpen}
-                      setEditManagerModalOpen={setEditManagerModalOpen}
-                      deleteManagerModalOpen={deleteManagerModalOpen}
-                      setDeleteManagerModalOpen={setDeleteManagerModalOpen}
-                    />
-                  )}
                 </S.ListBlock>
               );
             })}
