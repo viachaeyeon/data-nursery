@@ -11,6 +11,8 @@ import UpArrow from "@images/common/order-by-up-icon.svg";
 import DownArrow from "@images/common/order-by-down-icon.svg";
 import FinCheckIcon from "@images/statistics/fin-check-icon.svg";
 import WaitingIcon from "@images/statistics/waiting-icon.svg";
+import GrayFinCheckIcon from "@images/statistics/gray-fin-check-icon.svg";
+import GrayWaitingIcon from "@images/statistics/gray-waiting-icon.svg";
 import HeaderSelectArrowIcon from "@images/statistics/header-icon-arrow.svg";
 import SelectArrowIcon from "@images/statistics/icon-arrow.svg";
 import PickerIcon from "@images/statistics/date-picker-icon.svg";
@@ -227,6 +229,20 @@ const S = {
     .check-box {
       cursor: pointer;
     }
+
+    .delete {
+      border: 1px solid ${({ theme }) => theme.basic.whiteGray};
+      box-shadow: none;
+
+      p {
+        color: #c6c6c6;
+        ${({ theme }) => theme.textStyle.h7Bold};
+      }
+
+      .farm-name-frist {
+        background-color: #c6c6c6;
+      }
+    }
   `,
   ListBlock: styled.div`
     display: flex;
@@ -284,10 +300,14 @@ const S = {
     .sowing_count {
       width: 126px;
       justify-content: end;
+      color: ${({ theme }) => theme.basic.deepBlue};
+      ${({ theme }) => theme.textStyle.h7Bold};
     }
     .sowing_date {
       width: 126px;
       justify-content: center;
+      color: ${({ theme }) => theme.basic.gray40};
+      ${({ theme }) => theme.textStyle.h7Semibold}
     }
 
     .farm_name_wrap {
@@ -789,7 +809,7 @@ function StatisticsStatus() {
       sowing_count: "9999999",
       sowingDate: "2023/08/16",
       state: "fin",
-      farm_delete: "0",
+      farm_delete: "0", //0이 삭제되지 않은것 1이 삭제된것
     },
     {
       id: 2,
@@ -817,6 +837,20 @@ function StatisticsStatus() {
       sowing_count: "1122399",
       sowingDate: "2023/08/15",
       state: "wait",
+      farm_delete: "1",
+    },
+    {
+      id: 4,
+      serial_number: "KN001DS0958 ",
+      farm_id: "PF_0021350",
+      farm_name: "가야프러그영농조합",
+      farm_plant: "고추",
+      plant_name: "고추고추",
+      tray: "18",
+      order_count: "99999999",
+      sowing_count: "1122399",
+      sowingDate: "2023/08/15",
+      state: "fin",
       farm_delete: "1",
     },
   ]);
@@ -1193,7 +1227,10 @@ function StatisticsStatus() {
 
             {listData.map((data, index) => {
               return (
-                <S.ListBlock key={`map${index}`}>
+                <S.ListBlock
+                  key={`map${index}`}
+                  className={data.farm_delete === "1" && "delete"}
+                >
                   <p className="list_id">{data.id}</p>
                   <p className="farm_id">{data.farm_id}</p>
                   <div className="farm_name_wrap">
@@ -1212,10 +1249,16 @@ function StatisticsStatus() {
                     {NumberCommaFormatting(data.sowing_count)}
                   </p>
                   <p className="sowing_date">{data.sowingDate}</p>
-                  {data.state === "fin" ? (
+                  {data.state === "fin" && data.farm_delete === "0" ? (
                     <FinCheckIcon width={98} height={40} />
-                  ) : (
+                  ) : data.state === "wait" && data.farm_delete === "0" ? (
                     <WaitingIcon width={98} height={40} />
+                  ) : data.state === "fin" && data.farm_delete === "1" ? (
+                    <GrayFinCheckIcon width={98} height={40} />
+                  ) : data.state === "wait" && data.farm_delete === "1" ? (
+                    <GrayWaitingIcon width={98} height={40} />
+                  ) : (
+                    <></>
                   )}
                 </S.ListBlock>
               );

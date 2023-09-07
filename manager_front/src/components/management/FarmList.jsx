@@ -18,6 +18,7 @@ import UpArrow from "@images/common/order-by-up-icon.svg";
 import DownArrow from "@images/common/order-by-down-icon.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import FarmIcon from "@images/management/icon-farm.svg";
+import DeleteIcon from "@images/setting/icon-delete.svg";
 
 const S = {
   Wrap: styled.div`
@@ -130,6 +131,7 @@ const S = {
       justify-content: space-between;
       align-items: center;
       padding: 6px 32px 6px 24px;
+      height: 52px;
     }
     p {
       ${({ theme }) => theme.textStyle.h7Reguler};
@@ -151,6 +153,10 @@ const S = {
 
     .selected {
       border: 1px solid ${({ theme }) => theme.primery.primery};
+    }
+
+    .btn-wrap {
+      width: 100%;
     }
   `,
 
@@ -271,6 +277,23 @@ const S = {
       ${({ theme }) => theme.textStyle.h5Reguler}
     }
   `,
+  SelectDeleteBtn: styled.div`
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: ${({ theme }) => theme.primery.primery};
+    display: flex;
+    gap: 6px;
+    height: 32px;
+    align-items: center;
+    cursor: pointer;
+    width: fit-content;
+    margin-left: 16px;
+
+    p {
+      color: ${({ theme }) => theme.blackWhite.white} !important;
+      ${({ theme }) => theme.textStyle.h7Bold};
+    }
+  `,
 };
 
 function FarmList() {
@@ -332,6 +355,11 @@ function FarmList() {
     },
     [optionModalOpen],
   );
+
+  // 선택삭제 클릭
+  const handelSelectDeleteClick = useCallback(() => {
+    alert("선택삭제");
+  }, []);
 
   // 농가추가 모달
   const handleAddFarmModalClick = useCallback(() => {
@@ -494,33 +522,46 @@ function FarmList() {
               </div>
             </label>
           </div>
-          <p>파종기 S/N</p>
-          <p>농가 ID</p>
-          <div className="arrow-wrap">
-            <p>농가명</p>
-            <div className="icon-wrap" onClick={sortByFarmName}>
-              {isNameOrderBy ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
-              )}
-            </div>
-          </div>
-          <p>생산자명</p>
-          <p>육묘업등록번호</p>
-          <p>주소</p>
-          <p>연락처</p>
-          <div className="arrow-wrap">
-            <p>상태</p>
-            <div className="icon-wrap" onClick={sortByStatus}>
-              {isStateOrderBy ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
-              )}
-            </div>
-          </div>
-          <p></p>
+          {checkArray.length === 0 ? (
+            <>
+              <p>파종기 S/N</p>
+              <p>농가 ID</p>
+              <div className="arrow-wrap">
+                <p>농가명</p>
+                <div className="icon-wrap" onClick={sortByFarmName}>
+                  {isNameOrderBy ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
+                </div>
+              </div>
+              <p>생산자명</p>
+              <p>육묘업등록번호</p>
+              <p>주소</p>
+              <p>연락처</p>
+              <div className="arrow-wrap">
+                <p>상태</p>
+                <div className="icon-wrap" onClick={sortByStatus}>
+                  {isStateOrderBy ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
+                </div>
+              </div>
+              <p></p>
+            </>
+          ) : (
+            <>
+              <div className="btn-wrap">
+                <S.SelectDeleteBtn onClick={handelSelectDeleteClick}>
+                  <DeleteIcon width={12} height={12} />
+                  <p>선택삭제</p>
+                </S.SelectDeleteBtn>
+              </div>
+            </>
+          )}
         </div>
         {listData.length === 0 ? (
           <S.EmptyData>

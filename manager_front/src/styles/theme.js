@@ -27,7 +27,8 @@ const textStyle = {
   h7Reguler:
     "font-size:14px; font-style:normal; font-weight:400; line-height:16px",
   h8Reguler: "",
-  h7Semibold: "",
+  h7Semibold:
+    "font-size:14px; font-style:normal; font-weight:600; line-height:16px;",
 };
 
 const blackWhite = {
