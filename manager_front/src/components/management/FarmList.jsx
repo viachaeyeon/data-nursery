@@ -149,8 +149,8 @@ const S = {
       display: flex;
     }
 
-    .check-box {
-      cursor: pointer;
+    .selected {
+      border: 1px solid ${({ theme }) => theme.primery.primery};
     }
   `,
 
@@ -209,6 +209,10 @@ const S = {
     }
     .status-off {
       color: ${({ theme }) => theme.basic.gray30};
+    }
+
+    .option-modal-wrap {
+      position: relative;
     }
   `,
 
@@ -270,8 +274,6 @@ const S = {
 };
 
 function FarmList() {
-  const [isAllCheckBox, setIsAllCheckBox] = useState(false);
-  const [isOneCheckBox, setIsOneCheckBox] = useState(false);
   const [isNameOrderBy, setIsNameOrderBy] = useState(true);
   const [isStateOrderBy, setIsStateOrderBy] = useState(true);
   // 농가추가시 작성하는 시리얼넘버
@@ -319,16 +321,6 @@ function FarmList() {
     data: undefined,
   });
 
-  // 전체선택 토글
-  const AllCheckBoxToggle = useCallback(() => {
-    setIsAllCheckBox((prevIs) => !prevIs);
-  }, [isAllCheckBox]);
-
-  // 개별선택 토글
-  const OneCheckBoxToggle = useCallback(() => {
-    setIsOneCheckBox((prevIs) => !prevIs);
-  }, [isOneCheckBox]);
-
   // : 눌렀을때 나오는 모달
   const handleOptionModalClick = useCallback(
     (index, data) => {
@@ -349,6 +341,7 @@ function FarmList() {
   // 농가목록 데이터
   const [listData, setListData] = useState([
     {
+      id: 1,
       serial_number: "KN001DS0958",
       farm_id: "PF_0021350",
       farm_name: "하나공정육묘장영농조합법인",
@@ -360,6 +353,7 @@ function FarmList() {
       status: "ON",
     },
     {
+      id: 2,
       serial_number: "KN001DS0958 ",
       farm_id: "PF_0021350",
       farm_name: "가야프러그영농조합",
@@ -371,6 +365,7 @@ function FarmList() {
       status: "OFF",
     },
     {
+      id: 3,
       serial_number: "KN001DS0958 ",
       farm_id: "PF_0021350",
       farm_name: "김해고송육묘",
@@ -417,6 +412,49 @@ function FarmList() {
     alert("더보기 버튼 구현중");
   }, []);
 
+  const [selectAll, setSelectAll] = useState(false);
+  const [isChecked, setIsChecked] = useState(listData.map(() => false));
+  const [checkArray, setCheckArray] = useState([]);
+
+  const toggleItem = (index) => {
+    const updatedIsCheckedArray = [...isChecked];
+    updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
+    setIsChecked(updatedIsCheckedArray);
+
+    // 모든 항목이 체크되었는지 확인
+    const allChecked = updatedIsCheckedArray.every((checked) => checked);
+
+    // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
+    // 그렇지 않다면 전체 선택 체크박스를 false로 설정
+    setSelectAll(allChecked);
+
+    const selectedItemId = listData[index].number;
+    if (updatedIsCheckedArray[index]) {
+      setCheckArray((prevArray) => [...prevArray, selectedItemId]);
+    } else {
+      setCheckArray((prevArray) =>
+        prevArray.filter((number) => number !== selectedItemId),
+      );
+    }
+  };
+
+  const toggleAll = () => {
+    const allChecked = !selectAll;
+
+    // 모든 항목을 전부 선택 또는 해제
+    const updatedIsCheckedArray = isChecked.map(() => allChecked);
+
+    setIsChecked(updatedIsCheckedArray);
+    setSelectAll(allChecked);
+
+    const selectedIds = listData.map((item) => item.number);
+    if (allChecked) {
+      setCheckArray(selectedIds);
+    } else {
+      setCheckArray([]);
+    }
+  };
+
   return (
     <S.Wrap>
       <S.InfoBlock>
@@ -439,12 +477,22 @@ function FarmList() {
       </S.InfoBlock>
       <S.ContentList>
         <div className="list-table-head">
-          <div className="check-box" onClick={AllCheckBoxToggle}>
-            {isAllCheckBox ? (
-              <CheckBoxOn width={24} height={24} />
-            ) : (
-              <CheckBoxOff width={24} height={24} />
-            )}
+          <div>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={toggleAll}
+                style={{ display: "none" }}
+              />
+              <div>
+                {selectAll ? (
+                  <CheckBoxOn width={24} height={24} />
+                ) : (
+                  <CheckBoxOff width={24} height={24} />
+                )}
+              </div>
+            </label>
           </div>
           <p>파종기 S/N</p>
           <p>농가 ID</p>
@@ -480,21 +528,28 @@ function FarmList() {
             <p>등록된 농가가 없습니다.</p>
           </S.EmptyData>
         ) : (
-          listData.map((data, index) => {
+          listData.map((data, index, item) => {
             return (
-              <S.ListBlock key={`map${index}`}>
-                <div
-                  className="check-box-one"
-                  onClick={() => {
-                    OneCheckBoxToggle(index);
-                  }}
-                >
-                  {isOneCheckBox ? (
-                    <CheckBoxOn width={24} height={24} />
-                  ) : (
-                    <CheckBoxOff width={24} height={24} />
-                  )}
-                </div>
+              <S.ListBlock
+                key={`map${index}`}
+                className={`table-row ${isChecked[index] ? "selected" : ""}`}
+              >
+                <label key={item.id} className="table-row">
+                  <input
+                    type="checkbox"
+                    checked={isChecked[index]}
+                    onChange={() => toggleItem(index)}
+                    style={{ display: "none" }}
+                  />
+                  <div>
+                    {isChecked[index] ? (
+                      <CheckBoxOn width={24} height={24} />
+                    ) : (
+                      <CheckBoxOff width={24} height={24} />
+                    )}
+                  </div>
+                  <div>{item.name}</div>
+                </label>
                 <p className="serial_number">{data.serial_number}</p>
                 <p className="farm_id">{data.farm_id}</p>
                 <div className="farm_name_wrap">
@@ -514,21 +569,35 @@ function FarmList() {
                 ) : (
                   <p className="status-off">{data.status}</p>
                 )}
-                <div
-                  className="option-dot"
-                  onClick={() => {
-                    handleOptionModalClick(index, data);
-                    setQrDownloadModalOpen({
-                      open: false,
-                      data: data,
-                    });
-                    setDeleteModalOpen({
-                      open: false,
-                      data: data,
-                    });
-                  }}
-                >
-                  <OptionDot width={40} height={32} />
+
+                <div className="option-modal-wrap">
+                  <div
+                    className="option-dot"
+                    onClick={() => {
+                      handleOptionModalClick(index, data);
+                      setQrDownloadModalOpen({
+                        open: false,
+                        data: data,
+                      });
+                      setDeleteModalOpen({
+                        open: false,
+                        data: data,
+                      });
+                    }}
+                  >
+                    <OptionDot width={40} height={32} />
+                  </div>
+                  {index === optionModalOpen.index && (
+                    <OptionModal
+                      optionModalOpen={optionModalOpen}
+                      setOptionModalOpen={setOptionModalOpen}
+                      qrDownloadModalOpen={qrDownloadModalOpen}
+                      setQrDownloadModalOpen={setQrDownloadModalOpen}
+                      deleteModalOpen={deleteModalOpen}
+                      setDeleteModalOpen={setDeleteModalOpen}
+                      setEditModalOpen={setEditModalOpen}
+                    />
+                  )}
                 </div>
 
                 <S.AddressTooltip
@@ -543,17 +612,6 @@ function FarmList() {
                     </div>
                   }
                 />
-                {index === optionModalOpen.index && (
-                  <OptionModal
-                    optionModalOpen={optionModalOpen}
-                    setOptionModalOpen={setOptionModalOpen}
-                    qrDownloadModalOpen={qrDownloadModalOpen}
-                    setQrDownloadModalOpen={setQrDownloadModalOpen}
-                    deleteModalOpen={deleteModalOpen}
-                    setDeleteModalOpen={setDeleteModalOpen}
-                    setEditModalOpen={setEditModalOpen}
-                  />
-                )}
               </S.ListBlock>
             );
           })
