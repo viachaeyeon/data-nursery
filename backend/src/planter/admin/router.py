@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, case, extract
 from starlette.responses import JSONResponse
 from datetime import date, datetime
+from collections import defaultdict
+
 
 import src.auth.models as authModels
 import src.planter.models as planterModels
@@ -194,3 +196,77 @@ def get_total_output(request: Request, query_type: str, db: Session = Depends(ge
 
     else:
         return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
+
+
+@router.get(
+    "/crop/total-output",
+    status_code=200,
+    description="관리자 개요페이지 작물별 생산량 조회 api <br/>query_type = 'day' : 일별 조회<br/>query_type = 'month' : 월별 조회",
+)
+def get_crop_total_output(
+    request: Request, query_type: str, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+
+    grouped_data = defaultdict(list)
+
+    if query_type == "day":
+        houly_crop_sums = (
+            db.query(
+                cropModels.Crop.name,
+                extract("hour", planterModels.PlanterOutput.updated_at).label("hour"),
+                func.sum(planterModels.PlanterOutput.output).label("total_output"),
+            )
+            .join(
+                planterModels.PlanterWork,
+                cropModels.Crop.id == planterModels.PlanterWork.crop_id,
+            )
+            .join(
+                planterModels.PlanterOutput,
+                planterModels.PlanterWork.id
+                == planterModels.PlanterOutput.planter_work_id,
+            )
+            .filter(
+                func.Date(planterModels.PlanterOutput.updated_at)
+                == datetime.utcnow().date()
+            )
+            .group_by(cropModels.Crop.name, "hour")
+            .all()
+        )
+
+        for crop_name, hour, total_output in houly_crop_sums:
+            crop_name = crop_name.lower()
+            grouped_data[crop_name].append(
+                {"hour": int(hour), "output": int(total_output)}
+            )
+    elif query_type == "month":
+        monthly_crop_sums = (
+            db.query(
+                cropModels.Crop.name,
+                extract("month", planterModels.PlanterOutput.updated_at).label("month"),
+                func.sum(planterModels.PlanterOutput.output).label("total_output"),
+            )
+            .join(
+                planterModels.PlanterWork,
+                cropModels.Crop.id == planterModels.PlanterWork.crop_id,
+            )
+            .join(
+                planterModels.PlanterOutput,
+                planterModels.PlanterWork.id
+                == planterModels.PlanterOutput.planter_work_id,
+            )
+            .filter(
+                func.Date(planterModels.PlanterOutput.updated_at)
+                == datetime.utcnow().date()
+            )
+            .group_by(cropModels.Crop.name, "month")
+            .all()
+        )
+
+        for crop_name, month, total_output in monthly_crop_sums:
+            crop_name = crop_name.lower()
+            grouped_data[crop_name].append(
+                {"month": int(month), "output": int(total_output)}
+            )
+
+    return grouped_data
