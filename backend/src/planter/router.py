@@ -894,6 +894,16 @@ def update_planter_work_info(
         if getattr(planter_work_data, field) is not None:
             setattr(request_planter_work, field, getattr(planter_work_data, field))
 
+    if request_planter_work.is_del:
+        db.query(models.PlanterWorkStatus).filter(
+            models.PlanterWorkStatus.planter_work_id == request_planter_work.id,
+            models.PlanterWorkStatus.is_del == False,
+        ).update({"is_del": True})
+        db.query(models.PlanterOutput).filter(
+            models.PlanterOutput.planter_work_id == request_planter_work.id,
+            models.PlanterOutput.is_del == False,
+        ).update({"is_del": True})
+
     db.commit()
     db.refresh(request_planter_work)
 
