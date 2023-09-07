@@ -73,11 +73,12 @@ class PlanterWorkCreate(PlanterWorkBase):
 class PlanterWorkUpdate(BaseModel):
     sowing_date: Optional[datetime] = None
     deadline: Optional[datetime] = None
-    crop_id: Optional[str] = None
+    crop_id: Optional[int] = None
     crop_kind: Optional[str] = None
     planter_tray_id: Optional[int] = None
     order_quantity: Optional[int] = None
     seed_quantity: Optional[int] = None
+    is_del: Optional[bool] = None
 
 
 class PlanterWork(PlanterWorkBase):

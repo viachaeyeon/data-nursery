@@ -155,7 +155,7 @@ def create_planter_output(
         # 값이 0이상일 경우에
         else:
             planter_output.output = (
-                planter_work_status_in_working.planter_work__planter_tray.height
+                planter_work_status_in_working.planter_work__planter_tray.width
                 * operating_count_in_planter_work_working
             )
 
@@ -196,7 +196,7 @@ def create_planter_output(
         # 값이 0이상일 경우에
         else:
             planter_output.output = (
-                planter_work_status_in_working.planter_work__planter_tray.height
+                planter_work_status_in_working.planter_work__planter_tray.width
                 * operating_count_in_planter_work_working
             )
 
@@ -456,27 +456,29 @@ def planter_work_working_pause_list(
     pws = aliased(models.PlanterWorkStatus)
 
     recent_status_subquery = (
-        db.query(pws.planter_work_id, func.max(pws.id).label("last_pws_id"), pws.status)
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.id).label("last_pws_id"),
+        )
         .filter(pws.is_del == False)
-        .group_by(pws.planter_work_id, pws.status)
+        .group_by(pws.planter_work_id)
         .subquery()
     )
 
     planter_works_with_recent_working_or_pause_status = (
-        db.query(pw, pws.status.label("status"))
+        db.query(pw, pws.status.label("last_status"))
         .join(recent_status_subquery, recent_status_subquery.c.planter_work_id == pw.id)
         .join(
             pws,
             (pws.planter_work_id == recent_status_subquery.c.planter_work_id)
             & (pws.id == recent_status_subquery.c.last_pws_id),
-            # & (pws.created_at == recent_status_subquery.c.max_created_at),
         )
         .filter(
             pw.is_del == False,
             pw.planter_id == planter.id,
             pws.status.in_(["WORKING", "PAUSE"]),
         )
-        .order_by(pw.created_at.desc())
+        .order_by(pws.created_at.desc())
     ).first()
 
     if not planter_works_with_recent_working_or_pause_status:
@@ -798,7 +800,7 @@ def update_planter_work_status(
             # 값이 0이상일 경우에
             else:
                 planter_output.output = (
-                    last_planter_work_status.planter_work_status__planter_work.planter_work__planter_tray.height
+                    last_planter_work_status.planter_work_status__planter_work.planter_work__planter_tray.width
                     * operating_count_in_planter_work_working
                 )
 
@@ -892,6 +894,16 @@ def update_planter_work_info(
         if getattr(planter_work_data, field) is not None:
             setattr(request_planter_work, field, getattr(planter_work_data, field))
 
+    if request_planter_work.is_del:
+        db.query(models.PlanterWorkStatus).filter(
+            models.PlanterWorkStatus.planter_work_id == request_planter_work.id,
+            models.PlanterWorkStatus.is_del == False,
+        ).update({"is_del": True})
+        db.query(models.PlanterOutput).filter(
+            models.PlanterOutput.planter_work_id == request_planter_work.id,
+            models.PlanterOutput.is_del == False,
+        ).update({"is_del": True})
+
     db.commit()
     db.refresh(request_planter_work)
 
@@ -905,6 +917,7 @@ def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db
 
     pw = aliased(models.PlanterWork)
     pws = aliased(models.PlanterWorkStatus)
+
     last_plant_work_status_done_subquery = (
         db.query(
             pws.planter_work_id,
@@ -928,6 +941,11 @@ def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db
                 == last_plant_work_status_done_subquery.c.planter_work_id
             )
             & (pws.id == last_plant_work_status_done_subquery.c.last_pws_id),
+        )
+        .join(
+            models.PlanterStatus,
+            (models.PlanterStatus.planter_id == user_planter.id)
+            & (pw.planter_id == user_planter.id),
         )
         .filter(
             pw.is_del == False,
@@ -956,15 +974,24 @@ def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db
             "total_seed_quantity": today_best_crop_kind[1],
         }
 
-    today_planter_usage = base_query.with_entities(
-        func.count(pw.id), func.sum(pw.operating_time)
-    ).first()
+    today_planter_usage = base_query.with_entities(func.count(pw.id)).first()
+
+    planter_status_operating_time = (
+        db.query(func.sum(models.PlanterStatus.operating_time))
+        .filter(
+            models.PlanterStatus.is_del == False,
+            models.PlanterStatus.planter_id == user_planter.id,
+            models.PlanterStatus.status == "OFF",
+            func.Date(models.PlanterStatus.updated_at) == datetime.now(tz=utc).date(),
+        )
+        .scalar()
+    )
 
     return {
         "today_total_seed_quantity": today_total_seed_quantity,
         "today_best_crop_kind": today_best_crop_kind_result,
         "today_planter_usage": {
             "working_times": today_planter_usage[0],
-            "time": today_planter_usage[1],
+            "time": planter_status_operating_time,
         },
     }
