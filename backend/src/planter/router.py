@@ -155,7 +155,7 @@ def create_planter_output(
         # 값이 0이상일 경우에
         else:
             planter_output.output = (
-                planter_work_status_in_working.planter_work__planter_tray.height
+                planter_work_status_in_working.planter_work__planter_tray.width
                 * operating_count_in_planter_work_working
             )
 
@@ -196,7 +196,7 @@ def create_planter_output(
         # 값이 0이상일 경우에
         else:
             planter_output.output = (
-                planter_work_status_in_working.planter_work__planter_tray.height
+                planter_work_status_in_working.planter_work__planter_tray.width
                 * operating_count_in_planter_work_working
             )
 
@@ -798,7 +798,7 @@ def update_planter_work_status(
             # 값이 0이상일 경우에
             else:
                 planter_output.output = (
-                    last_planter_work_status.planter_work_status__planter_work.planter_work__planter_tray.height
+                    last_planter_work_status.planter_work_status__planter_work.planter_work__planter_tray.width
                     * operating_count_in_planter_work_working
                 )
 
