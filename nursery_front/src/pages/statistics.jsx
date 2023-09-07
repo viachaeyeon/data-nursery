@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 
 import MainLayout from "@components/layout/MainLayout";
+import DefaultYearMonthSelect from "@components/common/calendar/DefaultYearMonthSelect";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import theme from "@src/styles/theme";
+import DefaultYearMonthList from "@components/common/calendar/DefaultYearMonthList";
 
 const S = {
   Wrap: styled.div`
@@ -31,11 +33,6 @@ const S = {
     height: 76px;
     background-color: ${({ theme }) => theme.basic.deepBlue};
     position: sticky;
-
-    p {
-      ${({ theme }) => theme.textStyle.h3Bold}
-      color: #ffffff;
-    }
   `,
   ContentWrap: styled.div`
     padding: 38px 24px 36px 24px;
@@ -50,6 +47,40 @@ const S = {
 
 function StatisticsPage() {
   const router = useRouter();
+
+  const [yearMonthOpen, setYearMontOpen] = useState({
+    year: false,
+    month: false,
+  });
+  // const [isYearOpen, setIsYearOpen] = useState(false);
+  // const [isMonthOpen, setIsMonthOpen] = useState(false);
+
+  const [date, setDate] = useState({
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+  });
+
+  // 날짜 변경
+  const handleDateChange = useCallback(
+    (name, value) => {
+      setDate((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    [date],
+  );
+
+  // 년도, 월 오픈 변경
+  const handleYearMonthOpen = useCallback(
+    (name, value) => {
+      setYearMontOpen((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    [yearMonthOpen],
+  );
 
   // 유저 정보 API
   const { data: userInfo } = useUserInfo({
@@ -68,9 +99,15 @@ function StatisticsPage() {
       backgroundColor={theme.basic.deepBlue}>
       <S.Wrap>
         <S.DateSelectWrap>
-          <p>날짜 넣을 예정</p>
+          <DefaultYearMonthSelect date={date} yearMonthOpen={yearMonthOpen} handleYearMonthOpen={handleYearMonthOpen} />
         </S.DateSelectWrap>
         <S.ContentWrap></S.ContentWrap>
+        <DefaultYearMonthList
+          date={date}
+          yearMonthOpen={yearMonthOpen}
+          handleDateChange={handleDateChange}
+          handleYearMonthOpen={handleYearMonthOpen}
+        />
       </S.Wrap>
     </MainLayout>
   );

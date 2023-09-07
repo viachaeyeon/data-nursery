@@ -2,6 +2,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import SelectIcon from "@images/common/select-icon.svg";
+import theme from "@src/styles/theme";
 
 const S = {
   InputWrap: styled.div`
@@ -68,7 +69,7 @@ function DefaultSelect({ isSelected, text, isSelectOpen, onClick }) {
     <S.InputWrap isSelectOpen={isSelectOpen} onClick={onClick} isSelected={isSelected}>
       <p className="select-text">{text}</p>
       <S.SelectIconWrap isSelectOpen={isSelectOpen}>
-        <SelectIcon />
+        <SelectIcon fill={theme.basic.grey50} />
       </S.SelectIconWrap>
     </S.InputWrap>
   );

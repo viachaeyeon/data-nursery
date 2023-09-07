@@ -29,3 +29,41 @@ export function DateFormatting(date) {
     return changeDate[0] + changeDate[1] + changeDate[2].replace("/", " ") + changeDate[3];
   }
 }
+
+export function GetYearList() {
+  const result = [];
+  const lastYear = new Date().getFullYear();
+
+  if (2020 === lastYear) {
+    result.push(2020);
+  } else {
+    for (let i = lastYear; 2020 <= i; i--) {
+      result.push(i);
+    }
+  }
+
+  return result.reverse();
+}
+
+export function GetMonthList(selectYear) {
+  const result = [];
+
+  const lastYear = new Date().getFullYear();
+  const lastMonth = new Date().getMonth() + 1;
+
+  if (2020 === selectYear) {
+    for (let i = 9; i <= lastMonth; i++) {
+      result.push(i);
+    }
+  } else if (2020 < selectYear && selectYear < lastYear) {
+    for (let i = 1; i <= 12; i++) {
+      result.push(i);
+    }
+  } else {
+    for (let i = 1; i <= lastMonth; i++) {
+      result.push(i);
+    }
+  }
+
+  return result;
+}

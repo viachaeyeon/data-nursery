@@ -305,7 +305,7 @@ function WorkRegistrationPage() {
                 return (
                   <div
                     key={crop.id}
-                    className={`row-layout ${inputData.crop?.id === crop.id && "selected-value"}`}
+                    className={"row-layout"}
                     onClick={() => {
                       handleInputChange("crop", crop);
                       setIsCropSelectOpen(false);
@@ -327,7 +327,7 @@ function WorkRegistrationPage() {
                 return (
                   <div
                     key={tray.id}
-                    className={`row-layout ${inputData.planterTray?.id === tray.id && "selected-value"}`}
+                    className={"row-layout"}
                     onClick={() => {
                       handleInputChange("planterTray", tray);
                       setIsTraySelectOpen(false);
