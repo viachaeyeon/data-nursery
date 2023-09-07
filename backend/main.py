@@ -15,7 +15,9 @@ from utils.exceptions import AuthenticationException
 # from utils.database import get_db
 # from utils.db_shortcuts import get_current_user
 from src.auth import router as AuthRouter
+from src.auth.admin import router as AuthAdminRouter
 from src.crops import router as CropRouter
+from src.crops.admin import router as CropAdminRouter
 from src.planter import router as PlanterRouter
 from src.planter.admin import router as PlanterAdminRouter
 from constant.cookie_set import (
@@ -76,7 +78,13 @@ app.mount(
 )
 
 app.include_router(AuthRouter.router, prefix="/api/auth", tags=["auth"])
+app.include_router(
+    AuthAdminRouter.router, prefix="/api/admin/auth", tags=["admin/auth"]
+)
 app.include_router(CropRouter.router, prefix="/api/crop", tags=["crop"])
+app.include_router(
+    CropAdminRouter.router, prefix="/api/admin/crop", tags=["admin/crop"]
+)
 app.include_router(PlanterRouter.router, prefix="/api/planter", tags=["planter"])
 app.include_router(
     PlanterAdminRouter.router, prefix="/api/admin/planter", tags=["admin/planter"]

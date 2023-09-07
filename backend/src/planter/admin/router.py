@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case, extract, desc, asc
+from sqlalchemy import func, case, extract, desc, asc, cast, String
 from starlette.responses import JSONResponse
 from datetime import date, datetime, timedelta
 from pytz import timezone
@@ -496,7 +496,11 @@ def get_planter_total_operating_time(
 
 
 @router.get(
-    "/planter-work/statics", description=("관리자 통계현황 페이지 파종기 작업 조회 api"), status_code=200
+    "/planter-work/statics",
+    description=(
+        "관리자 통계현황 페이지 파종기 작업 조회 api<br/>farm_house_id,farmhouse_name,crop_name,tray_total 검색 시 구분값 || 넣어서 요청하기 ex) farm_house_id 중 PF_0021350, PF_0021351 검색하고 싶을 시 farm_house_id='PF_0021350||PF_0021351' 로 요청"
+    ),
+    status_code=200,
 )
 def get_planter_work_statics(
     request: Request,
@@ -673,3 +677,29 @@ def get_planter_work_statics(
         )
 
     return {"total": total, "data": result_data}
+
+
+@router.get(
+    "/search/planter-tray-total",
+    description="관리자용 파종기 트레이 총 홀 수 검색 api",
+    status_code=200,
+)
+def search_planter_tray_total_for_admin(
+    request: Request, search: str = None, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+
+    planter_tray_total_query = db.query(planterModels.PlanterTray.total)
+
+    if search:
+        planter_tray_total_query = planter_tray_total_query.filter(
+            cast(planterModels.PlanterTray.total, String).like(f"%{search}%")
+        )
+
+    planter_tray_total_query = planter_tray_total_query.order_by(
+        planterModels.PlanterTray.total.asc()
+    ).all()
+
+    planter_tray_total_response = [result[0] for result in planter_tray_total_query]
+
+    return planter_tray_total_response
