@@ -1,16 +1,23 @@
 # FastAPI 앱을 초기화하는 프로젝트의 루트
 from fastapi import FastAPI, Request, Response
+
+# from fastapi.openapi.docs import get_swagger_ui_html
+# from fastapi.openapi.utils import get_openapi
+from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 import os
 
 from utils.log_config import logger
+from utils.exceptions import AuthenticationException
+
+# from utils.database import get_db
+# from utils.db_shortcuts import get_current_user
 from src.auth import router as AuthRouter
 from src.crops import router as CropRouter
 from src.planter import router as PlanterRouter
 from src.planter.admin import router as PlanterAdminRouter
-from utils.exceptions import AuthenticationException
 from constant.cookie_set import (
     AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN,
     AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN,
@@ -49,6 +56,7 @@ app = FastAPI(
     # TODO: 배포시 해당 부분 주석 제거
     # docs_url=None,
     # redoc_url=None,
+    # openapi_url=None,
 )
 
 
@@ -71,7 +79,7 @@ app.include_router(AuthRouter.router, prefix="/api/auth", tags=["auth"])
 app.include_router(CropRouter.router, prefix="/api/crop", tags=["crop"])
 app.include_router(PlanterRouter.router, prefix="/api/planter", tags=["planter"])
 app.include_router(
-    PlanterAdminRouter.router, prefix="/api/planter", tags=["admin/planter"]
+    PlanterAdminRouter.router, prefix="/api/admin/planter", tags=["admin/planter"]
 )
 
 # CORS 설정
@@ -114,3 +122,19 @@ async def db_session_middleware(request: Request, call_next):
     finally:
         request.state.db.close()
     return response
+
+
+# @app.get("/docs")
+# async def get_documentation(
+#     username: str, password: str, db: Session = Depends(get_current_user(""))
+# ):
+#     return get_swagger_ui_html(
+#         openapi_url=f"/openapi.json?username={username}&password={password}",
+#         title="docs",
+#     )
+
+
+# @app.get("/openapi.json")
+# async def openapi(request: Request, db: Session = Depends(get_db)):
+#     get_current_user("99", request)
+#     return get_openapi(title="FastAPI", version="0.1.0", routes=app.routes)

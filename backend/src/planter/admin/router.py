@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case
-
-from datetime import date
+from sqlalchemy import func, case, extract
+from starlette.responses import JSONResponse
+from datetime import date, datetime
 
 import src.auth.models as authModels
 import src.planter.models as planterModels
@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/admin/dashboard/status",
+    "/dashboard/status",
     description="관리자 개요페이지 내 농가수, 작물수, 파종기, 누적파종량 가져오는 api 입니다.",
     status_code=200,
     response_model=planterAdminSchemas.DashboardResponse,
@@ -43,7 +43,7 @@ def get_admin_dashboard_data(request: Request, db: Session = Depends(get_db)):
     # 누적 파종량
     total_output = (
         db.query(func.sum(planterModels.PlanterOutput.output))
-        .filter(planterModels.PlanterOutput.is_del == False)
+        # .filter(planterModels.PlanterOutput.is_del == False)
         .scalar()
     )
 
@@ -56,7 +56,7 @@ def get_admin_dashboard_data(request: Request, db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/admin/dashboard/real-time",
+    "/dashboard/real-time",
     description="관리자 개요페이지 내 실시간 가동현황 불러오기",
 )
 def get_admin_dashboard_realtime_planter(
@@ -151,3 +151,46 @@ def get_admin_dashboard_realtime_planter(
         )
 
     return {"total": total, "planter": planter_responses}
+
+
+@router.get(
+    "/total-output",
+    status_code=200,
+    description="관리자 개요페이지 총 생산량 조회 api<br/>query_type = 'day' : 일별 조회<br/>query_type = 'month' : 월별 조회",
+)
+def get_total_output(request: Request, query_type: str, db: Session = Depends(get_db)):
+    get_current_user("99", request.cookies, db)
+
+    if query_type == "day":
+        hourly_sums = (
+            db.query(
+                extract("hour", planterModels.PlanterOutput.updated_at).label("hour"),
+                func.sum(planterModels.PlanterOutput.output).label("output_sum"),
+            )
+            .filter(
+                func.Date(planterModels.PlanterOutput.updated_at)
+                == datetime.utcnow().date()
+            )
+            .group_by("hour")
+            .all()
+        )
+
+        return [{"hour": item[0], "output": item[1]} for item in hourly_sums]
+    elif query_type == "month":
+        hourly_sums = (
+            db.query(
+                extract("month", planterModels.PlanterOutput.updated_at).label("month"),
+                func.sum(planterModels.PlanterOutput.output).label("output_sum"),
+            )
+            .filter(
+                func.Date(planterModels.PlanterOutput.updated_at)
+                == datetime.utcnow().date()
+            )
+            .group_by("month")
+            .all()
+        )
+
+        return [{"month": item[0], "output": item[1]} for item in hourly_sums]
+
+    else:
+        return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
