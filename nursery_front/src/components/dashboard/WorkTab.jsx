@@ -143,6 +143,8 @@ function WorkTab() {
     },
   });
 
+  // console.log(workingWorkInfo);
+
   return !!workingWorkInfo || waitWorkListData?.total !== 0 ? (
     <S.Wrap>
       <S.TabWrap>
