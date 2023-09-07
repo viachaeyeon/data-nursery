@@ -12,6 +12,8 @@ import OptionModal from "./TrayOptionModal";
 import EditTrayModal from "./EditTrayModal";
 import TrayDeleteModal from "./TrayDeleteModal";
 
+import DeleteIcon from "@images/setting/icon-delete.svg";
+
 const S = {
   Wrap: styled.div`
     width: 70%;
@@ -78,19 +80,33 @@ const S = {
       margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      height: 52px;
 
       p {
         color: ${({ theme }) => theme.basic.gray60};
         ${({ theme }) => theme.textStyle.h7Reguler}
+      }
+
+      .btn-wrap {
+        width: 100%;
       }
     }
   `,
   ListBlockWrap: styled.div`
     height: 368px;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    padding-right: 24px;
+
+    .selected {
+      border: 1px solid ${({ theme }) => theme.primery.primery};
+    }
+
+    .list-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
   `,
   ListBlock: styled.div`
     align-items: center;
@@ -129,6 +145,23 @@ const S = {
     p {
       color: ${({ theme }) => theme.basic.gray50};
       ${({ theme }) => theme.textStyle.h5Reguler}
+    }
+  `,
+  SelectDeleteBtn: styled.div`
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: ${({ theme }) => theme.primery.primery};
+    display: flex;
+    gap: 6px;
+    height: 32px;
+    align-items: center;
+    cursor: pointer;
+    width: fit-content;
+    margin-left: 16px;
+
+    p {
+      color: ${({ theme }) => theme.blackWhite.white} !important;
+      ${({ theme }) => theme.textStyle.h7Bold};
     }
   `,
 };
@@ -210,6 +243,50 @@ function TrayList() {
       height_count: "4",
     },
   ]);
+
+  const [selectAll, setSelectAll] = useState(false);
+  const [isChecked, setIsChecked] = useState(listData.map(() => false));
+  const [checkArray, setCheckArray] = useState([]);
+
+  const toggleItem = (index) => {
+    const updatedIsCheckedArray = [...isChecked];
+    updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
+    setIsChecked(updatedIsCheckedArray);
+
+    // 모든 항목이 체크되었는지 확인
+    const allChecked = updatedIsCheckedArray.every((checked) => checked);
+
+    // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
+    // 그렇지 않다면 전체 선택 체크박스를 false로 설정
+    setSelectAll(allChecked);
+
+    const selectedItemId = listData[index].number;
+    if (updatedIsCheckedArray[index]) {
+      setCheckArray((prevArray) => [...prevArray, selectedItemId]);
+    } else {
+      setCheckArray((prevArray) =>
+        prevArray.filter((number) => number !== selectedItemId),
+      );
+    }
+  };
+
+  const toggleAll = () => {
+    const allChecked = !selectAll;
+
+    // 모든 항목을 전부 선택 또는 해제
+    const updatedIsCheckedArray = isChecked.map(() => allChecked);
+
+    setIsChecked(updatedIsCheckedArray);
+    setSelectAll(allChecked);
+
+    const selectedIds = listData.map((item) => item.number);
+    if (allChecked) {
+      setCheckArray(selectedIds);
+    } else {
+      setCheckArray([]);
+    }
+  };
+
   return (
     <S.Wrap>
       <S.TitleWrap>
@@ -232,47 +309,96 @@ function TrayList() {
           <>
             <div className="table-header">
               <div>
-                <CheckBoxOff width={24} height={24} />
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={toggleAll}
+                    style={{ display: "none" }}
+                  />
+                  <div>
+                    {selectAll ? (
+                      <CheckBoxOn width={24} height={24} />
+                    ) : (
+                      <CheckBoxOff width={24} height={24} />
+                    )}
+                  </div>
+                </label>
               </div>
-              <p>NO</p>
-              <p>트레이공수</p>
-              <p>가로</p>
-              <p>세로</p>
-              <p></p>
+              {checkArray.length === 0 ? (
+                <>
+                  <p>NO</p>
+                  <p>트레이공수</p>
+                  <p>가로</p>
+                  <p>세로</p>
+                  <p></p>
+                </>
+              ) : (
+                <>
+                  <div className="btn-wrap">
+                    <S.SelectDeleteBtn>
+                      <DeleteIcon width={12} height={12} />
+                      <p>선택삭제</p>
+                    </S.SelectDeleteBtn>
+                  </div>
+                </>
+              )}
             </div>
             <S.ListBlockWrap>
-              {listData.map((data, index) => {
-                return (
-                  <S.ListBlock key={`map${index}`}>
-                    <CheckBoxOff width={24} height={24} />
-                    <p>{data.number}</p>
-                    <div className="icon-wrap">
-                      <TrayIcon width={24} height={24} />
-                      <p>{data.tray_number}</p>
-                    </div>
-                    <p>{data.width_count}</p>
-                    <p>{data.height_count}</p>
-                    <div
-                      className="option-dot"
-                      onClick={() => {
-                        handleCropsOptionModalClick(index, data);
-                        setDeleteTrayModalOpen({ open: false, data: data });
-                      }}
+              <div className="list-inner">
+                {listData.map((data, index, item) => {
+                  return (
+                    <S.ListBlock
+                      key={`map${index}`}
+                      className={`table-row ${
+                        isChecked[index] ? "selected" : ""
+                      }`}
                     >
-                      <OptionDot width={32} height={32} />
-                    </div>
-                    {index === optionModalOpen.index && (
-                      <OptionModal
-                        optionModalOpen={optionModalOpen}
-                        setOptionModalOpen={setOptionModalOpen}
-                        setEditTrayModalOpen={setEditTrayModalOpen}
-                        deleteTrayModalOpen={deleteTrayModalOpen}
-                        setDeleteTrayModalOpen={setDeleteTrayModalOpen}
-                      />
-                    )}
-                  </S.ListBlock>
-                );
-              })}
+                      <label key={item.id} className="table-row">
+                        <input
+                          type="checkbox"
+                          checked={isChecked[index]}
+                          onChange={() => toggleItem(index)}
+                          style={{ display: "none" }}
+                        />
+                        <div>
+                          {isChecked[index] ? (
+                            <CheckBoxOn width={24} height={24} />
+                          ) : (
+                            <CheckBoxOff width={24} height={24} />
+                          )}
+                        </div>
+                        <div>{item.name}</div>
+                      </label>
+                      <p>{data.number}</p>
+                      <div className="icon-wrap">
+                        <TrayIcon width={24} height={24} />
+                        <p>{data.tray_number}</p>
+                      </div>
+                      <p>{data.width_count}</p>
+                      <p>{data.height_count}</p>
+                      <div
+                        className="option-dot"
+                        onClick={() => {
+                          handleCropsOptionModalClick(index, data);
+                          setDeleteTrayModalOpen({ open: false, data: data });
+                        }}
+                      >
+                        <OptionDot width={32} height={32} />
+                      </div>
+                      {index === optionModalOpen.index && (
+                        <OptionModal
+                          optionModalOpen={optionModalOpen}
+                          setOptionModalOpen={setOptionModalOpen}
+                          setEditTrayModalOpen={setEditTrayModalOpen}
+                          deleteTrayModalOpen={deleteTrayModalOpen}
+                          setDeleteTrayModalOpen={setDeleteTrayModalOpen}
+                        />
+                      )}
+                    </S.ListBlock>
+                  );
+                })}
+              </div>
             </S.ListBlockWrap>
           </>
         )}

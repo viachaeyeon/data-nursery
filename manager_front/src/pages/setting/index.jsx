@@ -13,6 +13,7 @@ const S = {
     display: flex;
     flex-direction: column;
     gap: 72px;
+    min-width: 1500px;
   `,
   BottomWrap: styled.div`
     display: flex;

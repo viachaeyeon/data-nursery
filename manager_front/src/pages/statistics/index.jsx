@@ -8,6 +8,7 @@ import StatisticsStatus from "@components/statistics/StatisticsStatus";
 const S = {
   Wrap: styled.div`
     margin-top: 24px;
+    min-width: 1500px;
   `,
 };
 

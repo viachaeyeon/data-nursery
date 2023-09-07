@@ -16,6 +16,7 @@ const S = {
     display: flex;
     flex-direction: column;
     gap: 32px;
+    min-width: 1500px;
   `,
   Line: styled.div`
     display: flex;

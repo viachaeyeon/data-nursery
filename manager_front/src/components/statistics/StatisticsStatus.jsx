@@ -104,6 +104,7 @@ const S = {
   DateChooseWrap: styled.div`
     display: flex;
     gap: 8px;
+    margin-top: 13px;
   `,
   YearDropDown: styled.div`
     cursor: pointer;
@@ -182,6 +183,10 @@ const S = {
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+
+      .search-select-modal-wrap {
+        position: relative;
       }
 
       .no {
@@ -455,7 +460,7 @@ const S = {
     background-color: ${({ theme }) => theme.basic.whiteGray};
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
     position: absolute;
-    top: 359px;
+    top: 36px;
 
     .input-wrap {
       border-radius: 4px;
@@ -481,6 +486,15 @@ const S = {
     .drop-down-list-wrap {
       max-height: 272px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      p {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+      }
     }
     .drop-down-list {
       display: flex;
@@ -775,6 +789,7 @@ function StatisticsStatus() {
       sowing_count: "9999999",
       sowingDate: "2023/08/16",
       state: "fin",
+      farm_delete: "0",
     },
     {
       id: 2,
@@ -788,6 +803,21 @@ function StatisticsStatus() {
       sowing_count: "1122399",
       sowingDate: "2023/08/15",
       state: "wait",
+      farm_delete: "0",
+    },
+    {
+      id: 3,
+      serial_number: "KN001DS0958 ",
+      farm_id: "PF_0021350",
+      farm_name: "가야프러그영농조합",
+      farm_plant: "고추",
+      plant_name: "고추고추",
+      tray: "18",
+      order_count: "99999999",
+      sowing_count: "1122399",
+      sowingDate: "2023/08/15",
+      state: "wait",
+      farm_delete: "1",
     },
   ]);
 
@@ -820,13 +850,26 @@ function StatisticsStatus() {
     "PF_0021354",
     "PF_0021355",
     "PF_0021356",
+    "PF_0021350",
+    "PF_0021351",
+    "PF_0021352",
+    "PF_0021352",
+    "PF_0021353",
+    "PF_0021354",
+    "PF_0021355",
+    "PF_0021356",
   ];
 
   //농가명 데이터
   const farmNameList = [
-    "하나공정육묘장영농조합법인",
+    "하나공정육묘장영농조합법인dddddd",
     "김해고송육묘",
     "보천육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
+    "대곡제일육묘장",
     "대곡제일육묘장",
     "대곡제일육묘장",
     "대곡제일육묘장",
@@ -844,10 +887,19 @@ function StatisticsStatus() {
     "복숭아",
     "마늘",
     "당근",
+    "고추",
+    "상추",
+    "복숭아",
+    "마늘",
+    "당근",
   ];
 
   //트레이 데이터
   const trayCount = [
+    "128",
+    "64",
+    "128",
+    "64",
     "128",
     "64",
     "128",
@@ -955,27 +1007,105 @@ function StatisticsStatus() {
           <>
             <div className="list-table-head">
               <p className="no">NO</p>
-              <S.HeaderDropDown
-                style={{ width: "168px" }}
-                onClick={handleFarmIdClick}
-              >
-                <p>농가 ID</p>
-                <HeaderSelectArrowIcon width={20} height={20} />
-              </S.HeaderDropDown>
-              <S.HeaderDropDown
-                style={{ width: "224px" }}
-                onClick={handleFarmNameClick}
-              >
-                <p>농가명</p>
-                <HeaderSelectArrowIcon width={20} height={20} />
-              </S.HeaderDropDown>
-              <S.HeaderDropDown
-                style={{ width: "154px" }}
-                onClick={handleCropsNameClick}
-              >
-                <p>작물명</p>
-                <HeaderSelectArrowIcon width={20} height={20} />
-              </S.HeaderDropDown>
+
+              <div className="search-select-modal-wrap">
+                <S.HeaderDropDown
+                  style={{ width: "168px" }}
+                  onClick={handleFarmIdClick}
+                >
+                  <p>농가 ID</p>
+                  <HeaderSelectArrowIcon width={20} height={20} />
+                </S.HeaderDropDown>
+
+                {isFarmId && (
+                  <S.Dropdown style={{ width: "168px" }}>
+                    <div className="input-wrap">
+                      <SearchIcon width={18} height={18} />
+                      <input placeholder="검색어 입력" />
+                    </div>
+                    <S.DotBorder />
+                    <div className="drop-down-list-wrap">
+                      {farmIdList.map((data, index) => {
+                        return (
+                          <div
+                            className="drop-down-list"
+                            key={`farmId${index}`}
+                          >
+                            <CheckBoxOff width={24} height={24} />
+                            <p style={{ width: "120px" }}>{data}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </S.Dropdown>
+                )}
+              </div>
+
+              <div className="search-select-modal-wrap">
+                <S.HeaderDropDown
+                  style={{ width: "224px" }}
+                  onClick={handleFarmNameClick}
+                >
+                  <p>농가명</p>
+                  <HeaderSelectArrowIcon width={20} height={20} />
+                </S.HeaderDropDown>
+                {isFarmName && (
+                  <S.Dropdown style={{ width: "224px" }}>
+                    <div className="input-wrap">
+                      <SearchIcon width={18} height={18} />
+                      <input placeholder="검색어 입력" />
+                    </div>
+                    <S.DotBorder />
+                    <div className="drop-down-list-wrap">
+                      {farmNameList.map((data, index) => {
+                        return (
+                          <div
+                            className="drop-down-list"
+                            key={`farmName${index}`}
+                          >
+                            <CheckBoxOff width={24} height={24} />
+                            <p style={{ width: "120px" }}>{data}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </S.Dropdown>
+                )}
+              </div>
+
+              <div className="search-select-modal-wrap">
+                <S.HeaderDropDown
+                  style={{ width: "154px" }}
+                  onClick={handleCropsNameClick}
+                >
+                  <p>작물명</p>
+                  <HeaderSelectArrowIcon width={20} height={20} />
+                </S.HeaderDropDown>
+
+                {isCropsName && (
+                  <S.Dropdown style={{ width: "154px", height: "270px" }}>
+                    <div className="input-wrap">
+                      <SearchIcon width={18} height={18} />
+                      <input placeholder="검색어 입력" />
+                    </div>
+                    <S.DotBorder />
+                    <div className="drop-down-list-wrap">
+                      {cropsName.map((data, index) => {
+                        return (
+                          <div
+                            className="drop-down-list"
+                            key={`cropsName${index}`}
+                          >
+                            <CheckBoxOff width={24} height={24} />
+                            <p style={{ width: "120px" }}>{data}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </S.Dropdown>
+                )}
+              </div>
+
               <div className="arrow-wrap farm-name">
                 <p>품종명</p>
                 <div className="icon-wrap" onClick={sortByFarmName}>
@@ -986,13 +1116,39 @@ function StatisticsStatus() {
                   )}
                 </div>
               </div>
-              <S.HeaderDropDown
-                style={{ width: "154px" }}
-                onClick={handleTrayCountClick}
-              >
-                <p>트레이</p>
-                <HeaderSelectArrowIcon width={20} height={20} />
-              </S.HeaderDropDown>
+
+              <div className="search-select-modal-wrap">
+                <S.HeaderDropDown
+                  style={{ width: "154px" }}
+                  onClick={handleTrayCountClick}
+                >
+                  <p>트레이</p>
+                  <HeaderSelectArrowIcon width={20} height={20} />
+                </S.HeaderDropDown>
+                {isTrayCount && (
+                  <S.Dropdown style={{ width: "154px", height: "350px" }}>
+                    <div className="input-wrap">
+                      <SearchIcon width={18} height={18} />
+                      <input placeholder="검색어 입력" />
+                    </div>
+                    <S.DotBorder />
+                    <div className="drop-down-list-wrap">
+                      {trayCount.map((data, index) => {
+                        return (
+                          <div
+                            className="drop-down-list"
+                            key={`trayCount${index}`}
+                          >
+                            <CheckBoxOff width={24} height={24} />
+                            <p style={{ width: "120px" }}>{data}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </S.Dropdown>
+                )}
+              </div>
+
               <div className="arrow-wrap order-count">
                 <p>주문수량</p>
                 <div className="icon-wrap" onClick={sortByStatus}>
@@ -1034,90 +1190,6 @@ function StatisticsStatus() {
                 </div>
               </div>
             </div>
-
-            {isFarmId && (
-              <S.Dropdown style={{ width: "168px", left: "423px" }}>
-                <div className="input-wrap">
-                  <SearchIcon width={18} height={18} />
-                  <input placeholder="검색어 입력" />
-                </div>
-                <S.DotBorder />
-                <div className="drop-down-list-wrap">
-                  {farmIdList.map((data, index) => {
-                    return (
-                      <div className="drop-down-list" key={`farmId${index}`}>
-                        <CheckBoxOff width={24} height={24} />
-                        <p style={{ width: "120px" }}>{data}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </S.Dropdown>
-            )}
-
-            {isFarmName && (
-              <S.Dropdown style={{ width: "224px", left: "630px" }}>
-                <div className="input-wrap">
-                  <SearchIcon width={18} height={18} />
-                  <input placeholder="검색어 입력" />
-                </div>
-                <S.DotBorder />
-                <div className="drop-down-list-wrap">
-                  {farmNameList.map((data, index) => {
-                    return (
-                      <div className="drop-down-list" key={`farmName${index}`}>
-                        <CheckBoxOff width={24} height={24} />
-                        <p style={{ width: "120px" }}>{data}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </S.Dropdown>
-            )}
-
-            {isCropsName && (
-              <S.Dropdown
-                style={{ width: "154px", height: "270px", left: "894px" }}
-              >
-                <div className="input-wrap">
-                  <SearchIcon width={18} height={18} />
-                  <input placeholder="검색어 입력" />
-                </div>
-                <S.DotBorder />
-                <div className="drop-down-list-wrap">
-                  {cropsName.map((data, index) => {
-                    return (
-                      <div className="drop-down-list" key={`cropsName${index}`}>
-                        <CheckBoxOff width={24} height={24} />
-                        <p style={{ width: "120px" }}>{data}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </S.Dropdown>
-            )}
-
-            {isTrayCount && (
-              <S.Dropdown
-                style={{ width: "154px", height: "350px", left: "1193px" }}
-              >
-                <div className="input-wrap">
-                  <SearchIcon width={18} height={18} />
-                  <input placeholder="검색어 입력" />
-                </div>
-                <S.DotBorder />
-                <div className="drop-down-list-wrap">
-                  {trayCount.map((data, index) => {
-                    return (
-                      <div className="drop-down-list" key={`trayCount${index}`}>
-                        <CheckBoxOff width={24} height={24} />
-                        <p style={{ width: "120px" }}>{data}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </S.Dropdown>
-            )}
 
             {listData.map((data, index) => {
               return (

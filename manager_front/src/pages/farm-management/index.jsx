@@ -8,6 +8,7 @@ import FarmList from "@components/management/FarmList";
 const S = {
   Wrap: styled.div`
     margin-top: 24px;
+    min-width: 1500px;
   `,
 };
 
