@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { Button } from "react-bootstrap";
@@ -7,9 +7,9 @@ import useUserInfo from "@hooks/queries/auth/useUserInfo";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultModal from "@components/common/modal/DefaultModal";
+import DefaultInput from "@components/common/input/DefaultInput";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
-import DefaultInput from "@components/common/input/DefaultInput";
 
 const S = {
   Wrap: styled.div`
@@ -85,7 +85,7 @@ const S = {
   `,
 };
 
-function NurseryInfomationPage() {
+function NurseryInformationPage() {
   const router = useRouter();
 
   const [modalOpen, setModalOpen] = useState({
@@ -169,4 +169,4 @@ export const getServerSideProps = requireAuthentication((context) => {
   return { props: {} };
 });
 
-export default NurseryInfomationPage;
+export default NurseryInformationPage;

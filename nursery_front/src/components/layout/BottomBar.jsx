@@ -142,12 +142,12 @@ function BottomBar() {
       <S.BottomBarContent
         className="left-top-radius"
         onClick={() => {
-          alert("통계보기 클릭");
+          router.push("/statistics");
         }}>
         <div
           className="bottom-box"
           onClick={(e) => {
-            alert("통계보기 클릭");
+            router.push("/statistics");
             e.stopPropagation();
           }}
         />
