@@ -5,7 +5,7 @@ import { useRecoilState } from "recoil";
 
 import useCropList from "@hooks/queries/crop/useCropList";
 import useTrayList from "@hooks/queries/planter/useTrayList";
-import useRegisterWork from "@hooks/queries/planter/useRegisterWork";
+import useUpdateWork from "@hooks/queries/planter/useUpdateWork";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import MainLayout from "@components/layout/MainLayout";
@@ -25,7 +25,6 @@ import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 import CalendarButton from "@components/common/button/CalendarButton";
 import { DateFormatting } from "@utils/Formatting";
 import useWorkInfo from "@hooks/queries/planter/useWorkInfo";
-import useUpdateWork from "@hooks/queries/planter/useUpdateWork";
 
 const S = {
   Wrap: styled.div`
@@ -135,6 +134,7 @@ function WorkEditPage({ workId }) {
               planter_tray_id: inputData.planterTray.id,
               order_quantity: inputData.orderQuantity,
               seed_quantity: inputData.seedQuantity,
+              is_del: null,
             },
           });
         },

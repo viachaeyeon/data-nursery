@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 
+import useUpdateWork from "@hooks/queries/planter/useUpdateWork";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+
+import DefaultModal from "@components/common/modal/DefaultModal";
+
 import UpdateIcon from "@images/work/icon-update.svg";
 import DeleteIcon from "@images/work/icon-delete.svg";
-import DefaultModal from "../modal/DefaultModal";
+import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
   DropDownBackGroundWrap: styled.div`
@@ -76,6 +81,7 @@ const S = {
 
 function DefaultDropdown({ dropdownOpen, setDropdownOpen }) {
   const router = useRouter();
+  const invalidateQueries = useInvalidateQueries();
 
   const [modalOpen, setModalOpen] = useState({
     open: false,
@@ -85,6 +91,18 @@ function DefaultDropdown({ dropdownOpen, setDropdownOpen }) {
     btnType: "",
     afterFn: null,
   });
+
+  // 작업 수정 API
+  const { mutate: updateWorkMutate } = useUpdateWork(
+    () => {
+      // 대기중인 작업 목록 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([waitWorkListKey]);
+      router.push("/");
+    },
+    (error) => {
+      alert(error);
+    },
+  );
 
   return (
     <>
@@ -118,7 +136,19 @@ function DefaultDropdown({ dropdownOpen, setDropdownOpen }) {
                     description: "삭제된 장업정보는\n복원 할 수 없습니다.",
                     btnType: "two",
                     afterFn: () => {
-                      alert("삭제");
+                      updateWorkMutate({
+                        data: {
+                          workId: router.query.workId,
+                          sowing_date: null,
+                          deadline: null,
+                          crop_id: null,
+                          crop_kind: null,
+                          planter_tray_id: null,
+                          order_quantity: null,
+                          seed_quantity: null,
+                          is_del: true,
+                        },
+                      });
                     },
                   });
                 }}>
