@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import UpdateIcon from "@images/work/icon-update.svg";
 import DeleteIcon from "@images/work/icon-delete.svg";
+import DefaultModal from "../modal/DefaultModal";
 
 const S = {
   DropDownBackGroundWrap: styled.div`
@@ -73,38 +74,61 @@ const S = {
 };
 
 function DefaultDropdown({ dropdownOpen, setDropdownOpen }) {
+  const [modalOpen, setModalOpen] = useState({
+    open: false,
+    type: "",
+    title: "",
+    description: "",
+    btnType: "",
+    afterFn: null,
+  });
+
+  console.log(modalOpen);
+
   return (
-    dropdownOpen && (
-      <S.DropDownBackGroundWrap
-        onClick={() => {
-          setDropdownOpen(false);
-        }}>
-        <S.DropdownWrap>
-          <S.RowLayout>
-            <UpdateIcon className="update-icon" />
-            <p
-              className="drop-down-text"
-              onClick={() => {
-                alert("준비중입니다.");
-                setDropdownOpen(false);
-              }}>
-              수정
-            </p>
-          </S.RowLayout>
-          <S.RowLayout>
-            <DeleteIcon className="delete-icon" />
-            <p
-              className="drop-down-text"
-              onClick={() => {
-                alert("준비중입니다.");
-                setDropdownOpen(false);
-              }}>
-              삭제
-            </p>
-          </S.RowLayout>
-        </S.DropdownWrap>
-      </S.DropDownBackGroundWrap>
-    )
+    <>
+      {dropdownOpen && (
+        <S.DropDownBackGroundWrap
+          onClick={() => {
+            setDropdownOpen(false);
+          }}>
+          <S.DropdownWrap>
+            <S.RowLayout>
+              <UpdateIcon className="update-icon" />
+              <p
+                className="drop-down-text"
+                onClick={() => {
+                  alert("준비중입니다.");
+                  setDropdownOpen(false);
+                }}>
+                수정
+              </p>
+            </S.RowLayout>
+            <S.RowLayout>
+              <DeleteIcon className="delete-icon" />
+              <p
+                className="drop-down-text"
+                onClick={() => {
+                  setDropdownOpen(false);
+                  setModalOpen({
+                    open: true,
+                    type: "error",
+                    title: "작업정보를 삭제하시겠습니까?",
+                    description: "삭제된 장업정보는\n복원 할 수 없습니다.",
+                    btnType: "two",
+                    afterFn: () => {
+                      alert("삭제");
+                    },
+                  });
+                }}>
+                삭제
+              </p>
+            </S.RowLayout>
+          </S.DropdownWrap>
+        </S.DropDownBackGroundWrap>
+      )}
+      <DefaultModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+    </>
   );
 }
 

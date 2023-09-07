@@ -188,7 +188,7 @@ function QRScannerPage() {
             setModalOpen({
               open: true,
               type: "error",
-              title: "QR코드가 인식불가",
+              title: "QR코드 인식불가",
               description: "다시 시도해주세요.",
               btnType: "one",
               afterFn: null,
