@@ -268,5 +268,93 @@ def get_crop_total_output(
             grouped_data[crop_name].append(
                 {"month": int(month), "output": int(total_output)}
             )
-
+    else:
+        return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
     return grouped_data
+
+
+@router.get(
+    "/farmhouse/output",
+    description="농가별 생산령을 당일, 당월 기준으로 조회하는 api<br/>query_type='day': 당일 조회<br/>query_type='month': 당월 조회",
+    status_code=200,
+)
+def get_farmhouse_output(
+    request: Request, query_type: str, db: Session = Depends(get_db)
+):
+    utc_now = datetime.utcnow()
+    if query_type == "day":
+        farmhouse_output = (
+            db.query(
+                authModels.FarmHouse.id,
+                authModels.FarmHouse.name,
+                func.sum(planterModels.PlanterOutput.output).label("total_output"),
+            )
+            .join(
+                planterModels.Planter,
+                authModels.FarmHouse.id == planterModels.Planter.farm_house_id,
+            )
+            .join(
+                planterModels.PlanterWork,
+                planterModels.Planter.id == planterModels.PlanterWork.planter_id,
+            )
+            .join(
+                planterModels.PlanterOutput,
+                planterModels.PlanterWork.id
+                == planterModels.PlanterOutput.planter_work_id,
+            )
+            .filter(func.Date(planterModels.PlanterOutput.updated_at) == utc_now.date())
+            .group_by(authModels.FarmHouse.id, authModels.FarmHouse.name)
+            .order_by(authModels.FarmHouse.name.asc())
+            .all()
+        )
+
+        farmhouse_output_response = [
+            {
+                "farmhouse_id": result.id,
+                "farmhouse_name": result.name,
+                "total_output": int(result.total_output),
+            }
+            for result in farmhouse_output
+        ]
+
+    elif query_type == "month":
+        farmhouse_output = (
+            db.query(
+                authModels.FarmHouse.id,
+                authModels.FarmHouse.name,
+                func.sum(planterModels.PlanterOutput.output).label("total_output"),
+            )
+            .join(
+                planterModels.Planter,
+                authModels.FarmHouse.id == planterModels.Planter.farm_house_id,
+            )
+            .join(
+                planterModels.PlanterWork,
+                planterModels.Planter.id == planterModels.PlanterWork.planter_id,
+            )
+            .join(
+                planterModels.PlanterOutput,
+                planterModels.PlanterWork.id
+                == planterModels.PlanterOutput.planter_work_id,
+            )
+            .filter(
+                extract("year", planterModels.PlanterOutput.updated_at) == utc_now.year,
+                extract("month", planterModels.PlanterOutput.updated_at)
+                == utc_now.month,
+            )
+            .group_by(authModels.FarmHouse.id, authModels.FarmHouse.name)
+            .order_by(authModels.FarmHouse.name.asc())
+            .all()
+        )
+
+        farmhouse_output_response = [
+            {
+                "farmhouse_id": result.id,
+                "farmhouse_name": result.name,
+                "total_output": int(result.total_output),
+            }
+            for result in farmhouse_output
+        ]
+    else:
+        return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
+    return farmhouse_output_response
