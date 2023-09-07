@@ -14,7 +14,7 @@ import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/B
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import theme from "@src/styles/theme";
-import { workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
+import { dashBoardKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -125,6 +125,7 @@ function WorkContent({ isWorking, workingWorkInfo }) {
   const invalidateQueries = useInvalidateQueries();
 
   const [goWorkInfo, setGoWorkInfo] = useState(false); // 작업정보 클릭 여부
+  const [workComplete, setWorkComplete] = useState(false); // 작업완료 클릭 여부
 
   const [modalOpen, setModalOpen] = useState({
     open: false,
@@ -144,6 +145,12 @@ function WorkContent({ isWorking, workingWorkInfo }) {
       if (goWorkInfo) {
         router.push(`/work/${workingWorkInfo?.id}`);
         setGoWorkInfo(!goWorkInfo);
+      }
+
+      if (workComplete) {
+        // 오늘의 대시보드 정보 다시 불러오기 위해 쿼리키 삭제
+        invalidateQueries([dashBoardKey]);
+        setWorkComplete(!workComplete);
       }
     },
     (error) => {
@@ -242,6 +249,7 @@ function WorkContent({ isWorking, workingWorkInfo }) {
         <FontSmallDefaultButton
           text={"작업완료"}
           onClick={() => {
+            setWorkComplete(true);
             setModalOpen({
               open: true,
               type: "success",

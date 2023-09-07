@@ -174,7 +174,7 @@ function MainPage() {
               <div className="data-wrap">
                 <p className="bold-text">
                   {NumberFormatting(
-                    !!dashBoardInfo?.today_total_seed_qunantity ? dashBoardInfo?.today_total_seed_qunantity : 0,
+                    !!dashBoardInfo?.today_total_seed_quantity ? dashBoardInfo?.today_total_seed_quantity : 0,
                   )}
                 </p>
                 <p className="suffix-text">개</p>
@@ -184,9 +184,8 @@ function MainPage() {
               <div className="row-layout">
                 <Image src={"/images/dashboard/icon-best.png"} width={24} height={24} alt="best kind image" />
                 <p>
-                  BEST품종{" "}
-                  {!!dashBoardInfo?.today_best_crop_kind &&
-                    "- " + <span>{dashBoardInfo?.today_best_crop_kind.crop_kind}</span>}
+                  BEST품종 {!!dashBoardInfo?.today_best_crop_kind && "- "}
+                  {!!dashBoardInfo?.today_best_crop_kind && <span>{dashBoardInfo.today_best_crop_kind.crop_kind}</span>}
                 </p>
               </div>
               <div className="data-wrap">
@@ -202,16 +201,24 @@ function MainPage() {
               <div className="row-layout">
                 <UseTimeIcon />
                 <p>
-                  사용시간 - {!!dashBoardInfo?.today_planter_usage.time ? dashBoardInfo?.today_planter_usage.time : 0}회
+                  사용시간 -{" "}
+                  {!!dashBoardInfo?.today_planter_usage.working_times
+                    ? dashBoardInfo?.today_planter_usage.working_times
+                    : 0}
+                  회
                 </p>
               </div>
               <div className="time-wrap">
                 <div className="data-wrap">
-                  <p className="bold-text">{dashBoardInfo?.today_planter_usage.working_times}</p>
+                  <p className="bold-text">
+                    {!!dashBoardInfo?.today_planter_usage.time ? dashBoardInfo?.today_planter_usage.time : 0}
+                  </p>
                   <p className="suffix-text">시간</p>
                 </div>
                 <div className="data-wrap">
-                  <p className="bold-text">{dashBoardInfo?.today_planter_usage.working_times}</p>
+                  <p className="bold-text">
+                    {!!dashBoardInfo?.today_planter_usage.time ? dashBoardInfo?.today_planter_usage.time : 0}
+                  </p>
                   <p className="suffix-text">분</p>
                 </div>
               </div>
