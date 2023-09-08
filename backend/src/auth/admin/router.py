@@ -106,7 +106,7 @@ def update_admin_user(
     request: Request,
     user_id: int,
     user_data: authSchemas.UserUpdate,
-    admin_user_info_data: authAdminSchemas.AdminUserInfoUpdate,
+    admin_user_info_data: list[authAdminSchemas.AdminUserInfoUpdate],
     db: Session = Depends(get_db),
 ):
     get_current_user("99", request.cookies, db)
@@ -138,8 +138,50 @@ def update_admin_user(
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
 
 
-@router.get("/admin/user/list", description="관리자 목록 리스트 api", status_code=200)
-def get_admin_user_list(request: Request, db: Session = Depends(get_db)):
+@router.get(
+    "/admin/user/list",
+    description="관리자 목록 리스트 api<br/>page: 요청 페이지, size: 한페이지 데이터 수",
+    status_code=200,
+)
+def get_admin_user_list(
+    request: Request, page: int = 1, size: int = 10, db: Session = Depends(get_db)
+):
     get_current_user("99", request.cookies, db)
+    if page - 1 < 0:
+        page = 0
+    else:
+        page -= 1
 
-    pass
+    user_list = (
+        db.query(authModels.User, authModels.AdminUserInfo)
+        .join(
+            authModels.AdminUserInfo,
+            authModels.User.id == authModels.AdminUserInfo.user_id,
+        )
+        .filter(
+            authModels.User.is_del == False,
+            authModels.User.code == "99",
+        )
+        .order_by(authModels.AdminUserInfo.is_top_admin.desc())
+    )
+
+    total = user_list.count()
+
+    result_data = []
+
+    for user, admin_user_info in user_list.offset(page * size).limit(size).all():
+        result_data.append(
+            {
+                "user": {"id": user.id, "login_id": user.login_id, "name": user.name},
+                "admin_user_info": {
+                    "id": admin_user_info.id,
+                    "company": admin_user_info.company,
+                    "department": admin_user_info.department,
+                    "position": admin_user_info.position,
+                    "phone": admin_user_info.phone,
+                    "is_top_admin": admin_user_info.is_top_admin,
+                },
+            }
+        )
+
+    return {"total": total, "data": result_data}
