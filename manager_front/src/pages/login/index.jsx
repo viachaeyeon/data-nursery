@@ -1,4 +1,4 @@
-import React, { useState,useCallback,useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { loginAPI } from "@apis/authAPIs";
@@ -10,7 +10,6 @@ import PwIcon from "@images/common/icon-key.svg";
 import CheckOn from "@images/common/check-icon-on.svg";
 import CheckOff from "@images/common/check-icon-off.svg";
 import { loginCheckAuthentication } from "@src/utils/LoginCheckAuthentication";
-
 
 const S = {
   Wrap: styled.div`
@@ -146,7 +145,6 @@ function Login() {
 
   // 이메일 저장했는지 확인
   useEffect(() => {
-
     const saveId = secureLocalStorage.getItem("login_id");
 
     if (saveId) {
@@ -176,7 +174,7 @@ function Login() {
         secureLocalStorage.removeItem("login_id");
       }
 
-    router.push("/");
+      router.push("/");
     } catch (e) {
       alert("로그인에 실패하였습니다. 아이디 및 비밀번호를 확인해주세요.");
     }
@@ -253,6 +251,5 @@ function Login() {
 export const getServerSideProps = loginCheckAuthentication((context) => {
   return { props: {} };
 });
-
 
 export default Login;

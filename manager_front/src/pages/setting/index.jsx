@@ -9,7 +9,6 @@ import TrayList from "@components/setting/TrayList";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 
-
 const S = {
   Wrap: styled.div`
     margin-top: 24px;

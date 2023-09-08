@@ -136,13 +136,12 @@ const S = {
 };
 
 function OutlineBlock() {
-
-  const {data:planterStatus} = usePlanterStatus({
+  const { data: planterStatus } = usePlanterStatus({
     successFn: () => {},
-      errorFn: (err) => {
-        console.log("!!err", err);
-      },
-  })
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
 
   return (
     <S.Wrap>

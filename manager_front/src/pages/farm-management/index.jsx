@@ -7,7 +7,6 @@ import FarmList from "@components/management/FarmList";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 
-
 const S = {
   Wrap: styled.div`
     margin-top: 24px;

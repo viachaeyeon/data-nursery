@@ -7,7 +7,6 @@ import StatisticsStatus from "@components/statistics/StatisticsStatus";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 
-
 const S = {
   Wrap: styled.div`
     margin-top: 24px;

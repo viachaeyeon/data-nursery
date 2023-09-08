@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getDashboardPlanterStatusAPI } from "@apis/planterAPIs";
-import { PlanterStatusKey } from "@src/utils/query-keys/PlanterQueryKeys";
+import { getDashboardTotalAPI } from "@apis/planterAPIs";
+import { PlanterTotalKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
-export default function usePlanterStatus({ successFn, errorFn }) {
-  return useQuery([PlanterStatusKey], () => getDashboardPlanterStatusAPI(), {
+export default function usePlanterTotal({ queryType, successFn, errorFn }) {
+  return useQuery([PlanterTotalKey, queryType], () => getDashboardTotalAPI(queryType), {
     staleTime: 10 * (60 * 1000), // 10 mins
     cacheTime: 15 * (60 * 1000), // 15 mins
     retry: 0,

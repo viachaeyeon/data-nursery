@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
+import usePlanterTotal from "@src/hooks/queries/planter/usePlanterTotal";
+
 const S = {
   Wrap: styled.div`
     height: 360px;
@@ -12,6 +14,16 @@ const S = {
 };
 
 function GraphTotalProduction() {
+  const { data: planterTotal } = usePlanterTotal({
+    queryType: "month",
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
+  const dataArray = planterTotal.map((item) => item.output);
+
   const graphRef = useRef(null);
   let graphInstance = null;
 
@@ -47,7 +59,7 @@ function GraphTotalProduction() {
           labels: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
           datasets: [
             {
-              data: [12, 19, 3, 10, 2, 3, 9, 1, 3, 3, 9, 10],
+              data: dataArray,
               backgroundColor: "#C8B4F7",
               hoverBackgroundColor: "#C8B4F7",
               borderRadius: 4,
@@ -87,9 +99,9 @@ function GraphTotalProduction() {
                 align: "end",
                 text: "개 (단위 : 만)",
               },
-              ticks: {
-                stepSize: 10,
-              },
+              // ticks: {
+              //   stepSize: 10,
+              // },
             },
           },
           interaction: {
