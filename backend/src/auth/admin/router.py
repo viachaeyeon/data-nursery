@@ -185,3 +185,39 @@ def get_admin_user_list(
         )
 
     return {"total": total, "data": result_data}
+
+
+@router.patch(
+    "/user/multiple/delete/{user_ids}",
+    description="관리자 목록 다중 선택 후 삭제 api<br/> user_ids = '1||2||3||4||5||6' 의 형태로 데이터 보내기",
+    status_code=200,
+)
+def delete_multiple_admin_user(
+    request: Request, user_ids: str, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+    target_ids = user_ids.split("||")
+
+    base_query = (
+        db.query(authModels.User, authModels.AdminUserInfo)
+        .join(
+            authModels.AdminUserInfo,
+            authModels.User.id == authModels.AdminUserInfo.user_id,
+        )
+        .filter(authModels.User.id.in_(target_ids))
+        .all()
+    )
+
+    user_updates = []
+    admin_user_info_updates = []
+
+    for user, admin_user_info in base_query:
+        user_updates.append({"id": user.id, "is_del": True})
+
+        admin_user_info_updates.append({"id": admin_user_info.id, "is_del": True})
+
+    db.bulk_update_mappings(authModels.User, user_updates)
+    db.bulk_update_mappings(authModels.AdminUserInfo, admin_user_info_updates)
+    db.commit()
+
+    return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
