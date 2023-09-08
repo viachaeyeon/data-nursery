@@ -4,7 +4,7 @@ from starlette.responses import JSONResponse
 import bcrypt
 
 from utils.database import get_db
-from utils.db_shortcuts import get_current_user, create_
+from utils.db_shortcuts import get_current_user, create_, get_
 import src.auth.models as authModels
 import src.auth.schemas as authSchemas
 import src.auth.admin.schemas as authAdminSchemas
@@ -97,5 +97,42 @@ def create_admin_user(
     db.commit()
     db.refresh(new_user)
     db.refresh(new_admin_user_info)
+
+    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+@router.post("/admin/update/{user_id}", description="관리자 수정 api", status_code=200)
+def update_admin_user(
+    request: Request,
+    user_id: int,
+    user_data: authSchemas.UserUpdate,
+    admin_user_info_data: authAdminSchemas.AdminUserInfoUpdate,
+    db: Session = Depends(get_db),
+):
+    get_current_user("99", request.cookies, db)
+
+    user = get_(db, authModels.User, id=user_id)
+    admin_user_info = user.user__admin_user_info
+
+    for field in user_data.__dict__:
+        if getattr(user_data, field) is not None:
+            if field == "password":
+                setattr(
+                    user,
+                    field,
+                    bcrypt.hashpw(
+                        user_data.password.encode("utf-8"), bcrypt.gensalt()
+                    ).decode("utf-8"),
+                )
+            else:
+                setattr(user, field, getattr(user_data, field))
+
+    for field in admin_user_info_data.__dict__:
+        if getattr(admin_user_info_data, field) is not None:
+            setattr(admin_user_info, field, getattr(admin_user_info_data, field))
+
+    db.commit()
+    db.refresh(user)
+    db.refresh(admin_user_info)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
