@@ -170,7 +170,7 @@ function WorkContent({ isWorking, workingWorkInfo }) {
           </div>
           <div className="count-text-wrap seed-quantity-wrap">
             <BoxIcon />
-            <p className="suffix-text seed-quantity-text">{workingWorkInfo?.tray_total}공</p>
+            <p className="suffix-text seed-quantity-text">{NumberFormatting(workingWorkInfo?.tray_total)}공</p>
           </div>
         </div>
         <S.CropImage isCropImage={!!workingWorkInfo?.crop_img}>

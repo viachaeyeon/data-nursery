@@ -104,8 +104,10 @@ function WorkTab() {
 
   // 페이지 변경
   const pageChange = useCallback(() => {
-    setWaitWorkListPage(waitWorkListPage + 1);
-  }, [waitWorkListPage]);
+    if (waitWorkListData?.total > waitWorkList.length) {
+      setWaitWorkListPage(waitWorkListPage + 1);
+    }
+  }, [waitWorkListPage, waitWorkList]);
 
   useEffect(() => {
     if (inView) {
