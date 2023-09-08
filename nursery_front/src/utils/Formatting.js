@@ -30,6 +30,40 @@ export function DateFormatting(date) {
   }
 }
 
+export function DateKoreanFormatting(date) {
+  // 날짜 옵션
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short",
+    timeZone: "Asia/Seoul",
+    calendar: "korean",
+  };
+
+  if (!!date) {
+    const changeDate = new Intl.DateTimeFormat("ko-KR", options).format(new Date(date)).split(".");
+    return changeDate[0] + "년 " + changeDate[1] + "월 " + changeDate[2] + "일 " + changeDate[3];
+  }
+}
+
+export function DateDotFormatting(date) {
+  // 날짜 옵션
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short",
+    timeZone: "Asia/Seoul",
+    calendar: "korean",
+  };
+
+  if (!!date) {
+    const changeDate = new Intl.DateTimeFormat("ko-KR", options).format(new Date(date)).split(" ");
+    return changeDate[0] + changeDate[1] + changeDate[2].replace(".", " ") + changeDate[3];
+  }
+}
+
 export function GetYearList() {
   const result = [];
   const lastYear = new Date().getFullYear();

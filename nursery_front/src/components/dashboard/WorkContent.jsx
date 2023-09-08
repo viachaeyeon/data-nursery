@@ -74,6 +74,7 @@ const S = {
     .seed-quantity-wrap {
       gap: 7px;
       margin-top: 10px;
+      align-items: center;
     }
 
     .seed-quantity-text {
