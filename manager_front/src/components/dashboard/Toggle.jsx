@@ -45,14 +45,7 @@ const S = {
   ToggleButton: styled.div``,
 };
 
-function Toggle({
-  isSelectedLeft,
-  setIsSelectedLeft,
-  isSelectedRight,
-  setIsSelectedRight,
-  leftToggle,
-  rightToggle,
-}) {
+function Toggle({ isSelectedLeft, setIsSelectedLeft, isSelectedRight, setIsSelectedRight, leftToggle, rightToggle }) {
   // const [isSelectedLeft, setIsSelectedLeft] = useState(false);
   // const [isSelectedRight, setIsSelectedRight] = useState(true);
 
@@ -70,19 +63,13 @@ function Toggle({
     <S.Wrap>
       <S.ToggleButton
         onClick={handleToggleLeft}
-        className={`toggle-button left-button ${
-          isSelectedLeft ? "selected" : ""
-        }`}
-      >
+        className={`toggle-button left-button ${isSelectedLeft ? "selected" : ""}`}>
         {isSelectedLeft && <CheckIcon width={24} height={24} />}
         <p>{leftToggle}</p>
       </S.ToggleButton>
       <S.ToggleButton
         onClick={handleToggleRight}
-        className={`toggle-button right-button ${
-          isSelectedRight ? "selected" : ""
-        }`}
-      >
+        className={`toggle-button right-button ${isSelectedRight ? "selected" : ""}`}>
         {isSelectedRight && <CheckIcon width={24} height={24} />}
         <p>{rightToggle}</p>
       </S.ToggleButton>

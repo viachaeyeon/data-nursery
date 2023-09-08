@@ -34,19 +34,11 @@ function GraphTotalProduction() {
 
         ctx.save();
         const segment = width / data.labels.length;
-        const barWidth =
-          segment *
-          data.datasets[0].barPercentage *
-          data.datasets[0].categoryPercentage;
+        const barWidth = segment * data.datasets[0].barPercentage * data.datasets[0].categoryPercentage;
 
         ctx.fillStyle = pluginOptions.barColor;
         for (let i = 0; i < data.labels.length; i++) {
-          ctx.fillRect(
-            x.getPixelForValue(i) - barWidth / 2,
-            top,
-            barWidth,
-            height,
-          );
+          ctx.fillRect(x.getPixelForValue(i) - barWidth / 2, top, barWidth, height);
         }
       },
     };

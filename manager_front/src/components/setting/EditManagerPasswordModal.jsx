@@ -137,15 +137,9 @@ const S = {
   `,
 };
 
-function EditManagerPasswordModal({
-  editManagerModalOpen,
-  setEditManagerPWChangeModalOpen,
-  setManagerPassword,
-}) {
+function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChangeModalOpen, setManagerPassword }) {
   //기존 비밀번호
-  const [originPw, setOriginPw] = useState(
-    editManagerModalOpen.data.data.password,
-  );
+  const [originPw, setOriginPw] = useState(editManagerModalOpen.data.data.password);
   //현재 입력하는 비밀번호
   const [inputPw, setInputPw] = useState("");
   //새 비밀번호
@@ -214,9 +208,7 @@ function EditManagerPasswordModal({
           </div>
           {originInputPwCheck === false ? (
             <>
-              <p className="password-false">
-                * 현재 비밀번호와 일치하지 않습니다.
-              </p>
+              <p className="password-false">* 현재 비밀번호와 일치하지 않습니다.</p>
             </>
           ) : (
             <>
@@ -252,9 +244,7 @@ function EditManagerPasswordModal({
             <>
               {newPwSameCheck === false ? (
                 <>
-                  <p className="password-false">
-                    * 새 비밀번호와 일치하지 않습니다.
-                  </p>
+                  <p className="password-false">* 새 비밀번호와 일치하지 않습니다.</p>
                 </>
               ) : (
                 <>

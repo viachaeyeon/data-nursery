@@ -163,29 +163,13 @@ const S = {
   `,
 };
 
-function EditManagerModal({
-  editManagerModalOpen,
-  setEditManagerModalOpen,
-  setEditManagerPWChangeModalOpen,
-}) {
-  const [editManagerId, setEditManagerId] = useState(
-    editManagerModalOpen.data.data.accountId,
-  );
-  const [editManagerCompany, setEditManagerCompany] = useState(
-    editManagerModalOpen.data.data.company,
-  );
-  const [editManagerDepartment, setEditManagerDepartment] = useState(
-    editManagerModalOpen.data.data.department,
-  );
-  const [editManagerPosition, setEditManagerPosition] = useState(
-    editManagerModalOpen.data.data.position,
-  );
-  const [editManagerName, setEditManagerName] = useState(
-    editManagerModalOpen.data.data.name,
-  );
-  const [editManagerPhone, setEditManagerPhone] = useState(
-    editManagerModalOpen.data.data.phone,
-  );
+function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEditManagerPWChangeModalOpen }) {
+  const [editManagerId, setEditManagerId] = useState(editManagerModalOpen.data.data.accountId);
+  const [editManagerCompany, setEditManagerCompany] = useState(editManagerModalOpen.data.data.company);
+  const [editManagerDepartment, setEditManagerDepartment] = useState(editManagerModalOpen.data.data.department);
+  const [editManagerPosition, setEditManagerPosition] = useState(editManagerModalOpen.data.data.position);
+  const [editManagerName, setEditManagerName] = useState(editManagerModalOpen.data.data.name);
+  const [editManagerPhone, setEditManagerPhone] = useState(editManagerModalOpen.data.data.phone);
   const closeModal = useCallback(() => {
     setEditManagerModalOpen({ open: false, data: undefined });
     setEditManagerCompany("");
@@ -220,10 +204,7 @@ function EditManagerModal({
             <p className="input-title">아이디</p>
           </S.TextWrap>
           <div className="input-wrap-off">
-            <input
-              placeholder="사용하실 아이디를 입력하세요"
-              value={editManagerId}
-            />
+            <input placeholder="사용하실 아이디를 입력하세요" value={editManagerId} />
           </div>
 
           <S.TextWrap>
@@ -277,9 +258,7 @@ function EditManagerModal({
             <input
               placeholder="숫자만 입력하세요"
               value={editManagerPhone}
-              onChange={(e) =>
-                setEditManagerPhone(e.target.value.replace(/[^0-9]/g, ""))
-              }
+              onChange={(e) => setEditManagerPhone(e.target.value.replace(/[^0-9]/g, ""))}
             />
           </div>
 
@@ -288,11 +267,7 @@ function EditManagerModal({
           </S.TextWrap>
           <div className="input-btn-wrap">
             <div className="input-wrap">
-              <input
-                value={editManagerModalOpen.data.data.password}
-                type="password"
-                disabled
-              />
+              <input value={editManagerModalOpen.data.data.password} type="password" disabled />
             </div>
             <S.PasswordChangeBtn onClick={handlePasswordChangeClick}>
               <p>비밀번호 변경</p>

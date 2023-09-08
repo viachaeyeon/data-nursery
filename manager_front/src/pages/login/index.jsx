@@ -161,11 +161,7 @@ function Login() {
         </S.InputButtonWrap>
         <S.IdSaveWrap>
           <div className="check-box" onClick={toggleSaveId}>
-            {isSaveId ? (
-              <CheckOn width={24} height={24} />
-            ) : (
-              <CheckOff width={24} height={24} />
-            )}
+            {isSaveId ? <CheckOn width={24} height={24} /> : <CheckOff width={24} height={24} />}
           </div>
           <p>아이디 저장</p>
         </S.IdSaveWrap>

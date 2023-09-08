@@ -2,10 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
 
-import {
-  NumberCommaFormatting,
-  NumberUnitFormatting,
-} from "@src/utils/Formatting";
+import { NumberCommaFormatting, NumberUnitFormatting } from "@src/utils/Formatting";
 import FarmHouseIcon from "@images/dashboard/farm-house-icon.svg";
 import CropsIcon from "@images/dashboard/crops-icon.svg";
 import PlanterIcon from "@images/dashboard/planter-icon.svg";

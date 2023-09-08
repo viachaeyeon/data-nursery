@@ -221,9 +221,7 @@ function AddManagerModal({
             <input
               placeholder="숫자만 입력하세요"
               value={managerPhone}
-              onChange={(e) =>
-                setManagerPhone(e.target.value.replace(/[^0-9]/g, ""))
-              }
+              onChange={(e) => setManagerPhone(e.target.value.replace(/[^0-9]/g, ""))}
             />
           </div>
 

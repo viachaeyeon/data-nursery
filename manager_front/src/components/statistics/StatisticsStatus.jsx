@@ -582,14 +582,7 @@ function StatisticsStatus() {
       setIsCropsName(false);
       setIsTrayCount(false);
     }
-  }, [
-    yearModalOpen,
-    monthModalOpen,
-    isFarmId,
-    isFarmName,
-    isCropsName,
-    isTrayCount,
-  ]);
+  }, [yearModalOpen, monthModalOpen, isFarmId, isFarmName, isCropsName, isTrayCount]);
 
   //월별 클릭시
   const handelMonthDropDown = useCallback(() => {
@@ -603,14 +596,7 @@ function StatisticsStatus() {
       setIsCropsName(false);
       setIsTrayCount(false);
     }
-  }, [
-    monthModalOpen,
-    yearModalOpen,
-    isCropsName,
-    isFarmId,
-    isFarmName,
-    isTrayCount,
-  ]);
+  }, [monthModalOpen, yearModalOpen, isCropsName, isFarmId, isFarmName, isTrayCount]);
 
   //연도별 drop down 내용 클릭
   const handleClickYearDropList = useCallback(
@@ -642,15 +628,7 @@ function StatisticsStatus() {
     setIsFarmName(false);
     setIsCropsName(false);
     setIsTrayCount(false);
-  }, [
-    pickerOpen,
-    yearModalOpen,
-    monthModalOpen,
-    isFarmId,
-    isFarmName,
-    isCropsName,
-    isTrayCount,
-  ]);
+  }, [pickerOpen, yearModalOpen, monthModalOpen, isFarmId, isFarmName, isCropsName, isTrayCount]);
 
   // 농가 id 드롭다운 클릭
   const handleFarmIdClick = useCallback(() => {
@@ -664,14 +642,7 @@ function StatisticsStatus() {
       setIsCropsName(false);
       setIsTrayCount(false);
     }
-  }, [
-    isFarmId,
-    yearModalOpen,
-    monthModalOpen,
-    isFarmName,
-    isCropsName,
-    isTrayCount,
-  ]);
+  }, [isFarmId, yearModalOpen, monthModalOpen, isFarmName, isCropsName, isTrayCount]);
 
   // 농가명 드롭다운 클릭
   const handleFarmNameClick = useCallback(() => {
@@ -685,14 +656,7 @@ function StatisticsStatus() {
       setIsCropsName(false);
       setIsTrayCount(false);
     }
-  }, [
-    isFarmName,
-    yearModalOpen,
-    monthModalOpen,
-    isFarmId,
-    isCropsName,
-    isTrayCount,
-  ]);
+  }, [isFarmName, yearModalOpen, monthModalOpen, isFarmId, isCropsName, isTrayCount]);
 
   // 작물명 드롭다운 클릭
   const handleCropsNameClick = useCallback(() => {
@@ -706,14 +670,7 @@ function StatisticsStatus() {
       setIsFarmId(false);
       setIsTrayCount(false);
     }
-  }, [
-    isFarmName,
-    yearModalOpen,
-    monthModalOpen,
-    isFarmId,
-    isCropsName,
-    isTrayCount,
-  ]);
+  }, [isFarmName, yearModalOpen, monthModalOpen, isFarmId, isCropsName, isTrayCount]);
 
   // 트레이 드롭다운 클릭
   const handleTrayCountClick = useCallback(() => {
@@ -727,15 +684,7 @@ function StatisticsStatus() {
       setMonthModalOpen(false);
       setIsFarmId(false);
     }
-  }, [
-    isFarmName,
-    yearModalOpen,
-    monthModalOpen,
-    isFarmId,
-    isCropsName,
-    isTrayCount,
-    isTrayCount,
-  ]);
+  }, [isFarmName, yearModalOpen, monthModalOpen, isFarmId, isCropsName, isTrayCount, isTrayCount]);
 
   //정렬 토글
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
@@ -856,21 +805,7 @@ function StatisticsStatus() {
   ]);
 
   //연도 데이터
-  const yearList = [
-    ,
-    "2014",
-    "2015",
-    "2016",
-    "2017",
-    "2018",
-    "2019",
-    "2020",
-    "2021",
-    "2022",
-    "2023",
-    "2024",
-    "2025",
-  ];
+  const yearList = ["2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"];
   //월 데이터
   const monthList = ["1", "2", "3", "1", "2", "3", "1", "2", "3"];
 
@@ -929,22 +864,7 @@ function StatisticsStatus() {
   ];
 
   //트레이 데이터
-  const trayCount = [
-    "128",
-    "64",
-    "128",
-    "64",
-    "128",
-    "64",
-    "128",
-    "64",
-    "128",
-    "64",
-    "128",
-    "64",
-    "128",
-    "64",
-  ];
+  const trayCount = ["128", "64", "128", "64", "128", "64", "128", "64", "128", "64", "128", "64", "128", "64"];
 
   return (
     <S.Wrap>
@@ -985,12 +905,12 @@ function StatisticsStatus() {
                   </S.DateChooseWrap>
                   {yearModalOpen && (
                     <S.YearDropDownList>
-                      {yearList.map((data) => {
+                      {yearList.map((data, index) => {
                         return (
                           <div
                             className="drop-down-list"
                             onClick={() => handleClickYearDropList(data)}
-                          >
+                            key={`map${index}`}>
                             <p>{data}</p>
                           </div>
                         );
@@ -1000,12 +920,12 @@ function StatisticsStatus() {
 
                   {monthModalOpen && (
                     <S.MonthDropDownList>
-                      {monthList.map((data) => {
+                      {monthList.map((data, index) => {
                         return (
                           <div
                             className="drop-down-list"
                             onClick={() => handleClickMonthDropList(data)}
-                          >
+                            key={`map${index}`}>
                             <p>{data}</p>
                           </div>
                         );
@@ -1031,10 +951,7 @@ function StatisticsStatus() {
       <S.ContentList>
         {listData.length === 0 ? (
           <S.EmptyData>
-            <img
-              src="/images/statistics/w-icon-graph.png"
-              alt="statistics-icon"
-            />
+            <img src="/images/statistics/w-icon-graph.png" alt="statistics-icon" />
             <p>등록된 통계현황이 없습니다.</p>
           </S.EmptyData>
         ) : (
@@ -1043,10 +960,7 @@ function StatisticsStatus() {
               <p className="no">NO</p>
 
               <div className="search-select-modal-wrap">
-                <S.HeaderDropDown
-                  style={{ width: "168px" }}
-                  onClick={handleFarmIdClick}
-                >
+                <S.HeaderDropDown style={{ width: "168px" }} onClick={handleFarmIdClick}>
                   <p>농가 ID</p>
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
@@ -1061,10 +975,7 @@ function StatisticsStatus() {
                     <div className="drop-down-list-wrap">
                       {farmIdList.map((data, index) => {
                         return (
-                          <div
-                            className="drop-down-list"
-                            key={`farmId${index}`}
-                          >
+                          <div className="drop-down-list" key={`farmId${index}`}>
                             <CheckBoxOff width={24} height={24} />
                             <p style={{ width: "120px" }}>{data}</p>
                           </div>
@@ -1076,10 +987,7 @@ function StatisticsStatus() {
               </div>
 
               <div className="search-select-modal-wrap">
-                <S.HeaderDropDown
-                  style={{ width: "224px" }}
-                  onClick={handleFarmNameClick}
-                >
+                <S.HeaderDropDown style={{ width: "224px" }} onClick={handleFarmNameClick}>
                   <p>농가명</p>
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
@@ -1093,10 +1001,7 @@ function StatisticsStatus() {
                     <div className="drop-down-list-wrap">
                       {farmNameList.map((data, index) => {
                         return (
-                          <div
-                            className="drop-down-list"
-                            key={`farmName${index}`}
-                          >
+                          <div className="drop-down-list" key={`farmName${index}`}>
                             <CheckBoxOff width={24} height={24} />
                             <p style={{ width: "120px" }}>{data}</p>
                           </div>
@@ -1108,10 +1013,7 @@ function StatisticsStatus() {
               </div>
 
               <div className="search-select-modal-wrap">
-                <S.HeaderDropDown
-                  style={{ width: "154px" }}
-                  onClick={handleCropsNameClick}
-                >
+                <S.HeaderDropDown style={{ width: "154px" }} onClick={handleCropsNameClick}>
                   <p>작물명</p>
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
@@ -1126,10 +1028,7 @@ function StatisticsStatus() {
                     <div className="drop-down-list-wrap">
                       {cropsName.map((data, index) => {
                         return (
-                          <div
-                            className="drop-down-list"
-                            key={`cropsName${index}`}
-                          >
+                          <div className="drop-down-list" key={`cropsName${index}`}>
                             <CheckBoxOff width={24} height={24} />
                             <p style={{ width: "120px" }}>{data}</p>
                           </div>
@@ -1143,19 +1042,12 @@ function StatisticsStatus() {
               <div className="arrow-wrap farm-name">
                 <p>품종명</p>
                 <div className="icon-wrap" onClick={sortByFarmName}>
-                  {plantName ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
+                  {plantName ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
 
               <div className="search-select-modal-wrap">
-                <S.HeaderDropDown
-                  style={{ width: "154px" }}
-                  onClick={handleTrayCountClick}
-                >
+                <S.HeaderDropDown style={{ width: "154px" }} onClick={handleTrayCountClick}>
                   <p>트레이</p>
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
@@ -1169,10 +1061,7 @@ function StatisticsStatus() {
                     <div className="drop-down-list-wrap">
                       {trayCount.map((data, index) => {
                         return (
-                          <div
-                            className="drop-down-list"
-                            key={`trayCount${index}`}
-                          >
+                          <div className="drop-down-list" key={`trayCount${index}`}>
                             <CheckBoxOff width={24} height={24} />
                             <p style={{ width: "120px" }}>{data}</p>
                           </div>
@@ -1186,68 +1075,43 @@ function StatisticsStatus() {
               <div className="arrow-wrap order-count">
                 <p>주문수량</p>
                 <div className="icon-wrap" onClick={sortByStatus}>
-                  {orderCount ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
+                  {orderCount ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
               <div className="arrow-wrap sowing">
                 <p>파종량</p>
                 <div className="icon-wrap" onClick={sortBySowingCount}>
-                  {sowingCount ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
+                  {sowingCount ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
               <div className="arrow-wrap sowing">
                 <p>파종일자</p>
                 <div className="icon-wrap" onClick={sortBySowingDate}>
-                  {sowingDate ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
+                  {sowingDate ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
               <div className="arrow-wrap state">
                 <p>출하상태</p>
                 <div className="icon-wrap" onClick={sortByState}>
-                  {state ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
+                  {state ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
             </div>
 
             {listData.map((data, index) => {
               return (
-                <S.ListBlock
-                  key={`map${index}`}
-                  className={data.farm_delete === "1" && "delete"}
-                >
+                <S.ListBlock key={`map${index}`} className={data.farm_delete === "1" && "delete"}>
                   <p className="list_id">{data.id}</p>
                   <p className="farm_id">{data.farm_id}</p>
                   <div className="farm_name_wrap">
-                    <div className="farm-name-frist">
-                      {data.farm_name.slice(0, 1)}
-                    </div>
+                    <div className="farm-name-frist">{data.farm_name.slice(0, 1)}</div>
                     <p className="farm_name">{data.farm_name}</p>
                   </div>
                   <p className="farm_plant">{data.farm_plant}</p>
                   <p className="plant_name">{data.plant_name}</p>
                   <p className="tray">{data.tray}</p>
-                  <p className="order_count">
-                    {NumberCommaFormatting(data.order_count)}
-                  </p>
-                  <p className="sowing_count">
-                    {NumberCommaFormatting(data.sowing_count)}
-                  </p>
+                  <p className="order_count">{NumberCommaFormatting(data.order_count)}</p>
+                  <p className="sowing_count">{NumberCommaFormatting(data.sowing_count)}</p>
                   <p className="sowing_date">{data.sowingDate}</p>
                   {data.state === "fin" && data.farm_delete === "0" ? (
                     <FinCheckIcon width={98} height={40} />

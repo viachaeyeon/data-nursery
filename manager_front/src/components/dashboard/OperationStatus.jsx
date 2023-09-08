@@ -2,13 +2,9 @@ import React from "react";
 import styled from "styled-components";
 
 import { Tooltip } from "react-tooltip";
-import {
-  NumberCommaFormatting,
-  CountPlusFormatting,
-} from "@src/utils/Formatting";
+import { NumberCommaFormatting, CountPlusFormatting } from "@src/utils/Formatting";
 import BarIcon from "@images/dashboard/icon-bar.svg";
 import StatusOnIcon from "@images/dashboard/operation_status_on.svg";
-// import StatusOffIcon from "@images/common/dashboard/operation_status_off.svg";
 
 const S = {
   Wrap: styled.div`
@@ -144,8 +140,8 @@ const S = {
 
 function OperationStatus({ currentDate }) {
   const justMap = [
-    1123, 23434, 1223, 4999888, 5, 60, 7344, 8, 9, 10, 11, 12, 13, 1400000, 15,
-    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+    1123, 23434, 1223, 4999888, 5, 60, 7344, 8, 9, 10, 11, 12, 13, 1400000, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+    26, 27, 28, 29, 30,
   ];
 
   return (
@@ -160,7 +156,6 @@ function OperationStatus({ currentDate }) {
           return (
             <S.StatusBlock key={`map${index}`}>
               <StatusOnIcon width={68} height={68} />
-              {/* <StatusOffIcon width={68} height={68}/> */}
               <div className="block-text-wrap">
                 <p className="block-title">하동공정육묘장영농조합법인</p>
                 <div className="block-count-wrap">

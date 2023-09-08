@@ -166,8 +166,7 @@ function ManagementList() {
   });
 
   //관리자 비밀번호 변경 모달 오픈
-  const [editManagerPwChangeModalOpen, setEditManagerPWChangeModalOpen] =
-    useState({ open: false, data: undefined });
+  const [editManagerPwChangeModalOpen, setEditManagerPWChangeModalOpen] = useState({ open: false, data: undefined });
 
   //관리자 삭제모달 오픈
   const [deleteManagerModalOpen, setDeleteManagerModalOpen] = useState({
@@ -324,9 +323,7 @@ function ManagementList() {
     if (updatedIsCheckedArray[index]) {
       setCheckArray((prevArray) => [...prevArray, selectedItemId]);
     } else {
-      setCheckArray((prevArray) =>
-        prevArray.filter((id) => id !== selectedItemId),
-      );
+      setCheckArray((prevArray) => prevArray.filter((id) => id !== selectedItemId));
     }
   };
 
@@ -365,19 +362,8 @@ function ManagementList() {
         <div className="table-header">
           <div>
             <label>
-              <input
-                type="checkbox"
-                checked={selectAll}
-                onChange={toggleAll}
-                style={{ display: "none" }}
-              />
-              <div>
-                {selectAll ? (
-                  <CheckBoxOn width={24} height={24} />
-                ) : (
-                  <CheckBoxOff width={24} height={24} />
-                )}
-              </div>
+              <input type="checkbox" checked={selectAll} onChange={toggleAll} style={{ display: "none" }} />
+              <div>{selectAll ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}</div>
             </label>
           </div>
           {checkArray.length === 0 ? (
@@ -406,10 +392,7 @@ function ManagementList() {
           <div className="list-inner">
             {listData.map((data, index, item) => {
               return (
-                <S.ListBlock
-                  key={item.id}
-                  className={`table-row ${isChecked[index] ? "selected" : ""}`}
-                >
+                <S.ListBlock key={item.id} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
                   {data.member_type === "top" ? (
                     <CheckBoxNone width={24} height={24} />
                   ) : (
@@ -448,8 +431,7 @@ function ManagementList() {
                       onClick={() => {
                         handleOptionModalClick(index, data);
                         setDeleteManagerModalOpen({ open: false, data: data });
-                      }}
-                    >
+                      }}>
                       <OptionDot width={32} height={32} />
                     </div>
                     {index === optionModalOpen.index && (
@@ -517,9 +499,7 @@ function ManagementList() {
       {/* 관리자 삭제모달 */}
       {deleteManagerModalOpen.open && (
         <div className="modal-wrap">
-          <ManagerDeleteModal
-            setDeleteManagerModalOpen={setDeleteManagerModalOpen}
-          />
+          <ManagerDeleteModal setDeleteManagerModalOpen={setDeleteManagerModalOpen} />
         </div>
       )}
     </S.Wrap>

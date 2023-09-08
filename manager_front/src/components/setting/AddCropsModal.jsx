@@ -298,11 +298,7 @@ function AddCropsModal({
             <p className="input-title">작물명</p>
           </S.TextWrap>
           <div className="input-wrap">
-            <input
-              placeholder="작물명을 입력하세요"
-              value={cropsName}
-              onChange={(e) => setCropsName(e.target.value)}
-            />
+            <input placeholder="작물명을 입력하세요" value={cropsName} onChange={(e) => setCropsName(e.target.value)} />
           </div>
           <S.TextWrap>
             <p className="input-title">작물 표시 색상</p>
@@ -314,13 +310,12 @@ function AddCropsModal({
                 display: "flex",
                 flexWrap: "wrap",
                 width: "100%",
-                display: "flex",
                 justifyContent: "space-between",
-              }}
-            >
-              {colors.map((color) => (
+              }}>
+              {colors.map((color, index) => (
                 <div
-                  key={color}
+                  // key={color}
+                  key={`map${index}`}
                   onClick={() => handleColorClick(color)}
                   className="color-check-wrap"
                   style={{
@@ -334,8 +329,7 @@ function AddCropsModal({
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}
-                >
+                  }}>
                   {selectedColor === color && (
                     <img
                       src="/images/setting/color-icon-check.svg" // 이미지 파일 경로를 지정합니다.
@@ -349,23 +343,13 @@ function AddCropsModal({
                   )}
                 </div>
               ))}
-              <div
-                className="color-check-wrap-rainbow"
-                onClick={handleButtonClick}
-              >
-                {isColorInArray ? (
-                  <RainbowIcon width={48} height={48} />
-                ) : (
-                  <CheckRainbowIcon width={48} height={48} />
-                )}
+              <div className="color-check-wrap-rainbow" onClick={handleButtonClick}>
+                {isColorInArray ? <RainbowIcon width={48} height={48} /> : <CheckRainbowIcon width={48} height={48} />}
               </div>
             </div>
             {isOpen && (
               <S.ColorPalette>
-                <ChromePicker
-                  color={selectedColor}
-                  onChangeComplete={handleColorChange}
-                />
+                <ChromePicker color={selectedColor} onChangeComplete={handleColorChange} />
               </S.ColorPalette>
             )}
 

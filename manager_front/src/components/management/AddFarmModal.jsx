@@ -223,15 +223,7 @@ function AddFarmModal({
   //   setAddFarmSerialNumber(e.target.value);
   // };
 
-  const qrcode = (
-    <QRCodeCanvas
-      id="qrCode"
-      value={addFarmSerialNumber}
-      size={231}
-      bgColor={"#ffffff"}
-      level={"H"}
-    />
-  );
+  const qrcode = <QRCodeCanvas id="qrCode" value={addFarmSerialNumber} size={231} bgColor={"#ffffff"} level={"H"} />;
 
   const handleQRcodeResetClick = useCallback(() => {
     alert("큐알코드 리셋 버튼 구현중");

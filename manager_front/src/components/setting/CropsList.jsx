@@ -281,14 +281,7 @@ function CropsList() {
     },
   ]);
 
-  const CorpsColorList = [
-    "#EF7E7E",
-    "#F7AD77",
-    "#F9E37A",
-    "#C6E37C",
-    "#71B598",
-    "#79CEC8",
-  ];
+  const CorpsColorList = ["#EF7E7E", "#F7AD77", "#F9E37A", "#C6E37C", "#71B598", "#79CEC8"];
   const [selectAll, setSelectAll] = useState(false);
   const [isChecked, setIsChecked] = useState(listData.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
@@ -309,9 +302,7 @@ function CropsList() {
     if (updatedIsCheckedArray[index]) {
       setCheckArray((prevArray) => [...prevArray, selectedItemId]);
     } else {
-      setCheckArray((prevArray) =>
-        prevArray.filter((number) => number !== selectedItemId),
-      );
+      setCheckArray((prevArray) => prevArray.filter((number) => number !== selectedItemId));
     }
   };
 
@@ -355,18 +346,9 @@ function CropsList() {
             <div className="table-header">
               <div>
                 <label>
-                  <input
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={toggleAll}
-                    style={{ display: "none" }}
-                  />
+                  <input type="checkbox" checked={selectAll} onChange={toggleAll} style={{ display: "none" }} />
                   <div>
-                    {selectAll ? (
-                      <CheckBoxOn width={24} height={24} />
-                    ) : (
-                      <CheckBoxOff width={24} height={24} />
-                    )}
+                    {selectAll ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}
                   </div>
                 </label>
               </div>
@@ -392,12 +374,7 @@ function CropsList() {
               <div className="list-inner">
                 {listData.map((data, index, item) => {
                   return (
-                    <S.ListBlock
-                      key={`map${index}`}
-                      className={`table-row ${
-                        isChecked[index] ? "selected" : ""
-                      }`}
-                    >
+                    <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
                       <label key={item.id} className="table-row">
                         <input
                           type="checkbox"
@@ -415,10 +392,7 @@ function CropsList() {
                         <div>{item.name}</div>
                       </label>
                       <p>{data.number}</p>
-                      <div
-                        className="crops_color"
-                        style={{ backgroundColor: CorpsColorList[index] }}
-                      />
+                      <div className="crops_color" style={{ backgroundColor: CorpsColorList[index] }} />
                       <p>{data.crops_name}</p>
 
                       <div className="option-modal-wrap">
@@ -426,8 +400,7 @@ function CropsList() {
                           className="option-dot"
                           onClick={() => {
                             handleCropsOptionModalClick(index, data);
-                          }}
-                        >
+                          }}>
                           <OptionDot width={32} height={32} />
                         </div>
                         {index === optionModalOpen.index && (
@@ -439,9 +412,7 @@ function CropsList() {
                             // editCropsModalOpen={editCropsModalOpen}
                             setEditCropsModalOpen={setEditCropsModalOpen}
                             deleteCropsImgModalOpen={deleteCropsImgModalOpen}
-                            setDeleteCropsImgModalOpen={
-                              setDeleteCropsImgModalOpen
-                            }
+                            setDeleteCropsImgModalOpen={setDeleteCropsImgModalOpen}
                           />
                         )}
                       </div>

@@ -212,9 +212,7 @@ function EditCropsModal({
   editCropsImg,
   setEditCropsImg,
 }) {
-  const [editCropsName, setEditCropsName] = useState(
-    editCropsModalOpen.data.data.crops_name,
-  );
+  const [editCropsName, setEditCropsName] = useState(editCropsModalOpen.data.data.crops_name);
 
   useEffect(() => {
     setEditCropsImg(editCropsModalOpen.data.data.crops_img);
@@ -255,9 +253,7 @@ function EditCropsModal({
   ];
 
   //선택한 색상
-  const [selectedColor, setSelectedColor] = useState(
-    editCropsModalOpen.data.data.crops_color,
-  );
+  const [selectedColor, setSelectedColor] = useState(editCropsModalOpen.data.data.crops_color);
 
   const handleColorClick = (color) => {
     setSelectedColor(color);
@@ -358,10 +354,8 @@ function EditCropsModal({
                 display: "flex",
                 flexWrap: "wrap",
                 width: "100%",
-                display: "flex",
                 justifyContent: "space-between",
-              }}
-            >
+              }}>
               {colors.map((color) => (
                 <div
                   key={color}
@@ -378,8 +372,7 @@ function EditCropsModal({
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}
-                >
+                  }}>
                   {selectedColor === color && (
                     <img
                       src="/images/setting/color-icon-check.svg" // 이미지 파일 경로를 지정합니다.
@@ -393,24 +386,14 @@ function EditCropsModal({
                   )}
                 </div>
               ))}
-              <div
-                className="color-check-wrap-rainbow"
-                onClick={handleButtonClick}
-              >
-                {isColorInArray ? (
-                  <RainbowIcon width={48} height={48} />
-                ) : (
-                  <CheckRainbowIcon width={48} height={48} />
-                )}
+              <div className="color-check-wrap-rainbow" onClick={handleButtonClick}>
+                {isColorInArray ? <RainbowIcon width={48} height={48} /> : <CheckRainbowIcon width={48} height={48} />}
               </div>
             </div>
 
             {isOpen && (
               <S.ColorPalette>
-                <ChromePicker
-                  color={selectedColor}
-                  onChangeComplete={handleColorChange}
-                />
+                <ChromePicker color={selectedColor} onChangeComplete={handleColorChange} />
               </S.ColorPalette>
             )}
             <S.Border />

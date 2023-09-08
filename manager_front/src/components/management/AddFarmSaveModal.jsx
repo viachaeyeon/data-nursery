@@ -201,9 +201,7 @@ function AddFarmSaveModal({
     console.log("주소 : ", addressData, addressDetailData);
   }, []);
 
-  const open = useDaumPostcodePopup(
-    "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js",
-  );
+  const open = useDaumPostcodePopup("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js");
 
   const handleComplete = useCallback((data) => {
     let fullAddress = data.address;
@@ -216,8 +214,7 @@ function AddFarmSaveModal({
         extraAddress += data.bname;
       }
       if (data.buildingName !== "") {
-        extraAddress +=
-          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+        extraAddress += extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
       }
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
@@ -254,11 +251,7 @@ function AddFarmSaveModal({
           </div>
           <p className="title-info">농가ID</p>
           <div className="input-wrap">
-            <input
-              placeholder="예) PF_0021350"
-              value={farmId}
-              onChange={(e) => setFarmId(e.target.value)}
-            />
+            <input placeholder="예) PF_0021350" value={farmId} onChange={(e) => setFarmId(e.target.value)} />
           </div>
           <p className="title-info">농가명</p>
           <div className="input-wrap">
@@ -287,11 +280,7 @@ function AddFarmSaveModal({
           <p className="title-info">주소</p>
           <div className="address-wrap">
             <div className="input-wrap">
-              <input
-                placeholder="주소를 입력하세요."
-                value={addressData}
-                disabled
-              />
+              <input placeholder="주소를 입력하세요." value={addressData} disabled />
               <div className="search" onClick={handleClick}>
                 <SearchIcon width={40} height={40} />
               </div>

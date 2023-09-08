@@ -180,13 +180,7 @@ const S = {
   `,
 };
 
-function DatePickerMain({
-  pickerOpen,
-  setPickerOpen,
-  startDate,
-  endDate,
-  setDateRange,
-}) {
+function DatePickerMain({ pickerOpen, setPickerOpen, startDate, endDate, setDateRange }) {
   const handlePickerClose = useCallback(() => {
     setPickerOpen(false);
   }, [pickerOpen]);
@@ -215,19 +209,12 @@ function DatePickerMain({
             monthsShown={2}
             locale={ko}
             inline
-            renderCustomHeader={({
-              monthDate,
-              decreaseMonth,
-              increaseMonth,
-            }) => (
+            renderCustomHeader={({ monthDate, decreaseMonth, increaseMonth }) => (
               <div className="customer-calendar-header">
                 <button
                   aria-label="Previous Month"
-                  className={
-                    "react-datepicker__navigation react-datepicker__navigation--previous"
-                  }
-                  onClick={decreaseMonth}
-                >
+                  className={"react-datepicker__navigation react-datepicker__navigation--previous"}
+                  onClick={decreaseMonth}>
                   <CalendarArrowIcon />
                 </button>
                 <span className="react-datepicker__current-month">
@@ -240,11 +227,8 @@ function DatePickerMain({
                 </span>
                 <button
                   aria-label="Next Month"
-                  className={
-                    "react-datepicker__navigation react-datepicker__navigation--next"
-                  }
-                  onClick={increaseMonth}
-                >
+                  className={"react-datepicker__navigation react-datepicker__navigation--next"}
+                  onClick={increaseMonth}>
                   <CalendarArrowIcon className={"rotate-180"} />
                 </button>
               </div>

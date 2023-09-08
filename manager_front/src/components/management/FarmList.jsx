@@ -460,9 +460,7 @@ function FarmList() {
     if (updatedIsCheckedArray[index]) {
       setCheckArray((prevArray) => [...prevArray, selectedItemId]);
     } else {
-      setCheckArray((prevArray) =>
-        prevArray.filter((number) => number !== selectedItemId),
-      );
+      setCheckArray((prevArray) => prevArray.filter((number) => number !== selectedItemId));
     }
   };
 
@@ -507,19 +505,8 @@ function FarmList() {
         <div className="list-table-head">
           <div>
             <label>
-              <input
-                type="checkbox"
-                checked={selectAll}
-                onChange={toggleAll}
-                style={{ display: "none" }}
-              />
-              <div>
-                {selectAll ? (
-                  <CheckBoxOn width={24} height={24} />
-                ) : (
-                  <CheckBoxOff width={24} height={24} />
-                )}
-              </div>
+              <input type="checkbox" checked={selectAll} onChange={toggleAll} style={{ display: "none" }} />
+              <div>{selectAll ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}</div>
             </label>
           </div>
           {checkArray.length === 0 ? (
@@ -529,11 +516,7 @@ function FarmList() {
               <div className="arrow-wrap">
                 <p>농가명</p>
                 <div className="icon-wrap" onClick={sortByFarmName}>
-                  {isNameOrderBy ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
+                  {isNameOrderBy ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
               <p>생산자명</p>
@@ -543,11 +526,7 @@ function FarmList() {
               <div className="arrow-wrap">
                 <p>상태</p>
                 <div className="icon-wrap" onClick={sortByStatus}>
-                  {isStateOrderBy ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
+                  {isStateOrderBy ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
               <p></p>
@@ -571,10 +550,7 @@ function FarmList() {
         ) : (
           listData.map((data, index, item) => {
             return (
-              <S.ListBlock
-                key={`map${index}`}
-                className={`table-row ${isChecked[index] ? "selected" : ""}`}
-              >
+              <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
                 <label key={item.id} className="table-row">
                   <input
                     type="checkbox"
@@ -583,20 +559,14 @@ function FarmList() {
                     style={{ display: "none" }}
                   />
                   <div>
-                    {isChecked[index] ? (
-                      <CheckBoxOn width={24} height={24} />
-                    ) : (
-                      <CheckBoxOff width={24} height={24} />
-                    )}
+                    {isChecked[index] ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}
                   </div>
                   <div>{item.name}</div>
                 </label>
                 <p className="serial_number">{data.serial_number}</p>
                 <p className="farm_id">{data.farm_id}</p>
                 <div className="farm_name_wrap">
-                  <div className="farm-name-frist">
-                    {data.farm_name.slice(0, 1)}
-                  </div>
+                  <div className="farm-name-frist">{data.farm_name.slice(0, 1)}</div>
                   <p className="farm_name">{data.farm_name}</p>
                 </div>
                 <p className="name">{data.name}</p>
@@ -624,8 +594,7 @@ function FarmList() {
                         open: false,
                         data: data,
                       });
-                    }}
-                  >
+                    }}>
                     <OptionDot width={40} height={32} />
                   </div>
                   {index === optionModalOpen.index && (
@@ -726,10 +695,7 @@ function FarmList() {
       {/* 수정모달 */}
       {editModalOpen.open && (
         <div className="modal-wrap">
-          <EditFarmModal
-            editModalOpen={editModalOpen}
-            setEditModalOpen={setEditModalOpen}
-          />
+          <EditFarmModal editModalOpen={editModalOpen} setEditModalOpen={setEditModalOpen} />
         </div>
       )}
     </S.Wrap>

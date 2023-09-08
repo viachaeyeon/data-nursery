@@ -107,22 +107,15 @@ function MainSideMenu() {
     <S.Wrap>
       <S.SideMenuInner>
         <li className="main-logo">
-          <Image
-            src={"/images/common/logo-data-nursery.svg"}
-            fill
-            alt="main-logo"
-          />
+          <Image src={"/images/common/logo-data-nursery.svg"} fill alt="main-logo" />
         </li>
 
         <div className="sidebar">
           {menuItems.map((item) => (
             <div
               key={item.path}
-              className={`menu-item ${
-                router.pathname === item.path ? "active" : ""
-              }`}
-              onClick={() => router.push(item.path)}
-            >
+              className={`menu-item ${router.pathname === item.path ? "active" : ""}`}
+              onClick={() => router.push(item.path)}>
               <item.icon width={40} height={40} fill={"#6CA7FF"} />
               <p className="sidebar-text">{item.label}</p>
             </div>

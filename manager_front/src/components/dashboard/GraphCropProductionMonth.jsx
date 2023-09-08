@@ -67,10 +67,7 @@ function GraphTotalProduction() {
           // const activePoint = chart.tooltip._active[0];
           ctx.beginPath();
           ctx.moveTo(chart.tooltip._active[0].element.x, chart.chartArea.top);
-          ctx.lineTo(
-            chart.tooltip._active[0].element.x,
-            chart.chartArea.bottom,
-          );
+          ctx.lineTo(chart.tooltip._active[0].element.x, chart.chartArea.bottom);
           ctx.lineWidth = 1.5;
           ctx.setLineDash([2, 2]); // 세로선 점선 표시
           ctx.strokeStyle = "#C2D6E1"; // 세로 점선 색상
@@ -85,20 +82,7 @@ function GraphTotalProduction() {
       graphInstance = new Chart(graphCtx, {
         type: "line",
         data: {
-          labels: [
-            "01",
-            "02",
-            "03",
-            "04",
-            "05",
-            "06",
-            "07",
-            "08",
-            "09",
-            "10",
-            "11",
-            "12",
-          ],
+          labels: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
           datasets: [
             {
               data: data1,

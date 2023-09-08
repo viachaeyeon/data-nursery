@@ -72,10 +72,7 @@ function GraphTotalProduction() {
           // const activePoint = chart.tooltip._active[0];
           ctx.beginPath();
           ctx.moveTo(chart.tooltip._active[0].element.x, chart.chartArea.top);
-          ctx.lineTo(
-            chart.tooltip._active[0].element.x,
-            chart.chartArea.bottom,
-          );
+          ctx.lineTo(chart.tooltip._active[0].element.x, chart.chartArea.bottom);
           ctx.lineWidth = 1.5;
           ctx.setLineDash([2, 2]); // 세로선 점선 표시
           ctx.strokeStyle = "#C2D6E1"; // 세로 점선 색상

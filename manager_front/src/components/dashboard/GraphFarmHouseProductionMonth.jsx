@@ -41,18 +41,12 @@ function GraphFarmHouseProductionMonth() {
 
         const barPercentage = data.datasets[0].barPercentage || 0.9;
         const categoryPercentage = data.datasets[0].categoryPercentage || 0.8;
-        const barThickness =
-          (height / data.labels.length) * barPercentage * categoryPercentage;
+        const barThickness = (height / data.labels.length) * barPercentage * categoryPercentage;
 
         ctx.save();
         ctx.fillStyle = "#F7F7FA";
         data.labels.forEach((bar, index) => {
-          ctx.fillRect(
-            left,
-            y.getPixelForValue(index) - barThickness / 2,
-            width,
-            barThickness,
-          );
+          ctx.fillRect(left, y.getPixelForValue(index) - barThickness / 2, width, barThickness);
         });
         ctx.restore();
       },

@@ -134,15 +134,9 @@ const S = {
 };
 
 function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
-  const [editWidth, setEditWidth] = useState(
-    editTrayModalOpen.data.data.width_count,
-  );
-  const [editHeight, setEditHeight] = useState(
-    editTrayModalOpen.data.data.height_count,
-  );
-  const [editTray, setEditTray] = useState(
-    editTrayModalOpen.data.data.tray_number,
-  );
+  const [editWidth, setEditWidth] = useState(editTrayModalOpen.data.data.width_count);
+  const [editHeight, setEditHeight] = useState(editTrayModalOpen.data.data.height_count);
+  const [editTray, setEditTray] = useState(editTrayModalOpen.data.data.tray_number);
 
   useEffect(() => {
     setEditTray(editWidth * editHeight);
@@ -179,9 +173,7 @@ function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
             <input
               placeholder="예) 30"
               value={editWidth}
-              onChange={(e) =>
-                setEditWidth(e.target.value.replace(/[^0-9]/g, ""))
-              }
+              onChange={(e) => setEditWidth(e.target.value.replace(/[^0-9]/g, ""))}
             />
           </div>
           <S.TextWrap>
@@ -192,16 +184,12 @@ function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
             <input
               placeholder="예) 14"
               value={editHeight}
-              onChange={(e) =>
-                setEditHeight(e.target.value.replace(/[^0-9]/g, ""))
-              }
+              onChange={(e) => setEditHeight(e.target.value.replace(/[^0-9]/g, ""))}
             />
           </div>
           <S.TextWrap>
             <p className="input-title">트레이공수</p>
-            <p className="input-info">
-              ※ 가로,세로값이 입력되면 자동으로 계산됩니다.
-            </p>
+            <p className="input-info">※ 가로,세로값이 입력되면 자동으로 계산됩니다.</p>
           </S.TextWrap>
           <div className="input-wrap-off">
             <input value={editTray} />

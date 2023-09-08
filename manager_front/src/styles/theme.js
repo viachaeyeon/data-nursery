@@ -7,28 +7,18 @@
 //   };
 
 const textStyle = {
-  h1Bold:
-    "font-size: 56px; font-style: normal; font-weight: 700; line-height:64",
+  h1Bold: "font-size: 56px; font-style: normal; font-weight: 700; line-height:64",
   h2Bold: "",
-  h3Bold:
-    "font-size:32px; font-style:normal; font-weight:700; line-height:36px",
-  h4Bold:
-    "font-size:24px; font-style:normal; font-weight:700; line-height:28px;",
-  h5Bold:
-    "font-size:20px; font-style:normal; font-weight:700; line-height:24px",
-  h6Bold:
-    "font-size:16px; font-style:normal; font-weight:700; line-height:20px",
-  h7Bold:
-    "font-size:14px; font-style:normal; font-weight:700; line-height:16px",
-  h5Reguler:
-    "font-size:20px; font-style:normal; font-weight:400; line-height:24px",
-  h6Reguler:
-    "font-size:16px; font-style:normal; font-weight:400; line-height:20px; letter-spacing:-0.32px;",
-  h7Reguler:
-    "font-size:14px; font-style:normal; font-weight:400; line-height:16px",
+  h3Bold: "font-size:32px; font-style:normal; font-weight:700; line-height:36px",
+  h4Bold: "font-size:24px; font-style:normal; font-weight:700; line-height:28px;",
+  h5Bold: "font-size:20px; font-style:normal; font-weight:700; line-height:24px",
+  h6Bold: "font-size:16px; font-style:normal; font-weight:700; line-height:20px",
+  h7Bold: "font-size:14px; font-style:normal; font-weight:700; line-height:16px",
+  h5Reguler: "font-size:20px; font-style:normal; font-weight:400; line-height:24px",
+  h6Reguler: "font-size:16px; font-style:normal; font-weight:400; line-height:20px; letter-spacing:-0.32px;",
+  h7Reguler: "font-size:14px; font-style:normal; font-weight:400; line-height:16px",
   h8Reguler: "",
-  h7Semibold:
-    "font-size:14px; font-style:normal; font-weight:600; line-height:16px;",
+  h7Semibold: "font-size:14px; font-style:normal; font-weight:600; line-height:16px;",
 };
 
 const blackWhite = {

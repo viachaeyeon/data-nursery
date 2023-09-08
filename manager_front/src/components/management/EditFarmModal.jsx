@@ -155,14 +155,10 @@ const S = {
 };
 
 function EditFarmModal({ editModalOpen, setEditModalOpen }) {
-  const [editFarmName, setEditFarmName] = useState(
-    editModalOpen.data.data.farm_name,
-  );
+  const [editFarmName, setEditFarmName] = useState(editModalOpen.data.data.farm_name);
   const [editName, setEditName] = useState(editModalOpen.data.data.name);
   const [editPhone, setEditPhone] = useState(editModalOpen.data.data.phone);
-  const [editAddress, setEditAddress] = useState(
-    editModalOpen.data.data.address,
-  );
+  const [editAddress, setEditAddress] = useState(editModalOpen.data.data.address);
   // const [editDetailAddress,setEditDetailAddress] = useState(editModalOpen.data.data.)
 
   const closeModal = useCallback(() => {
@@ -240,11 +236,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
           </div>
           <p className="title-info">생산자명</p>
           <div className="input-wrap">
-            <input
-              placeholder="이름을 입력하세요."
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-            />
+            <input placeholder="이름을 입력하세요." value={editName} onChange={(e) => setEditName(e.target.value)} />
           </div>
           <p className="title-info">연락처</p>
           <div className="input-wrap">
@@ -279,9 +271,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
           </div>
         </S.InputWrap>
 
-        {editFarmName.length === 0 ||
-        editName.length === 0 ||
-        editPhone.length === 0 ? (
+        {editFarmName.length === 0 || editName.length === 0 || editPhone.length === 0 ? (
           <>
             <S.ButtonWrapOff>
               <p>저장</p>

@@ -30,19 +30,11 @@ function GraphTotalProduction() {
 
         ctx.save();
         const segment = width / data.labels.length;
-        const barWidth =
-          segment *
-          data.datasets[0].barPercentage *
-          data.datasets[0].categoryPercentage;
+        const barWidth = segment * data.datasets[0].barPercentage * data.datasets[0].categoryPercentage;
 
         ctx.fillStyle = pluginOptions.barColor;
         for (let i = 0; i < data.labels.length; i++) {
-          ctx.fillRect(
-            x.getPixelForValue(i) - barWidth / 2,
-            top,
-            barWidth,
-            height,
-          );
+          ctx.fillRect(x.getPixelForValue(i) - barWidth / 2, top, barWidth, height);
         }
       },
     };
@@ -52,20 +44,7 @@ function GraphTotalProduction() {
       graphInstance = new Chart(graphCtx, {
         type: "bar",
         data: {
-          labels: [
-            "01",
-            "02",
-            "03",
-            "04",
-            "05",
-            "06",
-            "07",
-            "08",
-            "09",
-            "10",
-            "11",
-            "12",
-          ],
+          labels: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
           datasets: [
             {
               data: [12, 19, 3, 10, 2, 3, 9, 1, 3, 3, 9, 10],

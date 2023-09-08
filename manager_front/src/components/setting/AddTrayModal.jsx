@@ -176,9 +176,7 @@ function AddTrayModal({
             <input
               placeholder="예) 30"
               value={trayWidthNum}
-              onChange={(e) =>
-                setTrayWidthNum(e.target.value.replace(/[^0-9]/g, ""))
-              }
+              onChange={(e) => setTrayWidthNum(e.target.value.replace(/[^0-9]/g, ""))}
             />
           </div>
           <S.TextWrap>
@@ -189,16 +187,12 @@ function AddTrayModal({
             <input
               placeholder="예) 14"
               value={trayHeighthNum}
-              onChange={(e) =>
-                setTrayHeighthNum(e.target.value.replace(/[^0-9]/g, ""))
-              }
+              onChange={(e) => setTrayHeighthNum(e.target.value.replace(/[^0-9]/g, ""))}
             />
           </div>
           <S.TextWrap>
             <p className="input-title">트레이공수</p>
-            <p className="input-info">
-              ※ 가로,세로값이 입력되면 자동으로 계산됩니다.
-            </p>
+            <p className="input-info">※ 가로,세로값이 입력되면 자동으로 계산됩니다.</p>
           </S.TextWrap>
           <div className="input-wrap-off">
             <input value={trayNum} />
