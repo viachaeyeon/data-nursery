@@ -14,7 +14,7 @@ import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/B
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import theme from "@src/styles/theme";
-import { dashBoardKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
+import { dashBoardKey, workHistoryKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -151,6 +151,8 @@ function WorkContent({ isWorking, workingWorkInfo }) {
       if (workComplete) {
         // 오늘의 대시보드 정보 다시 불러오기 위해 쿼리키 삭제
         invalidateQueries([dashBoardKey]);
+        // 작업이력 정보 다시 불러오기 위해 쿼리키 삭제
+        invalidateQueries([workHistoryKey]);
         setWorkComplete(!workComplete);
       }
     },
