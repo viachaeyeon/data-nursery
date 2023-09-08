@@ -639,7 +639,10 @@ def planter_work_done_datetime_list(
             {
                 "id": planter_work.id,
                 "crop_name": planter_work.planter_work__crop.name,
-                "crop_kine": planter_work.crop_kind,
+                "crop_image": planter_work.planter_work__crop.image,
+                "crop_kind": planter_work.crop_kind,
+                "sowing_date": planter_work.sowing_date,
+                "deadline": planter_work.deadline,
                 "seed_quantity": planter_work.seed_quantity,
                 "tray_total": planter_work.planter_work__planter_tray.total,
             }
