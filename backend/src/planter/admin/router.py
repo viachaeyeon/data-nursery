@@ -725,3 +725,31 @@ def update_planter_tray(
     db.commit()
     db.refresh(planter_tray)
     return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+
+
+@router.patch(
+    "/tray/multiple/delete/{tray_ids}",
+    description="트레이 목록 다중 선택 후 삭제 api<br/> tray_ids = '1||2||3||4||5||6' 의 형태로 데이터 보내기",
+    status_code=200,
+)
+def delete_multiple_planter_trays(
+    request: Request, tray_ids: str, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+    target_ids = tray_ids.split("||")
+
+    base_query = (
+        db.query(planterModels.PlanterTray)
+        .filter(planterModels.PlanterTray.id.in_(target_ids))
+        .all()
+    )
+
+    tray_updates = []
+
+    for tray in base_query:
+        tray_updates.append({"id": tray.id, "is_del": True})
+
+    db.bulk_update_mappings(planterModels.PlanterTray, tray_updates)
+    db.commit()
+
+    return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
