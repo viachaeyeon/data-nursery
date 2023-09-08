@@ -136,3 +136,10 @@ def update_admin_user(
     db.refresh(admin_user_info)
 
     return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+
+
+@router.get("/admin/user/list", description="관리자 목록 리스트 api", status_code=200)
+def get_admin_user_list(request: Request, db: Session = Depends(get_db)):
+    get_current_user("99", request.cookies, db)
+
+    pass

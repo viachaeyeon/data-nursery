@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, Boolean
 from sqlalchemy.orm import relationship
 
 
@@ -36,6 +36,7 @@ class AdminUserInfo(BaseModel):
     department = Column(String(length=30))
     position = Column(String(length=30))
     phone = Column(String(length=20))
+    is_top_admin = Column(Boolean, default=False)
 
     admin_user_info__user = relationship("User", back_populates="user__admin_user_info")
 
