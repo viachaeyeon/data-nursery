@@ -144,7 +144,10 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
                 "user": {
                     "id": login_user.id,
                     "name": login_user.name,
-                }
+                },
+                "admin_user_info": {
+                    "is_top_admin": login_user.user__admin_user_info.is_top_admin
+                },
             },
         )
 
@@ -165,7 +168,7 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
 
 @router.get(
     "/common/user",
-    description="일반유저 로그인 시 사용합니다.<br/>로그인 요청 시 _ta 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
+    description="일반유저 정보요청 시 사용합니다.<br/>로그인 요청 시 _ta 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
     status_code=200,
 )
 def get_user(request: Request, db: Session = Depends(get_db)):
@@ -217,14 +220,11 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 @router.get(
     "/admin/user",
-    description="관리자 유저 로그인 시 사용합니다.<br/>로그인 요청 시 _taa 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
+    description="관리자 유저 정보요청 시 사용합니다.<br/>로그인 요청 시 _taa 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
     status_code=200,
-    # openapi_extra="?"
-    # include_in_schema=False,
 )
 def get_user(request: Request, db: Session = Depends(get_db)):
     user = get_current_user("99", request.cookies, db)
-
     access_token = create_access_token(user.login_id)
 
     response = JSONResponse(
@@ -233,7 +233,10 @@ def get_user(request: Request, db: Session = Depends(get_db)):
             "user": {
                 "id": user.id,
                 "name": user.name,
-            }
+            },
+            "admin_user_info": {
+                "is_top_admin": user.user__admin_user_info.is_top_admin
+            },
         },
     )
 
