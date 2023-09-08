@@ -14,6 +14,12 @@ class UserCreate(UserBase):
     code: str | None = "01"
 
 
+class UserUpdate(BaseModel):
+    password: Optional[str] = None
+    name: Optional[str] = None
+    is_del: Optional[bool] = None
+
+
 class UserLogin(UserBase):
     password: str
     l_type: str

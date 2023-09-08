@@ -78,6 +78,7 @@ class PlanterWork(BaseModel):
     deadline = Column(DateTime(timezone=True))
     order_quantity = Column(BigInteger)
     seed_quantity = Column(BigInteger)
+    is_shipment_completed = Column(Boolean, default=False)
     # operating_time = Column(BigInteger, nullable=True, default=0)
 
     planter_work__planter = relationship(

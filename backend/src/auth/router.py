@@ -26,38 +26,37 @@ from constant.cookie_set import (
 router = APIRouter()
 
 
-# @router.post(
-#     "/test/sign-up",
-#     description="test 유저 생성용입니다.<br/>파종기 정보가 같이 생성되지 않습니다.",
-#     status_code=201,
-#     response_model=schemas.User,
-# )
-# def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-#     if not user.login_id or not user.password:
-#         return JSONResponse(
-#             status_code=400, content=dict(msg="ID and password must be provide")
-#         )
+@router.post(
+    "/test/sign-up",
+    description="docs 접근 유저 생성용입니다.<br/>파종기 정보가 같이 생성되지 않습니다.",
+    status_code=201,
+    response_model=schemas.User,
+)
+def sign_up_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    if not user.login_id or not user.password:
+        return JSONResponse(
+            status_code=400, content=dict(msg="ID and password must be provide")
+        )
 
-#     db_user = (
-#         db.query(models.User).filter(models.User.login_id == user.login_id).first()
-#     )
-#     if db_user:
-#         return JSONResponse(
-#             status_code=400, content=dict(msg="This ID is already taken")
-#         )
+    db_user = (
+        db.query(models.User).filter(models.User.login_id == user.login_id).first()
+    )
+    if db_user:
+        return JSONResponse(
+            status_code=400, content=dict(msg="This ID is already taken")
+        )
 
-#     # TODO: 실제 회원가입 시 FarmHouse도 같이 생성
-#     hash_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
-#     new_user = models.User(
-#         login_id=user.login_id,
-#         name=user.name,
-#         password=hash_pw.decode("utf-8"),
-#         code=user.code,
-#     )
-#     db.add(new_user)
-#     db.commit()
-#     db.refresh(new_user)
-#     return new_user
+    hash_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
+    new_user = models.User(
+        login_id=user.login_id,
+        name=user.name,
+        password=hash_pw.decode("utf-8"),
+        code=user.code,
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
 
 
 @router.post(
@@ -145,7 +144,10 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
                 "user": {
                     "id": login_user.id,
                     "name": login_user.name,
-                }
+                },
+                "admin_user_info": {
+                    "is_top_admin": login_user.user__admin_user_info.is_top_admin
+                },
             },
         )
 
@@ -166,7 +168,7 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
 
 @router.get(
     "/common/user",
-    description="일반유저 로그인 시 사용합니다.<br/>로그인 요청 시 _ta 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
+    description="일반유저 정보요청 시 사용합니다.<br/>로그인 요청 시 _ta 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
     status_code=200,
 )
 def get_user(request: Request, db: Session = Depends(get_db)):
@@ -218,14 +220,11 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 @router.get(
     "/admin/user",
-    description="관리자 유저 로그인 시 사용합니다.<br/>로그인 요청 시 _taa 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
+    description="관리자 유저 정보요청 시 사용합니다.<br/>로그인 요청 시 _taa 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
     status_code=200,
-    # openapi_extra="?"
-    # include_in_schema=False,
 )
 def get_user(request: Request, db: Session = Depends(get_db)):
     user = get_current_user("99", request.cookies, db)
-
     access_token = create_access_token(user.login_id)
 
     response = JSONResponse(
@@ -234,7 +233,10 @@ def get_user(request: Request, db: Session = Depends(get_db)):
             "user": {
                 "id": user.id,
                 "name": user.name,
-            }
+            },
+            "admin_user_info": {
+                "is_top_admin": user.user__admin_user_info.is_top_admin
+            },
         },
     )
 
