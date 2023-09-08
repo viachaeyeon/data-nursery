@@ -10,6 +10,7 @@ const S = {
       display: flex;
       overflow-x: auto;
       gap: 8px;
+      padding: 0px 8px;
     }
   `,
   DayWrap: styled.div`

@@ -15,7 +15,7 @@ import DefaultHorizontalCalendar from "@components/common/calendar/DefaultHorizo
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import theme from "@src/styles/theme";
-import { DateDotFormatting, DateKoreanFormatting, NumberFormatting } from "@utils/Formatting";
+import { DateDotFormatting, DateKoreanFormatting, ImagePathCheck, NumberFormatting } from "@utils/Formatting";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import { workHistoryKey } from "@utils/query-keys/PlanterQueryKeys";
@@ -35,7 +35,7 @@ const S = {
     }
   `,
   DateSelectWrap: styled.div`
-    padding: 24px 8px;
+    padding: 24px 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -138,7 +138,7 @@ const S = {
   `,
   WorkHistoryListWrap: styled.div`
     width: 100%;
-    padding: 16px 0px;
+    padding-top: 16px;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -401,17 +401,16 @@ function WorkHistoryPage() {
                   return (
                     <S.WorkHistoryContent key={`work${work.id}`}>
                       <S.WorkInfo>
-                        {/* <S.CropImage isCropImage={!!workingWorkInfo?.crop_img}> */}
-                        <S.CropImage isCropImage={false}>
-                          {/* {!!workingWorkInfo?.crop_img ? (
-                            <Image src={ImagePathCheck(workingWorkInfo?.crop_img)} layout="fill" alt="crop image" />
-                          ) : ( */}
-                          <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
-                          {/* )} */}
+                        <S.CropImage isCropImage={!!work.crop_image}>
+                          {!!work.crop_image ? (
+                            <Image src={ImagePathCheck(work.crop_image)} layout="fill" alt="crop image" />
+                          ) : (
+                            <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
+                          )}
                         </S.CropImage>
                         <div className="text-wrap">
                           <p className="crop-text">
-                            {work.crop_name} #{work.crop_kine}
+                            {work.crop_name} #{work.crop_kind}
                           </p>
                           <div className="count-text-wrap">
                             <p className="count-text">{NumberFormatting(work.seed_quantity)}</p>
@@ -429,13 +428,13 @@ function WorkHistoryPage() {
                           <div className="category-box">
                             <p>파종일</p>
                           </div>
-                          <p className="date-text">{DateDotFormatting("2023/07/10")}</p>
+                          <p className="date-text">{DateDotFormatting(work.sowing_date)}</p>
                         </div>
                         <div className="date-row-layout">
                           <div className="category-box">
                             <p>출하일</p>
                           </div>
-                          <p className="date-text">{DateDotFormatting("2023/07/10")}</p>
+                          <p className="date-text">{DateDotFormatting(work.deadline)}</p>
                         </div>
                       </S.DateWrap>
                     </S.WorkHistoryContent>
