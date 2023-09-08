@@ -34,10 +34,10 @@ export function GetYearList() {
   const result = [];
   const lastYear = new Date().getFullYear();
 
-  if (2020 === lastYear) {
-    result.push(2020);
+  if (2023 === lastYear) {
+    result.push(2023);
   } else {
-    for (let i = lastYear; 2020 <= i; i--) {
+    for (let i = lastYear; 2023 <= i; i--) {
       result.push(i);
     }
   }
@@ -51,11 +51,11 @@ export function GetMonthList(selectYear) {
   const lastYear = new Date().getFullYear();
   const lastMonth = new Date().getMonth() + 1;
 
-  if (2020 === selectYear) {
+  if (2023 === selectYear) {
     for (let i = 9; i <= lastMonth; i++) {
       result.push(i);
     }
-  } else if (2020 < selectYear && selectYear < lastYear) {
+  } else if (2023 < selectYear && selectYear < lastYear) {
     for (let i = 1; i <= 12; i++) {
       result.push(i);
     }

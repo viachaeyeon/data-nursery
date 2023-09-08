@@ -10,6 +10,8 @@ import DefaultYearMonthList from "@components/common/calendar/DefaultYearMonthLi
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import theme from "@src/styles/theme";
+import DefaultHorizontalCalendar from "@components/common/calendar/DefaultHorizontalCalendar";
+import { DateFormatting } from "@utils/Formatting";
 
 const S = {
   Wrap: styled.div`
@@ -28,30 +30,48 @@ const S = {
   DateSelectWrap: styled.div`
     padding: 24px 8px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 76px;
+    height: 166px;
     background-color: ${({ theme }) => theme.basic.deepBlue};
     position: sticky;
+
+    .select-wrap-padding {
+      padding: 16px 0px;
+    }
   `,
   ContentWrap: styled.div`
     padding: 38px 24px 36px 24px;
-    height: calc(100% - 76px);
+    height: calc(100% - 166px);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 24px;
     background-color: ${({ theme }) => theme.basic.whiteGrey};
   `,
+  SelectedDateWrap: styled.div`
+    width: fit-content;
+    height: 34px;
+    background-color: ${({ theme }) => theme.basic.grey20};
+    padding: 8px;
+    border-radius: 8px;
+
+    p {
+      ${({ theme }) => theme.textStyle.h7Regular}
+      color: ${({ theme }) => theme.basic.grey50};
+    }
+  `,
 };
 
-function StatisticsPage() {
+function WorkHistoryPage() {
   const router = useRouter();
 
   // 선택한 년도, 월
   const [date, setDate] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
+    day: new Date().getDate(),
   });
 
   // 년도, 월 Select open 여부
@@ -92,16 +112,28 @@ function StatisticsPage() {
 
   return (
     <MainLayout
-      pageName={"통계현황"}
+      pageName={"작업이력"}
       backIconClickFn={() => {
         router.push("/");
       }}
-      backgroundColor={theme.basic.deepBlue}>
+      backgroundColor={theme.basic.deepBlue}
+      buttonSetting={null}>
       <S.Wrap>
         <S.DateSelectWrap>
-          <DefaultYearMonthSelect date={date} yearMonthOpen={yearMonthOpen} handleYearMonthOpen={handleYearMonthOpen} />
+          <div className="select-wrap-padding">
+            <DefaultYearMonthSelect
+              date={date}
+              yearMonthOpen={yearMonthOpen}
+              handleYearMonthOpen={handleYearMonthOpen}
+            />
+          </div>
+          <DefaultHorizontalCalendar date={date} handleDateChange={handleDateChange} />
         </S.DateSelectWrap>
-        <S.ContentWrap></S.ContentWrap>
+        <S.ContentWrap>
+          <S.SelectedDateWrap>
+            <p>{DateFormatting(new Date(date.year, date.month, date.day))}</p>
+          </S.SelectedDateWrap>
+        </S.ContentWrap>
         <DefaultYearMonthList
           date={date}
           yearMonthOpen={yearMonthOpen}
@@ -118,4 +150,4 @@ export const getServerSideProps = requireAuthentication((context) => {
   return { props: {} };
 });
 
-export default StatisticsPage;
+export default WorkHistoryPage;

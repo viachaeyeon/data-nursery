@@ -8,7 +8,7 @@ import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 
 function DefaultYearMonthList({ date, yearMonthOpen, handleDateChange, handleYearMonthOpen }) {
   const yearList = GetYearList();
-  const [monthList, setMonthList] = useState([]);
+  const [monthList, setMonthList] = useState(GetMonthList(date.year));
 
   // 선택한 월이 변경한 년도에 없을 경우 가장 첫번쨰 월로 변경
   useEffect(() => {
