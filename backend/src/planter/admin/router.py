@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, case, extract, desc, asc, cast, String
 from starlette.responses import JSONResponse
 from datetime import date, datetime, timedelta
-from pytz import timezone
 from collections import defaultdict
 
 
@@ -12,7 +11,7 @@ import src.planter.models as planterModels
 import src.planter.admin.schemas as planterAdminSchemas
 import src.crops.models as cropModels
 from utils.database import get_db
-from utils.db_shortcuts import get_current_user
+from utils.db_shortcuts import get_current_user, get_
 
 
 router = APIRouter()
@@ -703,3 +702,26 @@ def search_planter_tray_total_for_admin(
     planter_tray_total_response = [result[0] for result in planter_tray_total_query]
 
     return planter_tray_total_response
+
+
+@router.patch(
+    "/tray/update/{tray_id}",
+    description="관리자 트레이 수정 api",
+)
+def update_planter_tray(
+    request: Request,
+    tray_id: int,
+    tray_data: planterAdminSchemas.PlanterTrayUpdate,
+    db: Session = Depends(get_db),
+):
+    get_current_user("99", request.cookies, db)
+
+    planter_tray = get_(db, planterModels.PlanterTray, id=tray_id)
+
+    for field in tray_data.__dict__:
+        if getattr(tray_data, field) is not None:
+            setattr(planter_tray, field, getattr(tray_data, field))
+
+    db.commit()
+    db.refresh(planter_tray)
+    return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
