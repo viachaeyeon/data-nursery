@@ -20,6 +20,24 @@ class User(BaseModel):
         back_populates="farm_house_user",
         primaryjoin="User.id == FarmHouse.owner_id",
     )
+    user__admin_user_info = relationship(
+        "AdminUserInfo",
+        uselist=False,
+        back_populates="admin_user_info__user",
+        primaryjoin="User.id == AdminUserInfo.user_id",
+    )
+
+
+class AdminUserInfo(BaseModel):
+    __tablename__ = "admin_user_infos"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    company = Column(String(length=30), index=True)
+    department = Column(String(length=30))
+    position = Column(String(length=30))
+    phone = Column(String(length=20))
+
+    admin_user_info__user = relationship("User", back_populates="user__admin_user_info")
 
 
 class FarmHouse(BaseModel):

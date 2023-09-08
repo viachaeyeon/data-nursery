@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
+from starlette.responses import JSONResponse
+import bcrypt
 
 from utils.database import get_db
-from utils.db_shortcuts import get_current_user
+from utils.db_shortcuts import get_current_user, create_
 import src.auth.models as authModels
+import src.auth.schemas as authSchemas
+import src.auth.admin.schemas as authAdminSchemas
 
 
 router = APIRouter()
@@ -51,3 +55,47 @@ def search_farmhouse_name_for_admin(
     farmhouse_name_response = [result[0] for result in farmhouse_name_query]
 
     return farmhouse_name_response
+
+
+@router.post("/admin/create", description="관리자 추가 api", status_code=200)
+def create_admin_user(
+    request: Request,
+    user_data: authSchemas.UserCreate,
+    admin_user_info_data: authAdminSchemas.AdminUserInfoCreate,
+    db: Session = Depends(get_db),
+):
+    get_current_user("99", request.cookies, db)
+
+    if user_data.code != "99":
+        return JSONResponse(status_code=400, content=dict(msg="NOT_CRAETED_USER_CODE"))
+
+    user_data.password = bcrypt.hashpw(
+        user_data.password.encode("utf-8"), bcrypt.gensalt()
+    ).decode("utf-8")
+
+    new_user = create_(
+        db,
+        authModels.User,
+        login_id=user_data.login_id,
+        name=user_data.name,
+        password=user_data.password,
+        code=user_data.code,
+    )
+
+    new_admin_user_info = create_(
+        db,
+        authModels.AdminUserInfo,
+        admin_user_info__user=new_user,
+        company=admin_user_info_data.company,
+        department=admin_user_info_data.department,
+        position=admin_user_info_data.position,
+        phone=admin_user_info_data.phone,
+    )
+
+    db.add(new_user)
+    db.add(new_admin_user_info)
+    db.commit()
+    db.refresh(new_user)
+    db.refresh(new_admin_user_info)
+
+    return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
