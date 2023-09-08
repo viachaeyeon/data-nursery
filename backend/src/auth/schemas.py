@@ -1,5 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
+
+from src.planter.schemas import PlanterStatus, Planter
 
 
 class UserBase(BaseModel):
@@ -8,11 +10,13 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    # code: str | None = "01"
+    name: str
+    code: str | None = "01"
 
 
 class UserLogin(UserBase):
     password: str
+    l_type: str
 
 
 class User(UserBase):
@@ -46,3 +50,28 @@ class FarmHouse(FarmHouseBase):
 
     class Config:
         from_attributes = True
+
+
+class FarmHouseUpdate(BaseModel):
+    id: int
+    name: Optional[str] = None
+    producer_name: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+
+
+class FarmHouseResponse(BaseModel):
+    id: int
+    name: str
+    nursery_number: str
+    farm_house_id: str
+    producer_name: str
+    address: str
+    phone: str
+    planter: Planter
+    last_planter_status: Optional[PlanterStatus]
+
+
+class PageFarmHouseResponse(BaseModel):
+    total: int
+    farm_houses: List[FarmHouseResponse]

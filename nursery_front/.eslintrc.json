@@ -1,0 +1,31 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:@next/next/recommended",
+    "next/core-web-vitals",
+    "prettier"
+  ],
+  "plugins": ["react", "react-hooks", "prettier"],
+  "rules": {
+    "prettier/prettier": ["error", { "endOfLine": "auto" }, { "usePrettierrc": true }],
+    "react/prop-types": "off",
+    "no-unused-vars": "off",
+    "no-extra-boolean-cast": "off",
+    "react/react-in-jsx-scope": "off",
+    "no-useless-escape": "off"
+  }
+}
