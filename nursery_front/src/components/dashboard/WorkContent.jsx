@@ -1,6 +1,11 @@
-import { NumberFormatting } from "@utils/Formatting";
+import { ImagePathCheck, NumberFormatting } from "@utils/Formatting";
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
+import Image from "next/image";
+import { useRouter } from "next/router";
+
+import useUpdateWorkStatus from "@hooks/queries/planter/useWorkStatusUpdate";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultButton";
 import DefaultModal from "@components/common/modal/DefaultModal";
@@ -8,6 +13,8 @@ import DefaultModal from "@components/common/modal/DefaultModal";
 import { borderButtonColor, purpleButtonColor, whiteButtonColor } from "@utils/ButtonColor";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
+import theme from "@src/styles/theme";
+import { dashBoardKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -55,6 +62,7 @@ const S = {
 
     .count-text {
       ${({ theme }) => theme.textStyle.h2BoldThin}
+      flex:1;
     }
 
     .suffix-text {
@@ -112,41 +120,79 @@ const S = {
   `,
 };
 
-function WorkContent({ isWork, setIsWork }) {
+function WorkContent({ isWorking, workingWorkInfo }) {
+  const router = useRouter();
+  const invalidateQueries = useInvalidateQueries();
+
+  const [goWorkInfo, setGoWorkInfo] = useState(false); // 작업정보 클릭 여부
+  const [workComplete, setWorkComplete] = useState(false); // 작업완료 클릭 여부
+
   const [modalOpen, setModalOpen] = useState({
     open: false,
     title: "",
     description: "",
     btnType: "",
     afterFn: null,
+    cancelFn: null,
   });
 
-  return (
+  // 작업 상태 변경 API
+  const { mutate: updateWorkStatusMutate } = useUpdateWorkStatus(
+    () => {
+      // 작업중인 작업 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([workingWorkInfoKey]);
+
+      if (goWorkInfo) {
+        router.push(`/work/${workingWorkInfo?.id}`);
+        setGoWorkInfo(!goWorkInfo);
+      }
+
+      if (workComplete) {
+        // 오늘의 대시보드 정보 다시 불러오기 위해 쿼리키 삭제
+        invalidateQueries([dashBoardKey]);
+        setWorkComplete(!workComplete);
+      }
+    },
+    (error) => {
+      alert(error);
+    },
+  );
+
+  return !!workingWorkInfo ? (
     <S.Wrap>
       <S.WorkInfo>
         <div className="text-wrap">
-          <p className="crop-name">미인풋고추</p>
+          <p className="crop-name">{workingWorkInfo?.crop_kind}</p>
           <div className="count-text-wrap">
-            <p className="count-text">{NumberFormatting(520000)}</p>
+            <p className="count-text">{NumberFormatting(workingWorkInfo?.planter_work_output)}</p>
             <p className="suffix-text">개</p>
           </div>
           <div className="count-text-wrap seed-quantity-wrap">
             <BoxIcon />
-            <p className="suffix-text seed-quantity-text">520공</p>
+            <p className="suffix-text seed-quantity-text">{workingWorkInfo?.tray_total}공</p>
           </div>
         </div>
-        <S.CropImage isCropImage={false}>
-          <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
+        <S.CropImage isCropImage={!!workingWorkInfo?.crop_img}>
+          {!!workingWorkInfo?.crop_img ? (
+            <Image src={ImagePathCheck(workingWorkInfo?.crop_img)} layout="fill" alt="crop image" />
+          ) : (
+            <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
+          )}
         </S.CropImage>
       </S.WorkInfo>
       <S.ButtonWrap>
         <S.ButtonWrap className="row-layout">
           <div className="flex-one">
-            {isWork ? (
+            {isWorking ? (
               <FontSmallDefaultButton
                 type={"pause"}
                 onClick={() => {
-                  setIsWork(false);
+                  updateWorkStatusMutate({
+                    data: {
+                      planter_work_id: workingWorkInfo?.id,
+                      status: "PAUSE",
+                    },
+                  });
                 }}
                 customStyle={whiteButtonColor}
               />
@@ -154,7 +200,12 @@ function WorkContent({ isWork, setIsWork }) {
               <FontSmallDefaultButton
                 type={"play"}
                 onClick={() => {
-                  setIsWork(true);
+                  updateWorkStatusMutate({
+                    data: {
+                      planter_work_id: workingWorkInfo?.id,
+                      status: "WORKING",
+                    },
+                  });
                 }}
                 customStyle={purpleButtonColor}
               />
@@ -164,7 +215,8 @@ function WorkContent({ isWork, setIsWork }) {
             <FontSmallDefaultButton
               text={"작업정보"}
               onClick={() => {
-                if (isWork) {
+                if (isWorking) {
+                  setGoWorkInfo(true);
                   setModalOpen({
                     open: true,
                     title: "작업정보 확인",
@@ -175,12 +227,19 @@ function WorkContent({ isWork, setIsWork }) {
                     ),
                     btnType: "two",
                     afterFn: () => {
-                      setIsWork(false);
-                      alert("작업정보 페이지로 이동 예정");
+                      updateWorkStatusMutate({
+                        data: {
+                          planter_work_id: workingWorkInfo?.id,
+                          status: "PAUSE",
+                        },
+                      });
+                    },
+                    cancelFn: () => {
+                      setGoWorkInfo(false);
                     },
                   });
                 } else {
-                  alert("작업정보 페이지로 이동 예정");
+                  router.push(`/work/${workingWorkInfo?.id}`);
                 }
               }}
               customStyle={whiteButtonColor}
@@ -190,6 +249,7 @@ function WorkContent({ isWork, setIsWork }) {
         <FontSmallDefaultButton
           text={"작업완료"}
           onClick={() => {
+            setWorkComplete(true);
             setModalOpen({
               open: true,
               type: "success",
@@ -197,8 +257,14 @@ function WorkContent({ isWork, setIsWork }) {
               description: "완료된 작업은 이력조회에서\n확인 할 수 있습니다.",
               btnType: "one",
               afterFn: () => {
-                alert("준비중입니다.");
+                updateWorkStatusMutate({
+                  data: {
+                    planter_work_id: workingWorkInfo?.id,
+                    status: "DONE",
+                  },
+                });
               },
+              cancelFn: null,
             });
           }}
           customStyle={borderButtonColor}
@@ -206,6 +272,11 @@ function WorkContent({ isWork, setIsWork }) {
       </S.ButtonWrap>
       <DefaultModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </S.Wrap>
+  ) : (
+    <div className="no-work">
+      <NoneIcon width={50} height={50} fill={theme.basic.grey20} />
+      <p>진행중인 작업이 없습니다</p>
+    </div>
   );
 }
 

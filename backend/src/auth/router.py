@@ -113,6 +113,7 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
                     "farm_house_id": farm_house.farm_house_id,
                     "producer_name": farm_house.producer_name,
                     "nursery_number": farm_house.nursery_number,
+                     "address": farm_house.address,
                     "phone": farm_house.phone,
                 },
                 "planter": {
@@ -188,6 +189,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
                 "farm_house_id": farm_house.farm_house_id,
                 "producer_name": farm_house.producer_name,
                 "nursery_number": farm_house.nursery_number,
+                "address": farm_house.address,
                 "phone": farm_house.phone,
             },
             "planter": {
