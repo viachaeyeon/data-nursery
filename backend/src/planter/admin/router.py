@@ -111,7 +111,7 @@ def get_admin_dashboard_realtime_planter(
                 planterModels.PlanterOutput.planter_work_id
                 == planterModels.PlanterWork.id
             )
-            & (planterModels.PlanterOutput.created_at >= date.today()),
+            & (planterModels.PlanterOutput.updated_at >= date.today()),
         )
         .filter(
             planterModels.Planter.is_del == False,
