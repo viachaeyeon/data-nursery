@@ -28,15 +28,15 @@ const S = {
 };
 
 function GraphTotalProduction() {
-  const {data:planterCropsTotal} = usePlanterCropTotal({
-    queryType : "day",
+  const { data: planterCropsTotal } = usePlanterCropTotal({
+    queryType: "day",
     successFn: () => {},
     errorFn: (err) => {
       console.log("!!err", err);
     },
-  })
+  });
 
-  console.log("작물별 생산량 일별",planterCropsTotal);
+  console.log("작물별 생산량 일별", planterCropsTotal);
 
   const graphRef = useRef(null);
   let graphInstance = null;

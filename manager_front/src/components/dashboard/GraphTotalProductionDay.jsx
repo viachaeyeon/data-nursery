@@ -22,7 +22,17 @@ function GraphTotalProduction() {
     },
   });
 
-  const dataArray = planterTotal?.map((item) => item.output);
+  const dataArray = [];
+  for (let i = 0; i < 31; i++) {
+    const data = null;
+    dataArray.push(data);
+  }
+
+  planterTotal?.map((data) => {
+    dataArray[data?.day - 1] = data?.output;
+  });
+
+  console.log("dataArray", dataArray);
 
   const graphRef = useRef(null);
   let graphInstance = null;
@@ -147,7 +157,7 @@ function GraphTotalProduction() {
               bodyColor: "#fff",
               callbacks: {
                 title: function (context) {
-                  return context[0].label + "월";
+                  return context[0].label + "일";
                 },
                 beforeBody: function (context) {
                   return context[0].formattedValue + "개";

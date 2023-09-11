@@ -22,7 +22,15 @@ function GraphTotalProduction() {
     },
   });
 
-  const dataArray = planterTotal?.map((item) => item?.output);
+  const dataArray = [];
+  for (let i = 0; i < 12; i++) {
+    const data = null;
+    dataArray.push(data);
+  }
+
+  planterTotal?.map((data) => {
+    dataArray[data?.month - 1] = data?.output;
+  });
 
   const graphRef = useRef(null);
   let graphInstance = null;
