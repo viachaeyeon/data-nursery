@@ -164,35 +164,35 @@ def get_total_output(request: Request, query_type: str, db: Session = Depends(ge
     get_current_user("99", request.cookies, db)
 
     if query_type == "day":
-        hourly_sums = (
+        daily_sum = (
             db.query(
-                extract("hour", planterModels.PlanterOutput.updated_at).label("hour"),
+                extract("day", planterModels.PlanterOutput.updated_at).label("day"),
                 func.sum(planterModels.PlanterOutput.output).label("output_sum"),
             )
             .filter(
-                func.Date(planterModels.PlanterOutput.updated_at)
-                == datetime.utcnow().date()
+                extract("month", planterModels.PlanterOutput.updated_at).label("month")
+                == datetime.utcnow().month
             )
-            .group_by("hour")
+            .group_by("day")
             .all()
         )
 
-        return [{"hour": item[0], "output": item[1]} for item in hourly_sums]
+        return [{"day": item[0], "output": item[1]} for item in daily_sum]
     elif query_type == "month":
-        hourly_sums = (
+        monthly_sum = (
             db.query(
                 extract("month", planterModels.PlanterOutput.updated_at).label("month"),
                 func.sum(planterModels.PlanterOutput.output).label("output_sum"),
             )
             .filter(
-                func.Date(planterModels.PlanterOutput.updated_at)
-                == datetime.utcnow().date()
+                extract("year", planterModels.PlanterOutput.updated_at).label("hour")
+                == datetime.utcnow().year
             )
             .group_by("month")
             .all()
         )
 
-        return [{"month": item[0], "output": item[1]} for item in hourly_sums]
+        return [{"month": item[0], "output": item[1]} for item in monthly_sum]
 
     else:
         return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
@@ -214,7 +214,7 @@ def get_crop_total_output(
         houly_crop_sums = (
             db.query(
                 cropModels.Crop.name,
-                extract("hour", planterModels.PlanterOutput.updated_at).label("hour"),
+                extract("day", planterModels.PlanterOutput.updated_at).label("day"),
                 func.sum(planterModels.PlanterOutput.output).label("total_output"),
             )
             .join(
@@ -227,17 +227,17 @@ def get_crop_total_output(
                 == planterModels.PlanterOutput.planter_work_id,
             )
             .filter(
-                func.Date(planterModels.PlanterOutput.updated_at)
-                == datetime.utcnow().date()
+                extract("month", planterModels.PlanterOutput.updated_at).label("month")
+                == datetime.utcnow().month
             )
-            .group_by(cropModels.Crop.name, "hour")
+            .group_by(cropModels.Crop.name, "day")
             .all()
         )
 
         for crop_name, hour, total_output in houly_crop_sums:
             crop_name = crop_name.lower()
             grouped_data[crop_name].append(
-                {"hour": int(hour), "output": int(total_output)}
+                {"day": int(hour), "output": int(total_output)}
             )
     elif query_type == "month":
         monthly_crop_sums = (
@@ -256,8 +256,8 @@ def get_crop_total_output(
                 == planterModels.PlanterOutput.planter_work_id,
             )
             .filter(
-                func.Date(planterModels.PlanterOutput.updated_at)
-                == datetime.utcnow().date()
+                extract("year", planterModels.PlanterOutput.updated_at).label("year")
+                == datetime.utcnow().year
             )
             .group_by(cropModels.Crop.name, "month")
             .all()
