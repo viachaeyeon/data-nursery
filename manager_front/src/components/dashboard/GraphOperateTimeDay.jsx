@@ -6,7 +6,6 @@ import { registerables } from "chart.js";
 
 import usePlanterOperatingTime from "@src/hooks/queries/planter/usePlanterOperatingTime";
 
-
 const S = {
   Wrap: styled.div`
     height: 360px;
@@ -59,13 +58,13 @@ const S = {
 };
 
 function GraphOperateTimeDay() {
-  const { data:planterOperation} = usePlanterOperatingTime({
+  const { data: planterOperation } = usePlanterOperatingTime({
     queryType: "day",
     successFn: () => {},
     errorFn: (err) => {
       console.log("!!err", err);
     },
-  })
+  });
 
   const graphRef = useRef(null);
   let graphInstance = null;
@@ -99,7 +98,7 @@ function GraphOperateTimeDay() {
         data: {
           datasets: [
             {
-              data: [planterOperation?.min?.farmhouse_name, (10-planterOperation?.min?.farmhouse_name)], // 여기서 첫 번째 데이터는 강조하고자 하는 값, 두 번째 데이터는 나머지 비율
+              data: [planterOperation?.min?.farmhouse_name, 10 - planterOperation?.min?.farmhouse_name], // 여기서 첫 번째 데이터는 강조하고자 하는 값, 두 번째 데이터는 나머지 비율
               backgroundColor: ["#8DBAEF", "#F7F7FA"],
               borderColor: ["#8DBAEF", "#F7F7FA"],
               hoverBackgroundColor: ["#8DBAEF", "#F7F7FA"],

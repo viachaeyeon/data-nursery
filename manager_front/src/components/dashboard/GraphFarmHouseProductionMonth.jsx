@@ -6,7 +6,6 @@ import { registerables } from "chart.js";
 
 import usePlanterFarm from "@src/hooks/queries/planter/usePlanterFarm";
 
-
 const S = {
   Wrap: styled.div`
     padding: 0px 40px;
@@ -30,7 +29,7 @@ function GraphFarmHouseProductionMonth() {
     },
   });
 
-  console.log("planterFarm",planterFarm);
+  console.log("planterFarm", planterFarm);
   // const dataArray = planterTotal?.map((item) => item.output);
 
   //육묘장 이름
@@ -42,7 +41,7 @@ function GraphFarmHouseProductionMonth() {
   // nameArray.push(' ')
   // nameArray.push(' ')
   // nameArray.push(' ')
-  
+
   //육묘장 데이터
   const dataArray = planterFarm?.map((item) => item.total_output);
   // dataArray.push('null')
@@ -52,8 +51,6 @@ function GraphFarmHouseProductionMonth() {
   // dataArray.push('null')
   // dataArray.push('null')
   // dataArray.push('null')
-
-  
 
   const graphRef = useRef(null);
   const graphUnitRef = useRef(null);
@@ -228,11 +225,11 @@ function GraphFarmHouseProductionMonth() {
     <S.Wrap>
       <div className="scrollBox">
         <div className="scrollBoxBody">
-          <canvas ref={graphRef} height={450} width={530}/>
+          <canvas ref={graphRef} height={450} width={530} />
         </div>
       </div>
       <div className="box">
-        <canvas ref={graphUnitRef} height={45} width={530}/>
+        <canvas ref={graphUnitRef} height={45} width={530} />
       </div>
     </S.Wrap>
   );

@@ -1,4 +1,4 @@
-import React, { useState,useCallback,useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useInView } from "react-intersection-observer";
 
@@ -46,14 +46,12 @@ const S = {
     overflow: scroll;
     padding-right: 5px;
 
-    .statusOff{
-      border: 1px solid ${({theme})=>theme.basic.whiteGray};
-      background-color: ${({theme})=>theme.basic.whiteGray};
-
+    .statusOff {
+      border: 1px solid ${({ theme }) => theme.basic.whiteGray};
+      background-color: ${({ theme }) => theme.basic.whiteGray};
     }
-    .statusOn{
-    border: 2px solid #fb97a3;
-      
+    .statusOn {
+      border: 2px solid #fb97a3;
     }
   `,
   StatusBlock: styled.div`
@@ -76,15 +74,15 @@ const S = {
     }
     .block-title-on {
       color: #737f8f;
-      ${({theme})=>theme.textStyle.h5Bold};
+      ${({ theme }) => theme.textStyle.h5Bold};
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 140px;
     }
     .block-title-off {
-      color: ${({theme})=>theme.basic.gray40};
-      ${({theme})=>theme.textStyle.h5Reguler};
+      color: ${({ theme }) => theme.basic.gray40};
+      ${({ theme }) => theme.textStyle.h5Reguler};
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -97,12 +95,12 @@ const S = {
       gap: 4px;
     }
     .block-count-on {
-      color: ${({theme})=>theme.basic.secondary};
-      ${({theme})=>theme.textStyle.h4Bold};
+      color: ${({ theme }) => theme.basic.secondary};
+      ${({ theme }) => theme.textStyle.h4Bold};
     }
     .block-count-off {
-      color: ${({theme})=>theme.basic.gray50};
-      ${({theme})=>theme.textStyle.h4Bold};
+      color: ${({ theme }) => theme.basic.gray50};
+      ${({ theme }) => theme.textStyle.h4Bold};
     }
     .block-unit {
       color: #979797;
@@ -160,18 +158,17 @@ const S = {
 };
 
 function OperationStatus({ currentDate }) {
-  const [operationListPage,setOperationListPage] = useState(1);
+  const [operationListPage, setOperationListPage] = useState(1);
 
-    // inView : 요소가 뷰포트에 진입했는지 여부
-    const { ref, inView, entry } = useInView({
-      threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
-    });
-    
+  // inView : 요소가 뷰포트에 진입했는지 여부
+  const { ref, inView, entry } = useInView({
+    threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
+  });
+
   // 페이지 변경
   const pageChange = useCallback(() => {
     setOperationListPage(operationListPage + 1);
   }, [operationListPage]);
-  
 
   useEffect(() => {
     if (inView) {
@@ -179,14 +176,14 @@ function OperationStatus({ currentDate }) {
     }
   }, [inView]);
 
-  const {data:planterOperationStatus} = usePlanterRealTime({
-    page:operationListPage,
-    size:20,
+  const { data: planterOperationStatus } = usePlanterRealTime({
+    page: operationListPage,
+    size: 20,
     successFn: () => {},
     errorFn: (err) => {
       console.log("!!err", err);
     },
-  })
+  });
 
   // console.log("operationListPage",operationListPage)
 
@@ -236,39 +233,44 @@ function OperationStatus({ currentDate }) {
         {planterOperationStatus?.planter?.map((data, index) => {
           return (
             <>
-            <S.StatusBlock key={`map${index}`} className={data?.planter_status === "ON" ? "statusOn" : "statusOff"}>
-              {data?.planter_status === "ON" ? (
-              <StatusOnIcon width={68} height={68} />
-              ) : (
-              <StatusOffIcon width={68} height={68} />
-              )}
-              <div className="block-text-wrap">
-                <p className={data?.planter_status === "ON" ? "block-title-on" : "block-title-off"}> {data?.farm_house_name}</p>
-                <div className="block-count-wrap">
-                  <p id={`status-num${index}`} className={data?.planter_status === "ON" ? "block-count-on" : "block-count-off"}>
-                    {CountPlusFormatting(data?.planter_output)}
+              <S.StatusBlock key={`map${index}`} className={data?.planter_status === "ON" ? "statusOn" : "statusOff"}>
+                {data?.planter_status === "ON" ? (
+                  <StatusOnIcon width={68} height={68} />
+                ) : (
+                  <StatusOffIcon width={68} height={68} />
+                )}
+                <div className="block-text-wrap">
+                  <p className={data?.planter_status === "ON" ? "block-title-on" : "block-title-off"}>
+                    {" "}
+                    {data?.farm_house_name}
                   </p>
-                  <p className="block-unit">개</p>
-                </div>
-              </div>
-              <S.StatusCountTooltip
-                anchorId={`status-num${index}`}
-                place="bottom"
-                content={
-                  <div className="text-wrap">
-                    <p className="tooltip-title">{data?.farm_house_name}</p>
-                    <div className="count-wrap">
-                      <p className="count">{NumberCommaFormatting(data?.planter_output)}</p>
-                      <p className="unit">개</p>
-                    </div>
+                  <div className="block-count-wrap">
+                    <p
+                      id={`status-num${index}`}
+                      className={data?.planter_status === "ON" ? "block-count-on" : "block-count-off"}>
+                      {CountPlusFormatting(data?.planter_output)}
+                    </p>
+                    <p className="block-unit">개</p>
                   </div>
-                }
-              />
-            </S.StatusBlock>
+                </div>
+                <S.StatusCountTooltip
+                  anchorId={`status-num${index}`}
+                  place="bottom"
+                  content={
+                    <div className="text-wrap">
+                      <p className="tooltip-title">{data?.farm_house_name}</p>
+                      <div className="count-wrap">
+                        <p className="count">{NumberCommaFormatting(data?.planter_output)}</p>
+                        <p className="unit">개</p>
+                      </div>
+                    </div>
+                  }
+                />
+              </S.StatusBlock>
             </>
           );
         })}
-            <div ref = {ref} />
+        <div ref={ref} />
       </S.ContentWrap>
     </S.Wrap>
   );

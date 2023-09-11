@@ -1,6 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
+
+import useFarmAllList from "@src/hooks/queries/auth/useFarmAllList";
 
 // import DaumPostcode from "react-daum-postcode";
 import OptionModal from "./OptionModal";
@@ -69,31 +71,31 @@ const S = {
     }
   `,
 
-  ExcelButton: styled.div`
-    cursor: pointer;
-    gap: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 16px 24px;
-    border: 1px solid #5899fb;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+  // ExcelButton: styled.div`
+  //   cursor: pointer;
+  //   gap: 16px;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   padding: 16px 24px;
+  //   border: 1px solid #5899fb;
+  //   background-color: #fff;
+  //   border-radius: 8px;
+  //   box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
 
-    p {
-      color: #5899fb;
-      ${({ theme }) => theme.textStyle.h6Bold}
-    }
+  //   p {
+  //     color: #5899fb;
+  //     ${({ theme }) => theme.textStyle.h6Bold}
+  //   }
 
-    &:hover {
-      border: 1px solid ${({ theme }) => theme.basic.btnAction};
-    }
-    &:active {
-      border: 1px solid ${({ theme }) => theme.basic.btnAction};
-      background-color: ${({ theme }) => theme.basic.lightSky};
-    }
-  `,
+  //   &:hover {
+  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
+  //   }
+  //   &:active {
+  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
+  //     background-color: ${({ theme }) => theme.basic.lightSky};
+  //   }
+  // `,
   AddButton: styled.div`
     cursor: pointer;
     gap: 16px;
@@ -297,8 +299,20 @@ const S = {
 };
 
 function FarmList() {
-  const [isNameOrderBy, setIsNameOrderBy] = useState(true);
-  const [isStateOrderBy, setIsStateOrderBy] = useState(true);
+  const [isNameOrderBy, setIsNameOrderBy] = useState(0);
+  const [isStateOrderBy, setIsStateOrderBy] = useState(0);
+
+  const { data: farmhouseList } = useFarmAllList({
+    nameOrder: isNameOrderBy,
+    statusOrder: isStateOrderBy,
+    page: 1,
+    size: 8,
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
   // 농가추가시 필요한 데이터
@@ -367,44 +381,24 @@ function FarmList() {
   }, [addFarmModalOpen]);
 
   // 농가목록 데이터
-  const [listData, setListData] = useState([
-    {
-      id: 1,
-      serial_number: "KN001DS0958",
-      farm_id: "PF_0021350",
-      farm_name: "하나공정육묘장영농조합법인",
-      name: "이형채",
-      farm_number: "제 13-부산-2018-06-01",
-      address: "전라북도 전주시 완산구 123456454",
-      address_code: "50402",
-      phone: "010-1234-1234",
-      status: "ON",
-    },
-    {
-      id: 2,
-      serial_number: "KN001DS0958 ",
-      farm_id: "PF_0021350",
-      farm_name: "가야프러그영농조합",
-      name: "이형채",
-      farm_number: "제 13-부산-2018-06-01",
-      address: "경상남도 밀양시 부북면 감운로 256 256",
-      address_code: "50402",
-      phone: "010-1234-1234",
-      status: "OFF",
-    },
-    {
-      id: 3,
-      serial_number: "KN001DS0958 ",
-      farm_id: "PF_0021350",
-      farm_name: "김해고송육묘",
-      name: "이형채",
-      farm_number: "제 13-부산-2018-06-01",
-      address: "경상남도 밀양시 부북면 감운로 256 256",
-      address_code: "50402",
-      phone: "010-1234-1234",
-      status: "OFF",
-    },
-  ]);
+  const listData = useMemo(() => {
+    const array = [];
+    farmhouseList?.farm_houses?.map((data) => {
+      array.push({
+        id: data?.id,
+        serial_number: data?.planter?.serial_number,
+        farm_id: data?.farm_house_id,
+        farm_name: data?.name,
+        name: data?.producer_name,
+        farm_number: data?.nursery_number,
+        address: data?.address,
+        address_code: "50402",
+        phone: data?.phone,
+        status: data?.last_planter_status?.status,
+      });
+    });
+    return array;
+  }, []);
 
   //정렬 토글
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
@@ -413,27 +407,29 @@ function FarmList() {
   // 농가명 정렬
   const sortByFarmName = useCallback(() => {
     setIsFarmNameAscending(!isFarmNameAscending);
+    setIsNameOrderBy(1);
     setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
-    listData.sort((a, b) => {
-      const compareResult = a.farm_name.localeCompare(b.farm_name);
-      return isFarmNameAscending ? compareResult : -compareResult;
-    });
+    // listData.sort((a, b) => {
+    //   const compareResult = a.farm_name.localeCompare(b.farm_name);
+    //   return isFarmNameAscending ? compareResult : -compareResult;
+    // });
   }, [isFarmNameAscending, isNameOrderBy]);
 
   // 상태 정렬
   const sortByStatus = useCallback(() => {
     setIsStatusAscending(!isStatusAscending);
+    setIsStateOrderBy(1);
     setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
-    listData.sort((a, b) => {
-      const compareResult = a.status.localeCompare(b.status);
-      return isStatusAscending ? compareResult : -compareResult;
-    });
+    // listData.sort((a, b) => {
+    //   const compareResult = a.status.localeCompare(b.status);
+    //   return isStatusAscending ? compareResult : -compareResult;
+    // });
   }, [isStatusAscending, isStateOrderBy]);
 
-  // 엑셀 다운로드 버튼
-  const handleExcelClick = useCallback(() => {
-    alert("엑셀 다운로드 클릭");
-  }, []);
+  // // 엑셀 다운로드 버튼
+  // const handleExcelClick = useCallback(() => {
+  //   alert("엑셀 다운로드 클릭");
+  // }, []);
 
   // 농가목록 더보기
   const listMoreView = useCallback(() => {
@@ -441,8 +437,19 @@ function FarmList() {
   }, []);
 
   const [selectAll, setSelectAll] = useState(false);
-  const [isChecked, setIsChecked] = useState(listData.map(() => false));
+  const [isChecked, setIsChecked] = useState([]);
+  // const [isChecked, setIsChecked] = useState(listData?.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
+
+  useEffect(() => {
+    if (!!listData) {
+      const dateArr = [];
+      listData.map(() => {
+        return dateArr.push(false);
+      });
+      setIsChecked(dateArr);
+    }
+  }, [listData]);
 
   const toggleItem = (index) => {
     const updatedIsCheckedArray = [...isChecked];
@@ -490,10 +497,10 @@ function FarmList() {
             <p className="info-sub">농가 목록 추가, 수정, 삭제, QR코드 관리</p>
           </div>
           <div className="button-wrap">
-            <S.ExcelButton onClick={handleExcelClick}>
+            {/* <S.ExcelButton onClick={handleExcelClick}>
               <ExcelIcon width={20} height={25} />
               <p>엑셀 내려받기</p>
-            </S.ExcelButton>
+            </S.ExcelButton> */}
             <S.AddButton onClick={handleAddFarmModalClick}>
               <AddIcon width={24} height={24} />
               <p>농가 추가</p>
@@ -542,13 +549,13 @@ function FarmList() {
             </>
           )}
         </div>
-        {listData.length === 0 ? (
+        {listData?.length === 0 ? (
           <S.EmptyData>
             <FarmIcon width={56} height={56} />
             <p>등록된 농가가 없습니다.</p>
           </S.EmptyData>
         ) : (
-          listData.map((data, index, item) => {
+          listData?.map((data, index, item) => {
             return (
               <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
                 <label key={item.id} className="table-row">
@@ -563,22 +570,22 @@ function FarmList() {
                   </div>
                   <div>{item.name}</div>
                 </label>
-                <p className="serial_number">{data.serial_number}</p>
-                <p className="farm_id">{data.farm_id}</p>
+                <p className="serial_number">{data?.serial_number}</p>
+                <p className="farm_id">{data?.farm_id}</p>
                 <div className="farm_name_wrap">
-                  <div className="farm-name-frist">{data.farm_name.slice(0, 1)}</div>
-                  <p className="farm_name">{data.farm_name}</p>
+                  <div className="farm-name-frist">{data?.farm_name?.slice(0, 1)}</div>
+                  <p className="farm_name">{data?.farm_name}</p>
                 </div>
-                <p className="name">{data.name}</p>
-                <p className="farm_number">{data.farm_number}</p>
+                <p className="name">{data?.name}</p>
+                <p className="farm_number">{data?.farm_number}</p>
                 <p className="address" id={`address${index}`}>
-                  {data.address}
+                  {data?.address}
                 </p>
-                <p className="phone">{data.phone}</p>
-                {data.status === "ON" ? (
-                  <p className="status-on">{data.status}</p>
+                <p className="phone">{data?.phone}</p>
+                {data?.status === "ON" ? (
+                  <p className="status-on">{data?.status}</p>
                 ) : (
-                  <p className="status-off">{data.status}</p>
+                  <p className="status-off">{data?.status}</p>
                 )}
 
                 <div className="option-modal-wrap">
@@ -617,7 +624,7 @@ function FarmList() {
                   content={
                     <div className="text-wrap">
                       <p>
-                        ({data.address_code}) {data.address}
+                        ({data?.address_code}) {data?.address}
                       </p>
                     </div>
                   }
@@ -626,7 +633,7 @@ function FarmList() {
             );
           })
         )}
-        {listData.length !== 0 && (
+        {listData?.length !== 0 && (
           <S.ButtonWrap>
             <S.MoreButton onClick={listMoreView}>
               <p>더보기</p>

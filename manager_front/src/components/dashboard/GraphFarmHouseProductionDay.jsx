@@ -35,8 +35,8 @@ function GraphFarmHouseProductionDay() {
   //육묘장 데이터
   const dataArray = planterFarm?.map((item) => item.total_output);
 
-  console.log("planterFarm",planterFarm);
-  
+  console.log("planterFarm", planterFarm);
+
   const graphRef = useRef(null);
   const graphUnitRef = useRef(null);
 
@@ -210,11 +210,11 @@ function GraphFarmHouseProductionDay() {
     <S.Wrap>
       <div className="scrollBox">
         <div className="scrollBoxBody">
-          <canvas ref={graphRef} height={450} width={530}/>
+          <canvas ref={graphRef} height={450} width={530} />
         </div>
       </div>
       <div className="box">
-        <canvas ref={graphUnitRef} height={45} width={530}/>
+        <canvas ref={graphUnitRef} height={45} width={530} />
       </div>
     </S.Wrap>
   );

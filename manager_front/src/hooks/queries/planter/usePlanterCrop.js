@@ -8,7 +8,7 @@ export default function usePlanterCropTotal({ queryType, successFn, errorFn }) {
     staleTime: 10 * (60 * 1000), // 10 mins
     cacheTime: 15 * (60 * 1000), // 15 mins
     retry: 0,
-    enabled: true,
+    enabled: !!queryType ? true : false,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
     refetchOnReconnect: false,
