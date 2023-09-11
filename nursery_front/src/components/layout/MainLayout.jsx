@@ -244,7 +244,7 @@ function MainLayout({
   useEffect(() => {
     if (pageName === "main") {
       setMainContentHeight("calc(100% - 160px)");
-    } else if (pageName?.includes("작업") && isMoreIcon && !!buttonSetting) {
+    } else if (pageName === "작업 정보" && !!buttonSetting) {
       // 작업 정보 페이지의 시작버튼 있을 경우
       setMainContentHeight("calc(100% - 196px)");
     } else if (pageName === "작업 등록" || pageName === "작업정보수정") {
@@ -292,8 +292,19 @@ function MainLayout({
               </S.PageNameWrap>
             )}
             <div className="content">{children}</div>
-            {pageName?.includes("작업") && !!buttonSetting && (
-              <S.BottomButtonWrap height={isMoreIcon ? "124px" : "90px"}>
+            {pageName === "작업 정보" && !!buttonSetting && (
+              <S.BottomButtonWrap height={"124px"}>
+                {isMoreIcon && <p className="work-start-text">시작을 눌러 작업을 시작하세요!</p>}
+                {!isMoreIcon && <p className="work-start-text">버튼을 눌러 작업을 완료하세요!</p>}
+                <DefaultButton
+                  customStyle={buttonSetting.color}
+                  text={buttonSetting.text}
+                  onClick={buttonSetting.onClickEvent}
+                />
+              </S.BottomButtonWrap>
+            )}
+            {(pageName === "작업 등록" || pageName === "작업정보수정") && (
+              <S.BottomButtonWrap height={"90px"}>
                 {isMoreIcon && <p className="work-start-text">시작을 눌러 작업을 시작하세요!</p>}
                 <DefaultButton
                   customStyle={buttonSetting.color}

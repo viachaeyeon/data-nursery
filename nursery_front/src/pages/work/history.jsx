@@ -150,6 +150,7 @@ const S = {
     border-radius: 8px;
     padding: 24px;
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    cursor: pointer;
 
     .divider {
       width: 100%;
@@ -399,7 +400,11 @@ function WorkHistoryPage() {
               <S.WorkHistoryListWrap>
                 {workHistoryList.map((work) => {
                   return (
-                    <S.WorkHistoryContent key={`work${work.id}`}>
+                    <S.WorkHistoryContent
+                      key={`work${work.id}`}
+                      onClick={() => {
+                        router.push(`/work/${work.id}`);
+                      }}>
                       <S.WorkInfo>
                         <S.CropImage isCropImage={!!work.crop_image}>
                           {!!work.crop_image ? (
