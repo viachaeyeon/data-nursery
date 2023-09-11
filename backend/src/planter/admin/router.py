@@ -111,7 +111,7 @@ def get_admin_dashboard_realtime_planter(
                 planterModels.PlanterOutput.planter_work_id
                 == planterModels.PlanterWork.id
             )
-            & (planterModels.PlanterOutput.created_at >= date.today()),
+            & (planterModels.PlanterOutput.updated_at >= date.today()),
         )
         .filter(
             planterModels.Planter.is_del == False,
@@ -214,6 +214,7 @@ def get_crop_total_output(
         houly_crop_sums = (
             db.query(
                 cropModels.Crop.name,
+                cropModels.Crop.color,
                 extract("day", planterModels.PlanterOutput.updated_at).label("day"),
                 func.sum(planterModels.PlanterOutput.output).label("total_output"),
             )
@@ -230,19 +231,20 @@ def get_crop_total_output(
                 extract("month", planterModels.PlanterOutput.updated_at).label("month")
                 == datetime.utcnow().month
             )
-            .group_by(cropModels.Crop.name, "day")
+            .group_by(cropModels.Crop.name, cropModels.Crop.color, "day")
             .all()
         )
 
-        for crop_name, hour, total_output in houly_crop_sums:
+        for crop_name, color, day, total_output in houly_crop_sums:
             crop_name = crop_name.lower()
             grouped_data[crop_name].append(
-                {"day": int(hour), "output": int(total_output)}
+                {"day": int(day), "color": color, "output": int(total_output)}
             )
     elif query_type == "month":
         monthly_crop_sums = (
             db.query(
                 cropModels.Crop.name,
+                cropModels.Crop.color,
                 extract("month", planterModels.PlanterOutput.updated_at).label("month"),
                 func.sum(planterModels.PlanterOutput.output).label("total_output"),
             )
@@ -259,14 +261,14 @@ def get_crop_total_output(
                 extract("year", planterModels.PlanterOutput.updated_at).label("year")
                 == datetime.utcnow().year
             )
-            .group_by(cropModels.Crop.name, "month")
+            .group_by(cropModels.Crop.name, cropModels.Crop.color, "month")
             .all()
         )
 
-        for crop_name, month, total_output in monthly_crop_sums:
+        for crop_name, color, month, total_output in monthly_crop_sums:
             crop_name = crop_name.lower()
             grouped_data[crop_name].append(
-                {"month": int(month), "output": int(total_output)}
+                {"month": int(month), "color": color, "output": int(total_output)}
             )
     else:
         return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
