@@ -22,7 +22,7 @@ function GraphTotalProduction() {
     },
   });
 
-  const dataArray = planterTotal.map((item) => item.output);
+  const dataArray = planterTotal?.map((item) => item?.output);
 
   const graphRef = useRef(null);
   let graphInstance = null;
