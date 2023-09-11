@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 
@@ -16,7 +16,6 @@ import { defaultButtonColor } from "@utils/ButtonColor";
 import { DateFormatting } from "@utils/Formatting";
 import PauseIcon from "@images/dashboard/icon-pause.svg";
 import CheckIcon from "@images/work/icon-check.svg";
-import theme from "@src/styles/theme";
 import { waitWorkListKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
 
 const S = {
@@ -131,7 +130,7 @@ function WorkInfoPage({ workId }) {
             {workInfo?.planter_work_status.status === "WAIT" && <p className="status-text">대기중인 작업</p>}
             {workInfo?.planter_work_status.status === "PAUSE" && (
               <>
-                <PauseIcon fill={theme.basic.grey50} />
+                <PauseIcon />
                 <p className="status-text">일시정지된 작업</p>
               </>
             )}

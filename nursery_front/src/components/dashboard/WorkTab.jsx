@@ -180,9 +180,7 @@ function WorkTab() {
           <div className="tab-bar" />
         </S.TabContent>
       </S.TabWrap>
-      {selectTab === "working" && (
-        <WorkContent isWorking={workingWorkInfo?.planter_status === "WORKING"} workingWorkInfo={workingWorkInfo} />
-      )}
+      {selectTab === "working" && <WorkContent workingWorkInfo={workingWorkInfo} />}
       {selectTab === "waiting" && (
         <WaitContent
           waitWorkList={waitWorkList}
