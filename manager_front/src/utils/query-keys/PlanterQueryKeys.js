@@ -1,3 +1,4 @@
 export const PlanterStatusKey = "PlanterStatusKey";
 export const PlanterTotalKey = "PlanterTotalKey";
-export const PlanterCropTotalKey = "PlanterCropTotalKey";
+export const PlanterCropKey = "PlanterCropKey";
+export const PlanterFarmKey = "PlanterFarmKey";
