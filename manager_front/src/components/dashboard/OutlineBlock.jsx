@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
 
 import { NumberCommaFormatting, NumberUnitFormatting } from "@src/utils/Formatting";
+
+import usePlanterStatus from "@src/hooks/queries/planter/usePlanterStatus";
+
 import FarmHouseIcon from "@images/dashboard/farm-house-icon.svg";
 import CropsIcon from "@images/dashboard/crops-icon.svg";
 import PlanterIcon from "@images/dashboard/planter-icon.svg";
@@ -133,14 +136,12 @@ const S = {
 };
 
 function OutlineBlock() {
-  //농가수
-  const farmHouseNum = "20";
-  //작물수
-  const cropsNum = "5";
-  //파종기
-  const planterNum = "20";
-  //누적파종량
-  const amountNum = "1370993";
+  const { data: planterStatus } = usePlanterStatus({
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
 
   return (
     <S.Wrap>
@@ -150,7 +151,7 @@ function OutlineBlock() {
         </div>
         <S.TextWrap>
           <p className="title">농가수</p>
-          <p className="num">{farmHouseNum}</p>
+          <p className="num">{planterStatus?.farmhouse_count}</p>
         </S.TextWrap>
       </S.FarmhouseBlock>
       <S.CropsBlock>
@@ -159,7 +160,7 @@ function OutlineBlock() {
         </div>
         <S.TextWrap>
           <p className="title">작물수</p>
-          <p className="num">{cropsNum}</p>
+          <p className="num">{planterStatus?.crop_count}</p>
         </S.TextWrap>
       </S.CropsBlock>
       <S.PlanterBlock>
@@ -168,7 +169,7 @@ function OutlineBlock() {
         </div>
         <S.TextWrap>
           <p className="title">파종기</p>
-          <p className="num">{planterNum}</p>
+          <p className="num">{planterStatus?.planter_count}</p>
         </S.TextWrap>
       </S.PlanterBlock>
       <S.AmountBlock>
@@ -178,7 +179,7 @@ function OutlineBlock() {
         <S.TextWrap>
           <p className="title">누적파종량</p>
           <div id="hover-icon">
-            <p className="num">{NumberUnitFormatting(amountNum)}</p>
+            <p className="num">{NumberUnitFormatting(planterStatus?.total_output)}</p>
           </div>
         </S.TextWrap>
       </S.AmountBlock>
@@ -189,7 +190,7 @@ function OutlineBlock() {
           <div className="text-wrap">
             <p className="title">누적파종량</p>
             <div className="count-wrap">
-              <p className="count">{NumberCommaFormatting(amountNum)}</p>
+              <p className="count">{NumberCommaFormatting(planterStatus?.total_output)}</p>
               <p className="unit">개</p>
             </div>
           </div>
