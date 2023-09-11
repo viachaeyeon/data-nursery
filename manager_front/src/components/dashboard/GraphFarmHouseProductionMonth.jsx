@@ -53,9 +53,6 @@ function GraphFarmHouseProductionMonth() {
   // dataArray.push('null')
   // dataArray.push('null')
 
-
-  console.log("nameArray",nameArray)
-  console.log("dataArray",dataArray)
   
 
   const graphRef = useRef(null);

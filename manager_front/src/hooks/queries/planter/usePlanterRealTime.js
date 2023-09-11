@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getDashboardCropTotal } from "@apis/planterAPIs";
-import { PlanterCropKey } from "@src/utils/query-keys/PlanterQueryKeys";
+import { getDashboardRealTimeAPI } from "@apis/planterAPIs";
+import { PlanterRealTimeKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
-export default function usePlanterCropTotal({ queryType, successFn, errorFn }) {
-  return useQuery([PlanterCropKey, queryType], () => getDashboardCropTotal(queryType), {
+export default function usePlanterRealTime({ page,size, successFn, errorFn }) {
+  return useQuery([PlanterRealTimeKey, page,size], () => getDashboardRealTimeAPI(page,size), {
     staleTime: 10 * (60 * 1000), // 10 mins
     cacheTime: 15 * (60 * 1000), // 15 mins
     retry: 0,

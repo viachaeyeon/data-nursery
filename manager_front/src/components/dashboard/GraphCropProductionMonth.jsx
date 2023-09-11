@@ -27,7 +27,7 @@ const S = {
   `,
 };
 
-function GraphTotalProduction() {
+function GraphCropProductionMonth() {
   const { data: planterCrops } = usePlanterCrop({
     queryType: "day",
     successFn: () => {},
@@ -264,4 +264,4 @@ function GraphTotalProduction() {
   );
 }
 
-export default GraphTotalProduction;
+export default GraphCropProductionMonth;
