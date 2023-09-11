@@ -165,6 +165,23 @@ def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     return response
 
 
+@router.post(
+    "/logout",
+    description="유저 로그아웃 사용합니다.<br/>일반유저(농가)와 관리자유저의 로그인 구분을 l_type의 값으로 판단합니다.<br/>01: 일반유저, 99: 관리자",
+    status_code=200,
+)
+def login_user(l_type: str, request: Request, db: Session = Depends(get_db)):
+    if l_type == "01":
+        response = JSONResponse(status_code=200, content={"msg": "SUCCESS"})
+        response.delete_cookie(AUTH_COOKIE_COMMON_USER_ACCESS_TOKEN)
+
+    if l_type == "99":
+        response = JSONResponse(status_code=200, content={"msg": "SUCCESS"})
+        response.delete_cookie(AUTH_COOKIE_ADMIN_USER_ACCESS_TOKEN)
+
+    return response
+
+
 @router.get(
     "/common/user",
     description="일반유저 정보요청 시 사용합니다.<br/>로그인 요청 시 _ta 키를 갖고있는 쿠키가 있어야합니다.<br/>로그인 성공 시 유저 정보를 리턴해줍니다.",
