@@ -547,7 +547,10 @@ function StatisticsStatus() {
   const handleClickYearDropList = useCallback(
     (data) => {
       setSelectYear(data);
-      setDateRange([null, null]);
+      setDateRange({
+        startDate: null,
+        endDate: null,
+      });
       setMonthList(GetMonthList(data));
       setYearModalOpen(false);
       // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
