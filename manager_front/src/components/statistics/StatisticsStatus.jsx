@@ -1,11 +1,18 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 
+import useStatics from "@src/hooks/queries/auth/useStatics";
+import useFarmHouseIdList from "@src/hooks/queries/auth/useFarmHouseIdList";
+import useFarmHouseNameList from "@src/hooks/queries/auth/useFarmHouseNameList";
+import useCropNameList from "@src/hooks/queries/crop/useCropNameList";
+import useTrayTotalList from "@src/hooks/queries/planter/useTrayTotalList";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+
 import DatePickerMain from "./DatePickerMain";
-import { GetMonthList, GetYearList, YYYYMMDDDash, YYYYMMDDSlash } from "@src/utils/Formatting";
+import SearchDropdown from "./SearchDropdown";
 
 import { NumberCommaFormatting } from "@src/utils/Formatting";
-
+import { GetMonthList, GetYearList, YYYYMMDDDash, YYYYMMDDSlash } from "@src/utils/Formatting";
 import ExcelIcon from "@images/management/excel-icon.svg";
 import UpArrow from "@images/common/order-by-up-icon.svg";
 import DownArrow from "@images/common/order-by-down-icon.svg";
@@ -16,15 +23,7 @@ import GrayWaitingIcon from "@images/statistics/gray-waiting-icon.svg";
 import HeaderSelectArrowIcon from "@images/statistics/header-icon-arrow.svg";
 import SelectArrowIcon from "@images/statistics/icon-arrow.svg";
 import PickerIcon from "@images/statistics/date-picker-icon.svg";
-import CheckBoxOff from "@images/common/check-icon-off.svg";
-import CheckBoxOn from "@images/common/check-icon-on.svg";
-import SearchIcon from "@images/statistics/icon-search.svg";
-import useStatics from "@src/hooks/queries/auth/useStatics";
-import useFarmHouseIdList from "@src/hooks/queries/auth/useFarmHouseIdList";
-import SearchDropdown from "./SearchDropdown";
-import useFarmHouseNameList from "@src/hooks/queries/auth/useFarmHouseNameList";
-import useCropNameList from "@src/hooks/queries/crop/useCropNameList";
-import useTrayTotalList from "@src/hooks/queries/planter/useTrayTotalList";
+import { staticsKey } from "@src/utils/query-keys/AuthQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -253,7 +252,7 @@ const S = {
         ${({ theme }) => theme.textStyle.h7Bold};
       }
 
-      .farm-name-frist {
+      .farm-name-first {
         background-color: #c6c6c6;
       }
     }
@@ -327,12 +326,21 @@ const S = {
     .farm_name_wrap {
       display: flex;
       gap: 8px;
-      /* align-items: center; */
       width: 224px;
       justify-content: start;
+      align-items: center;
+
+      .farm_name {
+        display: block !important;
+      }
     }
 
-    .farm-name-frist {
+    .farm-name-first {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background-color: #79cec8;
       border-radius: 30px;
       padding: 8px;
@@ -446,14 +454,13 @@ const S = {
 };
 
 function StatisticsStatus() {
-  const [plantName, setPlantName] = useState(true);
-  const [orderCount, setOrderCount] = useState(true);
-  const [sowingCount, setSowingCount] = useState(true);
-  const [sowingDate, setSowingDate] = useState(true);
+  const invalidateQueries = useInvalidateQueries();
   const [state, setState] = useState(true);
 
   // 통계현황 페이지
   const [page, setPage] = useState(1);
+
+  const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
 
   // 통계현황 검색 조건
   const [selectData, setSelectData] = useState({
@@ -474,6 +481,9 @@ function StatisticsStatus() {
   const [searchCropName, setSearchCropName] = useState("");
   const [searchTrayTotal, setSearchTrayTotal] = useState("");
 
+  // 농가목록 데이터
+  const [staticsList, setStaticsList] = useState([]);
+
   // 선택된 연도
   const [selectYear, setSelectYear] = useState(0);
   //선택된 월
@@ -487,6 +497,11 @@ function StatisticsStatus() {
 
   //달력 모달 오픈
   const [pickerOpen, setPickerOpen] = useState(false);
+
+  //연도 데이터
+  const yearList = GetYearList();
+  //월 데이터
+  const [monthList, setMonthList] = useState([]);
 
   //농가 id 드롭다운 모달 오픈
   const [isFarmId, setIsFarmId] = useState(false);
@@ -532,10 +547,13 @@ function StatisticsStatus() {
   const handleClickYearDropList = useCallback(
     (data) => {
       setSelectYear(data);
+      setDateRange([null, null]);
       setMonthList(GetMonthList(data));
       setYearModalOpen(false);
+      // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([staticsKey]);
     },
-    [selectYear, yearModalOpen],
+    [selectYear],
   );
 
   //월별 drop down 내용 클릭
@@ -543,12 +561,16 @@ function StatisticsStatus() {
     (data) => {
       setSelectMonth(data);
       setMonthModalOpen(false);
+      // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([staticsKey]);
     },
     [selectMonth, monthModalOpen],
   );
 
-  const [dateRange, setDateRange] = useState([null, null]);
-  const [startDate, endDate] = dateRange;
+  const [dateRange, setDateRange] = useState({
+    startDate: null,
+    endDate: null,
+  });
 
   //달력 클릭
   const handlePickerClick = useCallback(() => {
@@ -618,133 +640,68 @@ function StatisticsStatus() {
   }, [isFarmName, yearModalOpen, monthModalOpen, isFarmId, isCropsName, isTrayCount, isTrayCount]);
 
   //정렬 토글
-  const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
   const [isStatusAscending, setIsStatusAscending] = useState(true);
-
-  // 품종명 정렬
-  const sortByFarmName = useCallback(() => {
-    setIsFarmNameAscending(!isFarmNameAscending);
-    setPlantName((prevPlantName) => !prevPlantName);
-    listData.sort((a, b) => {
-      const compareResult = a.plant_name.localeCompare(b.plant_name);
-      return isFarmNameAscending ? compareResult : -compareResult;
-    });
-  }, [isFarmNameAscending, plantName]);
-
-  // 주문수량 정렬
-  const sortByStatus = useCallback(() => {
-    setIsStatusAscending(!isStatusAscending);
-    setOrderCount((prevOrderCount) => !prevOrderCount);
-    listData.sort((a, b) => {
-      const compareResult = a.order_count.localeCompare(b.order_count);
-      return isStatusAscending ? compareResult : -compareResult;
-    });
-  }, [isStatusAscending, orderCount]);
-
-  // 파종량 정렬
-  const sortBySowingCount = useCallback(() => {
-    setIsStatusAscending(!isStatusAscending);
-    setSowingCount((prevSowingCount) => !prevSowingCount);
-    listData.sort((a, b) => {
-      const compareResult = a.sowing_count.localeCompare(b.sowing_count);
-      return isStatusAscending ? compareResult : -compareResult;
-    });
-  }, [isStatusAscending, sowingCount]);
-
-  // 파종일자
-  const sortBySowingDate = useCallback(() => {
-    setIsStatusAscending(!isStatusAscending);
-    setSowingDate((prevSowingDate) => !prevSowingDate);
-    listData.sort((a, b) => {
-      const compareResult = a.sowingDate.localeCompare(b.sowingDate);
-      return isStatusAscending ? compareResult : -compareResult;
-    });
-  }, [isStatusAscending, sowingDate]);
 
   // 출하상태
   const sortByState = useCallback(() => {
     setIsStatusAscending(!isStatusAscending);
     setState((prevState) => !prevState);
-    listData.sort((a, b) => {
+    staticsList.sort((a, b) => {
       const compareResult = a.state.localeCompare(b.state);
       return isStatusAscending ? compareResult : -compareResult;
     });
   }, [isStatusAscending, state]);
 
-  const listMoreView = useCallback(() => {
-    alert("더보기 버튼 구현중");
-  }, []);
+  // 통계현황 검색 조건 선택
+  const handleSelectChange = useCallback(
+    (isSelect, name, value) => {
+      if (isSelect === undefined) {
+        setSelectData((prev) => ({
+          // 정렬 값
+          ...prev,
+          [name]: value ? 1 : 0,
+        }));
+      } else {
+        // dropdown으로 선택하는 값
+        const preValue = selectData[name];
+        let changeValue = "";
 
-  // 농가목록 데이터
-  const [listData, setListData] = useState([
-    {
-      id: 1,
-      serial_number: "KN001DS0958",
-      farm_id: "PF_0021350",
-      farm_name: "하나공정육묘장영농조합법인",
-      farm_plant: "토마토",
-      plant_name: "송이토마토토마토",
-      tray: "128",
-      order_count: "94581999",
-      sowing_count: "9999999",
-      sowingDate: "2023/08/16",
-      state: "fin",
-      farm_delete: "0", //0이 삭제되지 않은것 1이 삭제된것
-    },
-    {
-      id: 2,
-      serial_number: "KN001DS0958 ",
-      farm_id: "PF_0021350",
-      farm_name: "가야프러그영농조합",
-      farm_plant: "고추",
-      plant_name: "고추고추",
-      tray: "18",
-      order_count: "99999999",
-      sowing_count: "1122399",
-      sowingDate: "2023/08/15",
-      state: "wait",
-      farm_delete: "0",
-    },
-    {
-      id: 3,
-      serial_number: "KN001DS0958 ",
-      farm_id: "PF_0021350",
-      farm_name: "가야프러그영농조합",
-      farm_plant: "고추",
-      plant_name: "고추고추",
-      tray: "18",
-      order_count: "99999999",
-      sowing_count: "1122399",
-      sowingDate: "2023/08/15",
-      state: "wait",
-      farm_delete: "1",
-    },
-    {
-      id: 4,
-      serial_number: "KN001DS0958 ",
-      farm_id: "PF_0021350",
-      farm_name: "가야프러그영농조합",
-      farm_plant: "고추",
-      plant_name: "고추고추",
-      tray: "18",
-      order_count: "99999999",
-      sowing_count: "1122399",
-      sowingDate: "2023/08/15",
-      state: "fin",
-      farm_delete: "1",
-    },
-  ]);
+        if (isSelect) {
+          // 선택된 항목 클릭 시 실행
+          changeValue = preValue
+            .split("||")
+            .filter((data) => data !== value)
+            .join("||");
+        } else {
+          // 미선택된 항목 클릭 시 실행
+          if (preValue === "") {
+            changeValue = value;
+          } else {
+            changeValue = preValue + "||" + value;
+          }
+        }
 
-  //연도 데이터
-  const yearList = GetYearList();
-  //월 데이터
-  const [monthList, setMonthList] = useState(GetMonthList(selectYear));
+        setSelectData((prev) => ({
+          ...prev,
+          [name]: changeValue,
+        }));
+      }
+      // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([staticsKey]);
+    },
+    [selectData],
+  );
+
+  console.log(selectData);
 
   // 통계현황 API
   const { data: staticsInfo } = useStatics({
     year: selectYear,
     month: selectMonth,
-    day: startDate === null || endDate === null ? 0 : YYYYMMDDDash(startDate) + "||" + YYYYMMDDDash(endDate),
+    dateRange:
+      dateRange.startDate === null || dateRange.endDate === null
+        ? ""
+        : YYYYMMDDDash(dateRange.startDate) + "||" + YYYYMMDDDash(dateRange.endDate),
     farmHouseId: selectData.farmHouseId,
     farmHouseName: selectData.farmHouseName,
     cropName: selectData.cropName,
@@ -755,7 +712,16 @@ function StatisticsStatus() {
     sowingDateOrderType: selectData.sowingDateOrderType,
     isShipmentCompletedOrderType: selectData.isShipmentCompletedOrderType,
     page: page,
-    successFn: () => {},
+    successFn: (res) => {
+      if (res.total === 0) {
+        setStaticsList([]);
+      } else if (isAddDataClick) {
+        setStaticsList((prev) => [...prev, ...res.data]);
+      } else {
+        setStaticsList(res.data);
+        setIsAddDataClick(false);
+      }
+    },
     errorFn: (err) => {
       alert(err);
     },
@@ -798,6 +764,7 @@ function StatisticsStatus() {
   });
 
   console.log(staticsInfo);
+  console.log("staticsList : ", staticsList);
 
   return (
     <S.Wrap>
@@ -811,66 +778,63 @@ function StatisticsStatus() {
                 <UpArrow width={15} height={15} />
                 <p className="info-sub">정렬기능 )</p>
               </div>
-              {listData.length !== 0 && (
-                <>
-                  <S.DateChooseWrap>
-                    <S.YearDropDown onClick={handelYearDropDown}>
-                      {selectYear === 0 ? <p>연도별</p> : <p>{selectYear}</p>}
-                      <SelectArrowIcon width={24} height={24} />
-                    </S.YearDropDown>
-                    <S.MonthDropDown onClick={handelMonthDropDown}>
-                      {selectMonth === 0 ? <p>월별</p> : <p>{selectMonth}</p>}
-                      <SelectArrowIcon width={24} height={24} />
-                    </S.MonthDropDown>
-                    {startDate === null || endDate === null ? (
-                      <S.ClickPicker onClick={handlePickerClick}>
-                        <p>직접선택</p>
-                        <PickerIcon width={19} height={19} />
-                      </S.ClickPicker>
-                    ) : (
-                      <S.ClickPicker onClick={handlePickerClick}>
-                        <p>
-                          {YYYYMMDDSlash(startDate)} ~ {YYYYMMDDSlash(endDate)}
-                        </p>
-                        <PickerIcon width={19} height={19} />
-                      </S.ClickPicker>
-                    )}
-                  </S.DateChooseWrap>
-                  {yearModalOpen && (
-                    <S.YearMonthDropDownList className="top-div">
-                      {yearList.map((data, index) => {
-                        return (
-                          <div
-                            className="drop-down-list"
-                            onClick={() => handleClickYearDropList(data)}
-                            key={`map${index}`}>
-                            <p>{data}</p>
-                          </div>
-                        );
-                      })}
-                    </S.YearMonthDropDownList>
-                  )}
-                  {monthModalOpen && (
-                    <S.YearMonthDropDownList className="top-div month-dropdown-list">
-                      {monthList.map((data, index) => {
-                        return (
-                          <div
-                            className="drop-down-list"
-                            onClick={() => handleClickMonthDropList(data)}
-                            key={`map${index}`}>
-                            <p>{data}</p>
-                          </div>
-                        );
-                      })}
-                    </S.YearMonthDropDownList>
-                  )}
-                </>
+              {/* {staticsList.length !== 0 && (
+                <> */}
+              <S.DateChooseWrap>
+                <S.YearDropDown onClick={handelYearDropDown}>
+                  {selectYear === 0 ? <p>연도별</p> : <p>{selectYear}</p>}
+                  <SelectArrowIcon width={24} height={24} />
+                </S.YearDropDown>
+                <S.MonthDropDown onClick={handelMonthDropDown}>
+                  {selectMonth === 0 ? <p>월별</p> : <p>{selectMonth}</p>}
+                  <SelectArrowIcon width={24} height={24} />
+                </S.MonthDropDown>
+                {dateRange.startDate === null || dateRange.endDate === null ? (
+                  <S.ClickPicker onClick={handlePickerClick}>
+                    <p>직접선택</p>
+                    <PickerIcon width={19} height={19} />
+                  </S.ClickPicker>
+                ) : (
+                  <S.ClickPicker onClick={handlePickerClick}>
+                    <p>
+                      {YYYYMMDDSlash(dateRange.startDate)} ~ {YYYYMMDDSlash(dateRange.endDate)}
+                    </p>
+                    <PickerIcon width={19} height={19} />
+                  </S.ClickPicker>
+                )}
+              </S.DateChooseWrap>
+              {yearModalOpen && (
+                <S.YearMonthDropDownList className="top-div">
+                  {yearList.map((data, index) => {
+                    return (
+                      <div className="drop-down-list" onClick={() => handleClickYearDropList(data)} key={`map${index}`}>
+                        <p>{data}</p>
+                      </div>
+                    );
+                  })}
+                </S.YearMonthDropDownList>
               )}
+              {monthModalOpen && (
+                <S.YearMonthDropDownList className="top-div month-dropdown-list">
+                  {monthList.map((data, index) => {
+                    return (
+                      <div
+                        className="drop-down-list"
+                        onClick={() => handleClickMonthDropList(data)}
+                        key={`map${index}`}>
+                        <p>{data}</p>
+                      </div>
+                    );
+                  })}
+                </S.YearMonthDropDownList>
+              )}
+              {/* </>
+              )} */}
             </div>
           </div>
         </div>
         <div>
-          {listData.length !== 0 && (
+          {staticsList.length !== 0 && (
             <div className="button-wrap">
               <S.ExcelButton>
                 <ExcelIcon width={20} height={25} />
@@ -881,7 +845,7 @@ function StatisticsStatus() {
         </div>
       </S.InfoBlock>
       <S.ContentList>
-        {listData.length === 0 ? (
+        {staticsList.length === 0 ? (
           <S.EmptyData>
             <img src="/images/statistics/w-icon-graph.png" alt="statistics-icon" />
             <p>등록된 통계현황이 없습니다.</p>
@@ -904,6 +868,7 @@ function StatisticsStatus() {
                     selectData={selectData.farmHouseId}
                     searchText={searchFarmHouseId}
                     setSearchText={setSearchFarmHouseId}
+                    dataClick={handleSelectChange}
                   />
                 )}
               </div>
@@ -921,6 +886,7 @@ function StatisticsStatus() {
                     selectData={selectData.farmHouseName}
                     searchText={searchFarmHouseName}
                     setSearchText={setSearchFarmHouseName}
+                    dataClick={handleSelectChange}
                   />
                 )}
               </div>
@@ -938,14 +904,23 @@ function StatisticsStatus() {
                     selectData={selectData.cropName}
                     searchText={searchCropName}
                     setSearchText={setSearchCropName}
+                    dataClick={handleSelectChange}
                   />
                 )}
               </div>
 
               <div className="arrow-wrap farm-name">
                 <p>품종명</p>
-                <div className="icon-wrap" onClick={sortByFarmName}>
-                  {plantName ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
+                <div
+                  className="icon-wrap"
+                  onClick={() => {
+                    handleSelectChange(undefined, "cropKindOrderType", !selectData.cropKindOrderType);
+                  }}>
+                  {!selectData.cropKindOrderType ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
                 </div>
               </div>
 
@@ -962,26 +937,51 @@ function StatisticsStatus() {
                     selectData={selectData.trayTotal}
                     searchText={searchTrayTotal}
                     setSearchText={setSearchTrayTotal}
+                    dataClick={handleSelectChange}
                   />
                 )}
               </div>
 
               <div className="arrow-wrap order-count">
                 <p>주문수량</p>
-                <div className="icon-wrap" onClick={sortByStatus}>
-                  {orderCount ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
+                <div
+                  className="icon-wrap"
+                  onClick={() => {
+                    handleSelectChange(undefined, "planterOutputOrderType", !selectData.planterOutputOrderType);
+                  }}>
+                  {!selectData.planterOutputOrderType ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
                 </div>
               </div>
               <div className="arrow-wrap sowing">
                 <p>파종량</p>
-                <div className="icon-wrap" onClick={sortBySowingCount}>
-                  {sowingCount ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
+                <div
+                  className="icon-wrap"
+                  onClick={() => {
+                    handleSelectChange(undefined, "seedQuantityOrderType", !selectData.seedQuantityOrderType);
+                  }}>
+                  {!selectData.seedQuantityOrderType ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
                 </div>
               </div>
               <div className="arrow-wrap sowing">
                 <p>파종일자</p>
-                <div className="icon-wrap" onClick={sortBySowingDate}>
-                  {sowingDate ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
+                <div
+                  className="icon-wrap"
+                  onClick={() => {
+                    handleSelectChange(undefined, "sowingDateOrderType", !selectData.sowingDateOrderType);
+                  }}>
+                  {!selectData.sowingDateOrderType ? (
+                    <UpArrow width={24} height={24} />
+                  ) : (
+                    <DownArrow width={24} height={24} />
+                  )}
                 </div>
               </div>
               <div className="arrow-wrap state">
@@ -992,28 +992,28 @@ function StatisticsStatus() {
               </div>
             </div>
 
-            {listData.map((data, index) => {
+            {staticsList.map((data, index) => {
               return (
-                <S.ListBlock key={`map${index}`} className={data.farm_delete === "1" && "delete"}>
-                  <p className="list_id">{data.id}</p>
-                  <p className="farm_id">{data.farm_id}</p>
+                <S.ListBlock key={`statics${data.id}`} className={data.farmhouse.is_del && "delete"}>
+                  <p className="list_id">{index + 1}</p>
+                  <p className="farm_id">{data.farmhouse.farm_house_id}</p>
                   <div className="farm_name_wrap">
-                    <div className="farm-name-frist">{data.farm_name.slice(0, 1)}</div>
-                    <p className="farm_name">{data.farm_name}</p>
+                    <div className="farm-name-first">{data.farmhouse.name.slice(0, 1)}</div>
+                    <p className="farm_name">{data.farmhouse.name}</p>
                   </div>
-                  <p className="farm_plant">{data.farm_plant}</p>
-                  <p className="plant_name">{data.plant_name}</p>
-                  <p className="tray">{data.tray}</p>
-                  <p className="order_count">{NumberCommaFormatting(data.order_count)}</p>
-                  <p className="sowing_count">{NumberCommaFormatting(data.sowing_count)}</p>
-                  <p className="sowing_date">{data.sowingDate}</p>
-                  {data.state === "fin" && data.farm_delete === "0" ? (
+                  <p className="farm_plant">{data.crop.name}</p>
+                  <p className="plant_name">{data.crop_kind}</p>
+                  <p className="tray">{data.planter_tray.total}</p>
+                  <p className="order_count">{NumberCommaFormatting(data.order_quantity)}</p>
+                  <p className="sowing_count">{NumberCommaFormatting(data.order_quantity * data.planter_tray.total)}</p>
+                  <p className="sowing_date">{YYYYMMDDSlash(data.sowing_date)}</p>
+                  {!data.is_shipment_completed && !data.farmhouse.is_del ? (
                     <FinCheckIcon width={98} height={40} />
-                  ) : data.state === "wait" && data.farm_delete === "0" ? (
+                  ) : !data.is_shipment_completed && !data.farmhouse.is_del ? (
                     <WaitingIcon width={98} height={40} />
-                  ) : data.state === "fin" && data.farm_delete === "1" ? (
+                  ) : data.is_shipment_completed && data.farmhouse.is_del ? (
                     <GrayFinCheckIcon width={98} height={40} />
-                  ) : data.state === "wait" && data.farm_delete === "1" ? (
+                  ) : data.is_shipment_completed && data.farmhouse.is_del ? (
                     <GrayWaitingIcon width={98} height={40} />
                   ) : (
                     <></>
@@ -1023,23 +1023,31 @@ function StatisticsStatus() {
             })}
           </>
         )}
-        {listData.length !== 0 && (
+        {staticsInfo?.total !== 0 && staticsList.length !== staticsInfo?.total && (
           <S.ButtonWrap>
-            <S.MoreButton onClick={listMoreView}>
+            <S.MoreButton
+              onClick={() => {
+                setIsAddDataClick(true);
+                setPage(page + 1);
+              }}>
               <p>더보기</p>
             </S.MoreButton>
           </S.ButtonWrap>
         )}
       </S.ContentList>
-
       {pickerOpen && (
         <div className="modal-wrap">
           <DatePickerMain
             pickerOpen={pickerOpen}
             setPickerOpen={setPickerOpen}
-            setDateRange={setDateRange}
-            startDate={startDate}
-            endDate={endDate}
+            setDateRange={(calendarStartDate, calendarEndDate) => {
+              setDateRange({ startDate: calendarStartDate, endDate: calendarEndDate });
+              setSelectYear(0);
+              setSelectMonth(0); // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
+              invalidateQueries([staticsKey]);
+            }}
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
           />
         </div>
       )}

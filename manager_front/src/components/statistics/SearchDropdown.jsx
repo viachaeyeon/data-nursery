@@ -62,6 +62,7 @@ const S = {
       gap: 8px;
       border-radius: 4px;
       align-items: center;
+      cursor: pointer;
     }
 
     .data-text {
@@ -85,7 +86,7 @@ const S = {
   `,
 };
 
-function SearchDropdown({ width, type, dataList, selectData, searchText, setSearchText }) {
+function SearchDropdown({ width, type, dataList, selectData, searchText, setSearchText, dataClick }) {
   return (
     <S.Dropdown width={width}>
       <div className="input-wrap">
@@ -102,7 +103,12 @@ function SearchDropdown({ width, type, dataList, selectData, searchText, setSear
       <div className="drop-down-list-wrap">
         {dataList?.map((data, index) => {
           return (
-            <div className="drop-down-list" key={`${type + index}`}>
+            <div
+              className="drop-down-list"
+              key={`${type + index}`}
+              onClick={() => {
+                dataClick(selectData.split("||").includes(data), type, data);
+              }}>
               {selectData.split("||").includes(data) ? (
                 <CheckBoxOn width={24} height={24} />
               ) : (

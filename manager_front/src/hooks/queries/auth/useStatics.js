@@ -7,7 +7,7 @@ import { staticsKey } from "@src/utils/query-keys/AuthQueryKeys";
 export default function useStatics({
   year,
   month,
-  day,
+  dateRange,
   farmHouseId,
   farmHouseName,
   cropName,
@@ -26,7 +26,7 @@ export default function useStatics({
       staticsKey,
       year,
       month,
-      day,
+      dateRange,
       farmHouseId,
       farmHouseName,
       cropName,
@@ -42,7 +42,7 @@ export default function useStatics({
       getStatics(
         year,
         month,
-        day,
+        dateRange,
         farmHouseId,
         farmHouseName,
         cropName,

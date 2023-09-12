@@ -181,13 +181,17 @@ const S = {
 };
 
 function DatePickerMain({ pickerOpen, setPickerOpen, startDate, endDate, setDateRange }) {
+  const [calendarStartDate, setCalendarStartDate] = useState(startDate);
+  const [calendarEndDate, setCalendarEndDate] = useState(endDate);
+
   const handlePickerClose = useCallback(() => {
     setPickerOpen(false);
-  }, [pickerOpen]);
+  }, []);
 
   const handleDateDone = useCallback(() => {
+    setDateRange(calendarStartDate, calendarEndDate);
     handlePickerClose();
-  });
+  }, [calendarStartDate, calendarEndDate]);
 
   return (
     <S.Wrap>
@@ -201,10 +205,12 @@ function DatePickerMain({ pickerOpen, setPickerOpen, startDate, endDate, setDate
           </div>
           <DatePicker
             selectsRange={true}
-            startDate={startDate}
-            endDate={endDate}
+            startDate={calendarStartDate}
+            endDate={calendarEndDate}
             onChange={(update) => {
-              setDateRange(update);
+              // setDateRange(update);
+              setCalendarStartDate(update[0]);
+              setCalendarEndDate(update[1]);
             }}
             monthsShown={2}
             locale={ko}
@@ -236,7 +242,7 @@ function DatePickerMain({ pickerOpen, setPickerOpen, startDate, endDate, setDate
           />
 
           <S.Border />
-          {startDate === null || endDate === null ? (
+          {calendarStartDate === null || calendarEndDate === null ? (
             <S.ButtonWrapOff>
               <p>날짜 선택 완료</p>
             </S.ButtonWrapOff>
