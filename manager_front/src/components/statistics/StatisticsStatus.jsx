@@ -919,7 +919,7 @@ function StatisticsStatus() {
                   onClick={() => {
                     handleSelectChange(undefined, "cropKindOrderType", !selectData.cropKindOrderType);
                   }}>
-                  {!selectData.cropKindOrderType ? (
+                  {selectData.cropKindOrderType ? (
                     <UpArrow width={24} height={24} />
                   ) : (
                     <DownArrow width={24} height={24} />
@@ -952,7 +952,7 @@ function StatisticsStatus() {
                   onClick={() => {
                     handleSelectChange(undefined, "planterOutputOrderType", !selectData.planterOutputOrderType);
                   }}>
-                  {!selectData.planterOutputOrderType ? (
+                  {selectData.planterOutputOrderType ? (
                     <UpArrow width={24} height={24} />
                   ) : (
                     <DownArrow width={24} height={24} />
@@ -966,7 +966,7 @@ function StatisticsStatus() {
                   onClick={() => {
                     handleSelectChange(undefined, "seedQuantityOrderType", !selectData.seedQuantityOrderType);
                   }}>
-                  {!selectData.seedQuantityOrderType ? (
+                  {selectData.seedQuantityOrderType ? (
                     <UpArrow width={24} height={24} />
                   ) : (
                     <DownArrow width={24} height={24} />
@@ -980,7 +980,7 @@ function StatisticsStatus() {
                   onClick={() => {
                     handleSelectChange(undefined, "sowingDateOrderType", !selectData.sowingDateOrderType);
                   }}>
-                  {!selectData.sowingDateOrderType ? (
+                  {selectData.sowingDateOrderType ? (
                     <UpArrow width={24} height={24} />
                   ) : (
                     <DownArrow width={24} height={24} />
