@@ -2,16 +2,21 @@ import React, { useEffect, useState, useCallback } from "react";
 import styled, { css } from "styled-components";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
+import { useRouter } from "next/router";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useWorkingWorkInfo from "@hooks/queries/planter/useWorkingWorkInfo";
 import useWaitWorkList from "@hooks/queries/planter/useWaitWorkList";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import WorkContent from "@components/dashboard/WorkContent";
 import WaitContent from "@components/dashboard/WaitContent";
 
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import theme from "@src/styles/theme";
+import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -93,6 +98,10 @@ const S = {
 };
 
 function WorkTab() {
+  const router = useRouter();
+  const clearQueries = useAllCacheClear();
+  const invalidateQueries = useInvalidateQueries();
+
   const [selectTab, setSelectTab] = useState("working");
   const [waitWorkListPage, setWaitWorkListPage] = useState(1);
   const [waitWorkList, setWaitWorkList] = useState([]);
@@ -104,8 +113,10 @@ function WorkTab() {
 
   // 페이지 변경
   const pageChange = useCallback(() => {
-    setWaitWorkListPage(waitWorkListPage + 1);
-  }, [waitWorkListPage]);
+    if (waitWorkListData?.total > waitWorkList.length) {
+      setWaitWorkListPage(waitWorkListPage + 1);
+    }
+  }, [waitWorkListPage, waitWorkList]);
 
   useEffect(() => {
     if (inView) {
@@ -113,11 +124,15 @@ function WorkTab() {
     }
   }, [inView]);
 
+  useEffect(() => {
+    invalidateQueries([waitWorkListKey]);
+  }, []);
+
   // 유저 정보 API
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 
@@ -170,9 +185,7 @@ function WorkTab() {
           <div className="tab-bar" />
         </S.TabContent>
       </S.TabWrap>
-      {selectTab === "working" && (
-        <WorkContent isWorking={workingWorkInfo?.planter_status === "WORKING"} workingWorkInfo={workingWorkInfo} />
-      )}
+      {selectTab === "working" && <WorkContent workingWorkInfo={workingWorkInfo} />}
       {selectTab === "waiting" && (
         <WaitContent
           waitWorkList={waitWorkList}

@@ -55,7 +55,7 @@ export const getWorkingWorkInfoAPI = async (serialNumber) => {
 };
 
 // 대기중인 작업 목록
-export const getWaitWorkListListAPI = async (serialNumber, page) => {
+export const getWaitWorkListAPI = async (serialNumber, page) => {
   try {
     const res = await axios.get(
       process.env.NEXT_PUBLIC_END_POINT + `/api/planter/work/wait/list/${serialNumber}?page=${page}`,
@@ -125,5 +125,33 @@ export const getWorkInfoAPI = async (workId) => {
     return res.data;
   } catch (error) {
     throw new Error(error.response?.status || "작업 정보를 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+// 작업이력 목록
+export const getWorkHistoryListAPI = async (serialNumber, year, month, date, page) => {
+  try {
+    const res = await axios.get(
+      process.env.NEXT_PUBLIC_END_POINT +
+        `/api/planter/work/done/list/${serialNumber}/${year}/${month}/${date}?page=${page}`,
+      {
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "작업이력 목록을 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+// 통계현황
+export const getStatisticsAPI = async (year, month) => {
+  try {
+    const res = await axios.get(process.env.NEXT_PUBLIC_END_POINT + `/api/planter/month/statics/${year}/${month}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "통계현황을 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };

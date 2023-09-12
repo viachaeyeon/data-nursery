@@ -60,7 +60,7 @@ function DefaultYearMonthSelect({ date, yearMonthOpen, handleYearMonthOpen }) {
         onClick={() => {
           handleYearMonthOpen("month", true);
         }}>
-        <p className="date-text">{date.month}월</p>
+        <p className="date-text">{date.month === 0 ? "전체" : date.month + "월"}</p>
         <S.ArrowWrap isSelectOpen={yearMonthOpen.month}>
           <SelectIcon fill={theme.basic.whiteGrey} />
         </S.ArrowWrap>

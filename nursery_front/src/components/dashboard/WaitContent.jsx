@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 
@@ -7,6 +7,7 @@ import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries
 
 import SuffixButton from "@components/common/button/SuffixButton";
 import SmallButton from "@components/common/button/SmallButton";
+import DefaultModal from "@components/common/modal/DefaultModal";
 
 import { NumberFormatting } from "@utils/Formatting";
 import { borderButtonColor, purpleButtonColor } from "@utils/ButtonColor";
@@ -98,6 +99,15 @@ function WaitContent({ waitWorkList, isWorking, setSelectTab, intersectionRef })
   const router = useRouter();
   const invalidateQueries = useInvalidateQueries();
 
+  const [modalOpen, setModalOpen] = useState({
+    open: false,
+    title: "",
+    description: "",
+    btnType: "",
+    afterFn: null,
+    cancelFn: null,
+  });
+
   // 작업 상태 변경 API
   const { mutate: updateWorkStatusMutate } = useUpdateWorkStatus(
     () => {
@@ -142,7 +152,7 @@ function WaitContent({ waitWorkList, isWorking, setSelectTab, intersectionRef })
                     <p className="count-text">{NumberFormatting(work.tray_total)}</p>
                     <p className="suffix-text">개</p>
                   </div>
-                  <p className="suffix-text">{work.seed_quantity}공</p>
+                  <p className="suffix-text">{NumberFormatting(work.seed_quantity)}공</p>
                 </div>
               </div>
               {isWorking ? (
@@ -159,12 +169,22 @@ function WaitContent({ waitWorkList, isWorking, setSelectTab, intersectionRef })
                 <SuffixButton
                   text={"시작"}
                   onClick={(e) => {
-                    updateWorkStatusMutate({
-                      data: {
-                        planter_work_id: work.id,
-                        status: "WORKING",
+                    setModalOpen({
+                      open: true,
+                      title: "작업시작",
+                      description: "작업이 시작되면 정보수정은\n불가합니다. 진행할까요?",
+                      btnType: "two",
+                      afterFn: () => {
+                        updateWorkStatusMutate({
+                          data: {
+                            planter_work_id: work.id,
+                            status: "WORKING",
+                          },
+                        });
                       },
+                      cancelFn: null,
                     });
+
                     e.stopPropagation();
                   }}
                   customStyle={purpleButtonColor}
@@ -176,6 +196,7 @@ function WaitContent({ waitWorkList, isWorking, setSelectTab, intersectionRef })
         );
       })}
       <div ref={intersectionRef} />
+      <DefaultModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </S.Wrap>
   );
 }

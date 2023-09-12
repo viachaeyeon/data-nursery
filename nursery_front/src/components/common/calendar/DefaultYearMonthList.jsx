@@ -6,11 +6,11 @@ import { GetMonthList, GetYearList } from "@utils/Formatting";
 import OnRadioBtnIcon from "@images/common/on-radio-btn.svg";
 import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 
-function DefaultYearMonthList({ date, yearMonthOpen, handleDateChange, handleYearMonthOpen }) {
+function DefaultYearMonthList({ isStatistics = false, date, yearMonthOpen, handleDateChange, handleYearMonthOpen }) {
   const yearList = GetYearList();
-  const [monthList, setMonthList] = useState([]);
+  const [monthList, setMonthList] = useState(GetMonthList(date.year));
 
-  // 선택한 월이 변경한 년도에 없을 경우 가장 첫번쨰 월로 변경
+  // 선택한 월이 변경한 년도에 없을 경우 가장 첫번째 월로 변경
   useEffect(() => {
     if (monthList.length !== 0 && !monthList.includes(date.month)) {
       handleDateChange("month", monthList[0]);
@@ -46,11 +46,23 @@ function DefaultYearMonthList({ date, yearMonthOpen, handleDateChange, handleYea
         <DefaultSelectList>
           <p className="select-category-text">월</p>
           <div className="value-list-wrap" id="scroll-wrap">
+            {isStatistics && (
+              <div
+                className="row-layout"
+                onClick={() => {
+                  handleDateChange("month", 0);
+                  handleYearMonthOpen("month", false);
+                }}>
+                {date.month === 0 && <OnRadioBtnIcon />}
+                {date.month !== 0 && <OffRadioBtnIcon />}
+                <p className="value-text">전체</p>
+              </div>
+            )}
             {monthList.map((month) => {
               return (
                 <div
                   key={`month${month}`}
-                  className={"row-layout"}
+                  className="row-layout"
                   onClick={() => {
                     handleDateChange("month", month);
                     handleYearMonthOpen("month", false);
