@@ -49,7 +49,7 @@ const S = {
     }
   `,
   ContentWrap: styled.div`
-    padding: 38px 24px 36px 24px;
+    padding: 32px 24px;
     height: calc(100% - 166px);
     overflow-y: auto;
     display: flex;
