@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, case, extract, desc, asc, cast, String
 from starlette.responses import JSONResponse
 from datetime import date, datetime, timedelta
+from pytz import timezone, utc
 from collections import defaultdict
 
 
@@ -507,7 +508,7 @@ def get_planter_work_statics(
     request: Request,
     year: int = None,
     month: int = None,
-    day: int = None,
+    date_range: str = None,
     farm_house_id: str = None,
     farmhouse_name: str = None,
     crop_name: str = None,
@@ -563,24 +564,44 @@ def get_planter_work_statics(
 
     delimiter = "||"
 
-    if day:
-        base_query = base_query.filter(
-            extract(
-                "year",
-                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+    if date_range:
+        target_timezone = timezone("Asia/Seoul")
+        start_date, end_date = date_range.split(delimiter)
+        start_year, start_month, start_day = start_date.split("-")
+        end_year, end_month, end_day = end_date.split("-")
+
+        target_start_date = datetime(
+            int(start_year), int(start_month), int(start_day), tzinfo=target_timezone
+        ).date()
+        target_end_date = datetime(
+            int(end_year), int(end_month), int(end_day), tzinfo=target_timezone
+        ).date()
+        if target_start_date == target_end_date:
+            base_query = base_query.filter(
+                extract(
+                    "year",
+                    func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+                )
+                == end_year,
+                extract(
+                    "month",
+                    func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+                )
+                == end_month,
+                extract(
+                    "day",
+                    func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+                )
+                == end_day,
             )
-            == year,
-            extract(
-                "month",
-                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+        else:
+            base_query = base_query.filter(
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at)
+                >= target_start_date,
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at)
+                <= target_end_date,
             )
-            == month,
-            extract(
-                "day",
-                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
-            )
-            == day,
-        )
+        # return None
     elif month:
         base_query = base_query.filter(
             extract(
