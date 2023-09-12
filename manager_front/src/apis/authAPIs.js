@@ -30,3 +30,46 @@ export const getAllFarmListAPI = async (nameOrder, statusOrder, page, size) => {
     throw new Error(err.response?.status || "전체 농가 목록을 불러오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
+
+//농가관리 페이지 : 농가추가
+export const addFarmhouseAPI = async (data) => {
+  try {
+    const res = await axios.post(process.env.NEXT_PUBLIC_END_POINT + `/api/auth/farmhouse/create`, data, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "농가를 추가하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+//농가관리 페이지 : 농가수정
+export const updateFarmhouseAPI = async (data) => {
+  try {
+    const res = await axios.patch(process.env.NEXT_PUBLIC_END_POINT + `/api/auth/farmhouse/update`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "농가를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+//농가관리 페이지 : 농가삭제
+export const deleteFarmhouseAPI = async (data) => {
+  try {
+    const res = await axios.patch(
+      process.env.NEXT_PUBLIC_END_POINT + `/api/auth/farmhouse/delete?farmhouse_id=${data.farmhouseId}`,
+      data,
+      {
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "농가를 삭제하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};

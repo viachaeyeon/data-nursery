@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 
-import DatePickerMain from "./DatePickerMain";
+// import DatePickerMain from "./DatePickerMain";
 import { YYYYMMDDSlash } from "@src/utils/Formatting";
 
 import { NumberCommaFormatting } from "@src/utils/Formatting";
@@ -938,14 +938,14 @@ function StatisticsStatus() {
           </div>
         </div>
         <div>
-          {listData.length !== 0 && (
+          {/* {listData.length !== 0 && (
             <div className="button-wrap">
               <S.ExcelButton>
                 <ExcelIcon width={20} height={25} />
                 <p>엑셀 내려받기</p>
               </S.ExcelButton>
             </div>
-          )}
+          )} */}
         </div>
       </S.InfoBlock>
       <S.ContentList>
@@ -1138,7 +1138,7 @@ function StatisticsStatus() {
         )}
       </S.ContentList>
 
-      {pickerOpen && (
+      {/* {pickerOpen && (
         <div className="modal-wrap">
           <DatePickerMain
             pickerOpen={pickerOpen}
@@ -1148,7 +1148,7 @@ function StatisticsStatus() {
             endDate={endDate}
           />
         </div>
-      )}
+      )} */}
     </S.Wrap>
   );
 }

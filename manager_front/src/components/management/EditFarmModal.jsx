@@ -1,7 +1,12 @@
 import React, { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 
+import useUpdateFarmhouse from "@src/hooks/queries/auth/useUpdateFarmhouse";
 import { useDaumPostcodePopup } from "react-daum-postcode";
+
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import { useFarmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
 
 import XIcon from "@images/common/icon-x.svg";
 import SearchIcon from "@images/management/search-btn.svg";
@@ -155,52 +160,92 @@ const S = {
 };
 
 function EditFarmModal({ editModalOpen, setEditModalOpen }) {
+  const invalidateQueries = useInvalidateQueries();
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
+
   const [editFarmName, setEditFarmName] = useState(editModalOpen.data.data.farm_name);
   const [editName, setEditName] = useState(editModalOpen.data.data.name);
   const [editPhone, setEditPhone] = useState(editModalOpen.data.data.phone);
+  const [editAddressCode, setEditAddressCode] = useState(editModalOpen.data.data.address_code);
   const [editAddress, setEditAddress] = useState(editModalOpen.data.data.address);
+  const [editAddressData, setEditAddressData] = useState("");
   // const [editDetailAddress,setEditDetailAddress] = useState(editModalOpen.data.data.)
 
   const closeModal = useCallback(() => {
     setEditModalOpen({ open: false, data: undefined });
   }, []);
 
-  // const open = useDaumPostcodePopup(
-  //   "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js",
-  // );
-
-  // const handleComplete = useCallback((data) => {
-  //   let fullAddress = data.address;
-  //   let extraAddress = "";
-  //   let zoneCode = data.zonecode;
-  //   setAddressData("(" + zoneCode + ") " + fullAddress);
-
-  //   if (data.addressType === "R") {
-  //     if (data.bname !== "") {
-  //       extraAddress += data.bname;
-  //     }
-  //     if (data.buildingName !== "") {
-  //       extraAddress +=
-  //         extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
-  //     }
-  //     fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
-  //   }
-  // }, []);
-
-  // const handleClick = useCallback(() => {
-  //   open({ onComplete: handleComplete });
-  // }, []);
+  console.log("editModalOpen", editModalOpen);
 
   const FarmInfoSave = useCallback(() => {
-    alert("저장 클릭");
+    let editAddressAll = editAddressCode + "||" + editAddress + editAddressData;
 
+    updateFarmhouseMutate({
+      data: {
+        id: editModalOpen.data.data.id,
+        name: editName,
+        producer_name: editFarmName,
+        phone: editPhone,
+        address: editAddressAll,
+      },
+    });
+    console.log("아이디 : ", editModalOpen.data.data.id);
     console.log("농가명 : ", editFarmName);
     console.log("생산자명 : ", editName);
     console.log("연락처 : ", editPhone);
-    // console.log("주소 : ", addressData, addressDetailData);
+    console.log("주소 : ", editAddressAll);
 
     closeModal();
+  }, [editModalOpen, editName, editFarmName]);
+
+  const open = useDaumPostcodePopup("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js");
+
+  const handleComplete = useCallback(
+    (data) => {
+      let fullAddress = data.address;
+      let extraAddress = "";
+      // let zoneCode = data.zonecode;
+      setEditAddressCode(data.zonecode);
+      // setEditAddress("(" + zoneCode + ") " + fullAddress);
+      setEditAddress(fullAddress);
+
+      if (data.addressType === "R") {
+        if (data.bname !== "") {
+          extraAddress += data.bname;
+        }
+        if (data.buildingName !== "") {
+          extraAddress += extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+        }
+        fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+      }
+    },
+    [editAddressCode, editAddress],
+  );
+
+  const handleClick = useCallback(() => {
+    open({ onComplete: handleComplete });
   }, []);
+
+  const { mutate: updateFarmhouseMutate } = useUpdateFarmhouse(
+    () => {
+      invalidateQueries([useFarmAllListKey]);
+      closeModal();
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 저장되었습니다.",
+        okClick: null,
+      });
+    },
+    (error) => {
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
+    },
+  );
 
   return (
     <S.Wrap>
@@ -251,21 +296,19 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
             <div className="input-wrap">
               <input
                 placeholder="주소를 입력하세요."
-                // value={addressData}
+                // value={editAddress}
+                value={"(" + editAddressCode + ") " + editAddress}
                 disabled
               />
-              <div
-                className="search"
-                //  onClick={handleClick}
-              >
+              <div className="search" onClick={handleClick}>
                 <SearchIcon width={40} height={40} />
               </div>
             </div>
             <div className="input-wrap">
               <input
                 placeholder="나머지 주소를 입력하세요."
-                // value={addressDetailData}
-                // onChange={(e) => setAddressDetailData(e.target.value)}
+                value={editAddressData}
+                onChange={(e) => setEditAddressData(e.target.value)}
               />
             </div>
           </div>

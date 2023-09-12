@@ -122,6 +122,12 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
     alert("qr 코드 다운로드 클릭");
   }, []);
 
+  console.log("qrDownloadModalOpen", qrDownloadModalOpen);
+
+  const qrImage = qrDownloadModalOpen?.data?.data?.qr_image;
+
+  console.log("qrImage", qrImage);
+
   return (
     <S.Wrap>
       <S.WrapInner>
@@ -149,7 +155,9 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
             </div>
           </div>
         </S.InputWrap>
-        <S.QrCodWrap></S.QrCodWrap>
+        <S.QrCodWrap>
+          <img src={qrImage} alt="qrcode-img" />
+        </S.QrCodWrap>
         <S.ButtonWrap onClick={qrCodeDownloadClick}>
           <p>다운로드</p>
         </S.ButtonWrap>

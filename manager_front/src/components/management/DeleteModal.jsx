@@ -1,6 +1,11 @@
 import React, { useCallback, useState, useRef } from "react";
 import styled from "styled-components";
 
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+import useDeleteFarmhouse from "@src/hooks/queries/auth/useDeleteFarmhouse";
+import { useFarmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+
 const S = {
   Wrap: styled.div`
     width: 100%;
@@ -77,14 +82,45 @@ const S = {
   `,
 };
 
-function AddFarmModal({ setDeleteModalOpen }) {
+function AddFarmModal({ deleteModalOpen, setDeleteModalOpen }) {
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
+  const invalidateQueries = useInvalidateQueries();
+
   const closeModal = useCallback(() => {
     setDeleteModalOpen({ open: false, data: undefined });
   }, []);
 
   const handleDeleteOkClick = useCallback(() => {
-    alert("확인 클릭");
-  }, []);
+    // alert("확인 클릭");
+    deleteFarmhouseMutate({
+      data: {
+        farmhouseId: deleteModalOpen.data.data.id,
+      },
+    });
+  }, [deleteModalOpen]);
+
+  console.log("deleteModalOpen", deleteModalOpen);
+
+  const { mutate: deleteFarmhouseMutate } = useDeleteFarmhouse(
+    () => {
+      invalidateQueries([useFarmAllListKey]);
+      closeModal();
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 삭제되었습니다.",
+        okClick: null,
+      });
+    },
+    (error) => {
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
+    },
+  );
 
   return (
     <S.Wrap>

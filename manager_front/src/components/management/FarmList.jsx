@@ -196,6 +196,11 @@ const S = {
       border-radius: 30px;
       padding: 8px;
       color: #fff;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      display: flex;
     }
     .farm_name {
       width: 132px;
@@ -313,6 +318,8 @@ function FarmList() {
     },
   });
 
+  console.log("farmhouseList", farmhouseList);
+
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
   // 농가추가시 필요한 데이터
@@ -323,6 +330,8 @@ function FarmList() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [addressData, setAddressData] = useState("");
   const [addressDetailData, setAddressDetailData] = useState("");
+  const [addressCode, setAddressCode] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   // ...클릭시 나오는 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
@@ -391,14 +400,18 @@ function FarmList() {
         farm_name: data?.name,
         name: data?.producer_name,
         farm_number: data?.nursery_number,
-        address: data?.address,
-        address_code: "50402",
+        address: data?.address.split("||")[1],
+        address_code: data?.address.split("||")[0],
         phone: data?.phone,
         status: data?.last_planter_status?.status,
+        qr_image: data?.planter?.qrcode,
       });
     });
     return array;
   }, []);
+
+  console.log("farmhouseList", farmhouseList);
+  console.log("listData", listData);
 
   //정렬 토글
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
@@ -440,6 +453,8 @@ function FarmList() {
   const [isChecked, setIsChecked] = useState([]);
   // const [isChecked, setIsChecked] = useState(listData?.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
+
+  console.log("checkArray", checkArray);
 
   useEffect(() => {
     if (!!listData) {
@@ -652,6 +667,8 @@ function FarmList() {
             createQrcode={createQrcode}
             setCreateQrcode={setCreateQrcode}
             setAddFarmSaveModalOpen={setAddFarmSaveModalOpen}
+            qrCodeUrl={qrCodeUrl}
+            setQrCodeUrl={setQrCodeUrl}
           />
         </div>
       )}
@@ -678,6 +695,10 @@ function FarmList() {
             setAddressDetailData={setAddressDetailData}
             setCreateQrcode={setCreateQrcode}
             setAddFarmSerialNumber={setAddFarmSerialNumber}
+            qrCodeUrl={qrCodeUrl}
+            setQrCodeUrl={setQrCodeUrl}
+            addressCode={addressCode}
+            setAddressCode={setAddressCode}
           />
         </div>
       )}
@@ -695,7 +716,7 @@ function FarmList() {
       {/* 삭제 모달 */}
       {deleteModalOpen.open && (
         <div className="modal-wrap">
-          <DeleteModal setDeleteModalOpen={setDeleteModalOpen} />
+          <DeleteModal setDeleteModalOpen={setDeleteModalOpen} deleteModalOpen={deleteModalOpen} />
         </div>
       )}
 

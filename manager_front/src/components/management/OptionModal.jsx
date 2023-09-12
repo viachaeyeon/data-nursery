@@ -74,6 +74,8 @@ function OptionModal({
   setDeleteModalOpen,
   setEditModalOpen,
 }) {
+  console.log("optionModalOpen", optionModalOpen);
+
   // QR 다운로드 모달
   const handleQrDownloadModalClick = useCallback(() => {
     // if (qrDownloadModalOpen.open === true) {
