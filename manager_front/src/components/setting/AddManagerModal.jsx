@@ -1,5 +1,9 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
+import { useRecoilState } from "recoil";
+
+import useCreateManager from "@src/hooks/queries/auth/useCreateManager";
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 
 import XIcon from "@images/common/icon-x.svg";
 
@@ -131,6 +135,8 @@ function AddManagerModal({
   managerPassword,
   setManagerPassword,
 }) {
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
+
   const closeModal = useCallback(() => {
     setAddManagerModalOpen(false);
     setManagerId("");
@@ -143,9 +149,56 @@ function AddManagerModal({
   }, []);
 
   const handleTraySaveClick = useCallback(() => {
-    alert("저장");
+    createAdminMutate({
+      data:{
+        user_data: {
+          login_id: managerId,
+          password: managerPassword,
+          name: managerName,
+          code: "99"
+        },
+        admin_user_info_data: {
+          company: managerCompany,
+          department: managerDepartment,
+          position: managerPosition,
+          phone: managerPhone
+        }
+      }
+    });
+
     closeModal();
-  }, []);
+
+    console.log("아이디",managerId);
+    console.log("회사",managerCompany);
+    console.log("부서",managerDepartment);
+    console.log("직책",managerPosition);
+    console.log("담당자",managerName);
+    console.log("전화번호",managerPhone);
+    console.log("비밀번호",managerPassword);
+  }, [managerId,managerCompany,managerDepartment,managerPosition,managerName,managerPhone,managerPassword]);
+
+  const { mutate:createAdminMutate } = useCreateManager(
+    ()=>{
+      // invalidateQueries([useFarmAllListKey]);
+      closeModal();
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 저장되었습니다.",
+        okClick: null,
+      });
+    },
+    (error) => {
+      alert(error);
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
+    },
+    
+  )
 
   return (
     <S.Wrap>

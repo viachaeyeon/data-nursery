@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
+import useManagerList from "@src/hooks/queries/auth/useManagerList";
+
 import AddIcon from "@images/management/add-icon.svg";
 import CheckBoxNone from "@images/setting/check-icon-none.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
@@ -150,6 +152,19 @@ const S = {
 };
 
 function ManagementList() {
+
+  const {data:managerList} = useManagerList ({
+    page:1,
+    size:15,
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  })
+
+  console.log("managerList",managerList?.data)
+
+
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
     index: undefined,
@@ -297,7 +312,7 @@ function ManagementList() {
   ]);
 
   const [selectAll, setSelectAll] = useState(false);
-  const [isChecked, setIsChecked] = useState(listData.map(() => false));
+  const [isChecked, setIsChecked] = useState(managerList?.data?.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
 
   const toggleItem = (index) => {
@@ -305,21 +320,21 @@ function ManagementList() {
     updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
     setIsChecked(updatedIsCheckedArray);
 
-    if (listData[index].member_type === "top") {
+    if (managerList?.data[index]?.member_type === "top") {
       // 'top' 항목은 개별적으로 선택해도 전체 선택에 영향을 주지 않음
       return;
     }
 
     // 모든 항목이 체크되었는지 확인
     const allChecked = updatedIsCheckedArray.every(
-      (checked, index) => listData[index].member_type === "top" || checked,
+      (checked, index) => managerList?.data[index]?.member_type === "top" || checked,
     );
 
     // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
     // 그렇지 않다면 전체 선택 체크박스를 false로 설정
     setSelectAll(allChecked);
 
-    const selectedItemId = listData[index].id;
+    const selectedItemId = managerList?.data[index]?.id;
     if (updatedIsCheckedArray[index]) {
       setCheckArray((prevArray) => [...prevArray, selectedItemId]);
     } else {
@@ -332,19 +347,20 @@ function ManagementList() {
 
     // 개별 항목 중 'member_type'이 'top'이 아닌 항목만 업데이트
     const updatedIsCheckedArray = isChecked.map((checked, index) =>
-      listData[index].member_type === "top" ? checked : allChecked,
+    managerList?.data[index].member_type === "top" ? checked : allChecked,
     );
 
     setIsChecked(updatedIsCheckedArray);
     setSelectAll(allChecked);
 
-    const selectedIds = listData.map((item) => item.id);
+    const selectedIds = managerList?.data?.map((item) => item?.admin_user_info?.id);
     if (allChecked) {
       setCheckArray(selectedIds);
     } else {
       setCheckArray([]);
     }
   };
+
 
   return (
     <S.Wrap>
@@ -390,7 +406,64 @@ function ManagementList() {
         </div>
         <S.ListBlockWrap>
           <div className="list-inner">
-            {listData.map((data, index, item) => {
+            {managerList?.data?.map((data,item,index)=>{
+              return(
+                <S.ListBlock key={item.id} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
+                  {data?.admin_user_info?.is_top_admin === true ? (
+                    <CheckBoxNone width={24} height={24} />
+                  ) : (
+                    <label key={item?.admin_user_info?.id} className="table-row">
+                      <input
+                        type="checkbox"
+                        checked={isChecked[index]}
+                        onChange={() => toggleItem(index)}
+                        style={{ display: "none" }}
+                      />
+                      <div>
+                        {isChecked[index] ? (
+                          <CheckBoxOn width={24} height={24} />
+                        ) : (
+                          <CheckBoxOff width={24} height={24} />
+                        )}
+                      </div>
+                      <div>{item?.user?.name}</div>
+                    </label>
+                  )}
+
+                  {data.admin_user_info.is_top_admin === true ? (
+                    <TopManager width={107} height={28} />
+                  ) : (
+                    <CommonManager width={107} height={28} />
+                  )}
+                  <p>{data?.user?.login_id}</p>
+                  <p>{data?.admin_user_info?.company}</p>
+                  <p>{data?.admin_user_info?.department}</p>
+                  <p>{data?.admin_user_info?.position}</p>
+                  <p>{data?.user?.name}</p>
+                  <p>{data?.admin_user_info?.phone}</p>
+                  <div className="option-modal-wrap">
+                    <div
+                      className="option-dot"
+                      onClick={() => {
+                        handleOptionModalClick(index, data);
+                        setDeleteManagerModalOpen({ open: false, data: data });
+                      }}>
+                      <OptionDot width={32} height={32} />
+                    </div>
+                    {index === optionModalOpen.index && (
+                      <OptionModal
+                        optionModalOpen={optionModalOpen}
+                        setOptionModalOpen={setOptionModalOpen}
+                        setEditManagerModalOpen={setEditManagerModalOpen}
+                        deleteManagerModalOpen={deleteManagerModalOpen}
+                        setDeleteManagerModalOpen={setDeleteManagerModalOpen}
+                      />
+                    )}
+                  </div>
+                </S.ListBlock>
+              )
+            })}
+            {/* {listData.map((data, index, item) => {
               return (
                 <S.ListBlock key={item.id} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
                   {data.member_type === "top" ? (
@@ -446,7 +519,7 @@ function ManagementList() {
                   </div>
                 </S.ListBlock>
               );
-            })}
+            })} */}
           </div>
         </S.ListBlockWrap>
       </S.ContentList>
