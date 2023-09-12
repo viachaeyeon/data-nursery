@@ -318,7 +318,7 @@ function FarmList() {
     },
   });
 
-  console.log("farmhouseList", farmhouseList);
+  // console.log("farmhouseList", farmhouseList);
 
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
@@ -410,8 +410,8 @@ function FarmList() {
     return array;
   }, []);
 
-  console.log("farmhouseList", farmhouseList);
-  console.log("listData", listData);
+  // console.log("farmhouseList", farmhouseList);
+  // console.log("listData", listData);
 
   //정렬 토글
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
@@ -454,7 +454,7 @@ function FarmList() {
   // const [isChecked, setIsChecked] = useState(listData?.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
 
-  console.log("checkArray", checkArray);
+  // console.log("checkArray", checkArray);
 
   useEffect(() => {
     if (!!listData) {

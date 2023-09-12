@@ -1,6 +1,8 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
+import { saveAs } from "file-saver";
+
 import XIcon from "@images/common/icon-x.svg";
 
 const S = {
@@ -110,6 +112,30 @@ const S = {
     align-items: center;
     justify-content: center;
     margin-top: 16px;
+
+    .qrcode-inner {
+      width: 257px;
+      height: 290px;
+      padding: 11.49px;
+      display: flex;
+      flex-direction: column;
+      gap: 8.61px;
+      background-color: ${({ theme }) => theme.blackWhite.white};
+      justify-content: center;
+      align-items: center;
+    }
+    .qrcode {
+      width: 234px;
+      height: 231px;
+    }
+
+    p {
+      color: ${({ theme }) => theme.basic.gray40};
+      font-size: 22.972px;
+      font-weight: 600;
+      line-height: normal;
+      font-style: normal;
+    }
   `,
 };
 
@@ -118,15 +144,16 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
     setQrDownloadModalOpen({ open: false, data: undefined });
   }, []);
 
-  const qrCodeDownloadClick = useCallback(() => {
-    alert("qr 코드 다운로드 클릭");
-  }, []);
-
   console.log("qrDownloadModalOpen", qrDownloadModalOpen);
 
-  const qrImage = qrDownloadModalOpen?.data?.data?.qr_image;
+  const qrImage = "http://localhost:8000" + qrDownloadModalOpen?.data?.data?.qr_image;
 
   console.log("qrImage", qrImage);
+
+  const qrCodeDownloadClick = useCallback(() => {
+    let url = qrImage;
+    saveAs(url, qrDownloadModalOpen?.data?.data?.serial_number + "-qrcode");
+  }, [qrImage]);
 
   return (
     <S.Wrap>
@@ -156,7 +183,10 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
           </div>
         </S.InputWrap>
         <S.QrCodWrap>
-          <img src={qrImage} alt="qrcode-img" />
+          <div className="qrcode-inner">
+            <img src={qrImage} alt="qrcode-img" className="qrcode" />
+            <p>SCAN ME!</p>
+          </div>
         </S.QrCodWrap>
         <S.ButtonWrap onClick={qrCodeDownloadClick}>
           <p>다운로드</p>

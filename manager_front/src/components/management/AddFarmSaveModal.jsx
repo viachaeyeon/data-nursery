@@ -238,7 +238,7 @@ function AddFarmSaveModal({
       return new File([u8arr], fileName, { type: mime });
     };
     //Usage example:
-    var file = dataURLtoFile("data:text/plain;base64,aGVsbG8gd29ybGQ=", ".png");
+    var file = dataURLtoFile(qrCodeUrl, addFarmSerialNumber + ".png");
 
     createFarmhouseMutate({
       data: {
@@ -261,6 +261,7 @@ function AddFarmSaveModal({
     console.log("연락처 : ", phoneNumber);
     console.log("주소 : ", addressCode + "||" + addressData.split(") ")[1] + addressDetailData);
     console.log("큐알코드 : ", file);
+    console.log("큐알코드 : ", qrCodeUrl);
     console.log("전체 주소 : ", addressData);
 
     // // Base64 문자열을 ArrayBuffer로 디코딩합니다.

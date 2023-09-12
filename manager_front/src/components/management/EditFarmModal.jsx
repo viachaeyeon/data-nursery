@@ -1,5 +1,6 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
+import { useRecoilState } from "recoil";
 
 import useUpdateFarmhouse from "@src/hooks/queries/auth/useUpdateFarmhouse";
 import { useDaumPostcodePopup } from "react-daum-postcode";
