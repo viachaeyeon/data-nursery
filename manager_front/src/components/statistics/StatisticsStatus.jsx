@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 
 import DatePickerMain from "./DatePickerMain";
-import { YYYYMMDDSlash } from "@src/utils/Formatting";
+import { GetMonthList, GetYearList, YYYYMMDDDash, YYYYMMDDSlash } from "@src/utils/Formatting";
 
 import { NumberCommaFormatting } from "@src/utils/Formatting";
 
@@ -19,6 +19,7 @@ import PickerIcon from "@images/statistics/date-picker-icon.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
 import CheckBoxOn from "@images/common/check-icon-on.svg";
 import SearchIcon from "@images/statistics/icon-search.svg";
+import useStatics from "@src/hooks/queries/auth/useStatics";
 
 const S = {
   Wrap: styled.div`
@@ -46,6 +47,14 @@ const S = {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+
+    .top-div {
+      z-index: 99;
+    }
+
+    .month-dropdown-list {
+      left: 542px;
+    }
 
     .info-wrap {
       display: flex;
@@ -386,10 +395,10 @@ const S = {
       ${({ theme }) => theme.textStyle.h7Reguler}
     }
   `,
-  YearDropDownList: styled.div`
+  YearMonthDropDownList: styled.div`
     position: absolute;
     background-color: ${({ theme }) => theme.basic.whiteGray};
-    height: 300px;
+    max-height: 300px;
     top: 247px;
     padding: 16px;
     border-radius: 8px;
@@ -419,41 +428,6 @@ const S = {
       border-radius: 4px;
     }
   `,
-  MonthDropDownList: styled.div`
-    position: absolute;
-    background-color: ${({ theme }) => theme.basic.whiteGray};
-    height: 300px;
-    top: 247px;
-    padding: 16px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border: 1px solid ${({ theme }) => theme.basic.recOutline};
-    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
-    width: 138px;
-    overflow-y: auto;
-    left: 542px;
-
-    .drop-down-list {
-      padding: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: start;
-      cursor: pointer;
-      background-color: ${({ theme }) => theme.basic.whiteGray};
-
-      p {
-        color: ${({ theme }) => theme.basic.gray60};
-        ${({ theme }) => theme.textStyle.h7Reguler};
-      }
-    }
-    .drop-down-list:hover {
-      background-color: ${({ theme }) => theme.basic.gray20};
-      border-radius: 4px;
-    }
-  `,
-
   SearchSelectBox: styled.div`
     border-radius: 8px;
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
@@ -544,10 +518,24 @@ function StatisticsStatus() {
   const [sowingDate, setSowingDate] = useState(true);
   const [state, setState] = useState(true);
 
+  const [page, setPage] = useState(1);
+
+  const [searchSelect, setSearchSelect] = useState({
+    farmHouseId: "",
+    farmHouseName: "",
+    cropName: "",
+    cropKindOrderType: 0,
+    trayTotal: "",
+    seedQuantityOrderType: 1,
+    planterOutputOrderType: 1,
+    sowingDateOrderType: 1,
+    isShipmentCompletedOrderType: 1,
+  });
+
   // 선택된 연도
-  const [selectYear, setSelectYear] = useState("");
+  const [selectYear, setSelectYear] = useState(0);
   //선택된 월
-  const [selectMonth, setSelectMonth] = useState("");
+  const [selectMonth, setSelectMonth] = useState(0);
 
   //연도별 drop down 모달 오픈
   const [yearModalOpen, setYearModalOpen] = useState(false);
@@ -602,6 +590,7 @@ function StatisticsStatus() {
   const handleClickYearDropList = useCallback(
     (data) => {
       setSelectYear(data);
+      setMonthList(GetMonthList(data));
       setYearModalOpen(false);
     },
     [selectYear, yearModalOpen],
@@ -805,9 +794,9 @@ function StatisticsStatus() {
   ]);
 
   //연도 데이터
-  const yearList = ["2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"];
+  const yearList = GetYearList();
   //월 데이터
-  const monthList = ["1", "2", "3", "1", "2", "3", "1", "2", "3"];
+  const [monthList, setMonthList] = useState(GetMonthList(selectYear));
 
   //농가 ID 데이터
   const farmIdList = [
@@ -866,6 +855,29 @@ function StatisticsStatus() {
   //트레이 데이터
   const trayCount = ["128", "64", "128", "64", "128", "64", "128", "64", "128", "64", "128", "64", "128", "64"];
 
+  // 통계현황 API
+  const { data: staticsInfo } = useStatics({
+    year: selectYear,
+    month: selectMonth,
+    day: startDate === null || endDate === null ? 0 : YYYYMMDDDash(startDate) + "||" + YYYYMMDDDash(endDate),
+    farmHouseId: searchSelect.farmHouseId,
+    farmHouseName: searchSelect.farmHouseName,
+    cropName: searchSelect.cropName,
+    cropKindOrderType: searchSelect.cropKindOrderType,
+    trayTotal: searchSelect.trayTotal,
+    seedQuantityOrderType: searchSelect.seedQuantityOrderType,
+    planterOutputOrderType: searchSelect.planterOutputOrderType,
+    sowingDateOrderType: searchSelect.sowingDateOrderType,
+    isShipmentCompletedOrderType: searchSelect.isShipmentCompletedOrderType,
+    page: page,
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log(err);
+    },
+  });
+
+  console.log(staticsInfo);
+
   return (
     <S.Wrap>
       <S.InfoBlock>
@@ -882,11 +894,11 @@ function StatisticsStatus() {
                 <>
                   <S.DateChooseWrap>
                     <S.YearDropDown onClick={handelYearDropDown}>
-                      <p>연도별</p>
+                      {selectYear === 0 ? <p>연도별</p> : <p>{selectYear}</p>}
                       <SelectArrowIcon width={24} height={24} />
                     </S.YearDropDown>
                     <S.MonthDropDown onClick={handelMonthDropDown}>
-                      <p>월별</p>
+                      {selectMonth === 0 ? <p>월별</p> : <p>{selectMonth}</p>}
                       <SelectArrowIcon width={24} height={24} />
                     </S.MonthDropDown>
                     {startDate === null || endDate === null ? (
@@ -904,7 +916,7 @@ function StatisticsStatus() {
                     )}
                   </S.DateChooseWrap>
                   {yearModalOpen && (
-                    <S.YearDropDownList>
+                    <S.YearMonthDropDownList className="top-div">
                       {yearList.map((data, index) => {
                         return (
                           <div
@@ -915,11 +927,10 @@ function StatisticsStatus() {
                           </div>
                         );
                       })}
-                    </S.YearDropDownList>
+                    </S.YearMonthDropDownList>
                   )}
-
                   {monthModalOpen && (
-                    <S.MonthDropDownList>
+                    <S.YearMonthDropDownList className="top-div month-dropdown-list">
                       {monthList.map((data, index) => {
                         return (
                           <div
@@ -930,7 +941,7 @@ function StatisticsStatus() {
                           </div>
                         );
                       })}
-                    </S.MonthDropDownList>
+                    </S.YearMonthDropDownList>
                   )}
                 </>
               )}
@@ -964,7 +975,6 @@ function StatisticsStatus() {
                   <p>농가 ID</p>
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
-
                 {isFarmId && (
                   <S.Dropdown style={{ width: "168px" }}>
                     <div className="input-wrap">
