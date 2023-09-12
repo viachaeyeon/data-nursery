@@ -20,6 +20,8 @@ import CheckBoxOff from "@images/common/check-icon-off.svg";
 import CheckBoxOn from "@images/common/check-icon-on.svg";
 import SearchIcon from "@images/statistics/icon-search.svg";
 import useStatics from "@src/hooks/queries/auth/useStatics";
+import useFarmHouseIdList from "@src/hooks/queries/auth/useFarmHouseIdList";
+import SearchDropdown from "./SearchDropdown";
 
 const S = {
   Wrap: styled.div`
@@ -438,77 +440,6 @@ const S = {
     justify-content: space-between;
     align-items: center;
   `,
-
-  DotBorder: styled.div`
-    border: 1px dashed ${({ theme }) => theme.basic.recOutline};
-    height: 1px;
-    width: 100%;
-  `,
-  Dropdown: styled.div`
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border: 1px solid ${({ theme }) => theme.basic.recOutline};
-    background-color: ${({ theme }) => theme.basic.whiteGray};
-    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
-    position: absolute;
-    top: 36px;
-
-    .input-wrap {
-      border-radius: 4px;
-      padding: 6px 8px 6px 12px;
-      height: 30px;
-      background-color: ${({ theme }) => theme.blackWhite.white};
-      display: flex;
-      gap: 6px;
-      align-items: center;
-
-      input {
-        border: none;
-        width: 100%;
-      }
-      input:focus-visible {
-        outline: none;
-      }
-      input::placeholder {
-        color: ${({ theme }) => theme.basic.gray60};
-        ${({ theme }) => theme.textStyle.h7Reguler};
-      }
-    }
-    .drop-down-list-wrap {
-      max-height: 272px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-
-      p {
-        display: flex;
-        align-items: center;
-        justify-content: start;
-      }
-    }
-    .drop-down-list {
-      display: flex;
-      padding: 4px;
-      gap: 8px;
-      border-radius: 4px;
-      align-items: center;
-
-      p {
-        color: ${({ theme }) => theme.basic.gray60};
-        ${({ theme }) => theme.textStyle.h7Reguler};
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
-    .drop-down-list:hover {
-      background-color: ${({ theme }) => theme.basic.gray20};
-    }
-  `,
 };
 
 function StatisticsStatus() {
@@ -518,9 +449,11 @@ function StatisticsStatus() {
   const [sowingDate, setSowingDate] = useState(true);
   const [state, setState] = useState(true);
 
+  // 통계현황 페이지
   const [page, setPage] = useState(1);
 
-  const [searchSelect, setSearchSelect] = useState({
+  // 통계현황 검색 조건
+  const [selectData, setSelectData] = useState({
     farmHouseId: "",
     farmHouseName: "",
     cropName: "",
@@ -531,6 +464,9 @@ function StatisticsStatus() {
     sowingDateOrderType: 1,
     isShipmentCompletedOrderType: 1,
   });
+
+  // Dropdown 검색어
+  const [searchFarmHouseId, setSearchFarmHouseId] = useState("");
 
   // 선택된 연도
   const [selectYear, setSelectYear] = useState(0);
@@ -860,19 +796,28 @@ function StatisticsStatus() {
     year: selectYear,
     month: selectMonth,
     day: startDate === null || endDate === null ? 0 : YYYYMMDDDash(startDate) + "||" + YYYYMMDDDash(endDate),
-    farmHouseId: searchSelect.farmHouseId,
-    farmHouseName: searchSelect.farmHouseName,
-    cropName: searchSelect.cropName,
-    cropKindOrderType: searchSelect.cropKindOrderType,
-    trayTotal: searchSelect.trayTotal,
-    seedQuantityOrderType: searchSelect.seedQuantityOrderType,
-    planterOutputOrderType: searchSelect.planterOutputOrderType,
-    sowingDateOrderType: searchSelect.sowingDateOrderType,
-    isShipmentCompletedOrderType: searchSelect.isShipmentCompletedOrderType,
+    farmHouseId: selectData.farmHouseId,
+    farmHouseName: selectData.farmHouseName,
+    cropName: selectData.cropName,
+    cropKindOrderType: selectData.cropKindOrderType,
+    trayTotal: selectData.trayTotal,
+    seedQuantityOrderType: selectData.seedQuantityOrderType,
+    planterOutputOrderType: selectData.planterOutputOrderType,
+    sowingDateOrderType: selectData.sowingDateOrderType,
+    isShipmentCompletedOrderType: selectData.isShipmentCompletedOrderType,
     page: page,
     successFn: () => {},
     errorFn: (err) => {
-      console.log(err);
+      alert(err);
+    },
+  });
+
+  // 통계현황 API
+  const { data: farmHouseIdList } = useFarmHouseIdList({
+    searchText: searchFarmHouseId,
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
     },
   });
 
@@ -976,23 +921,13 @@ function StatisticsStatus() {
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
                 {isFarmId && (
-                  <S.Dropdown style={{ width: "168px" }}>
-                    <div className="input-wrap">
-                      <SearchIcon width={18} height={18} />
-                      <input placeholder="검색어 입력" />
-                    </div>
-                    <S.DotBorder />
-                    <div className="drop-down-list-wrap">
-                      {farmIdList.map((data, index) => {
-                        return (
-                          <div className="drop-down-list" key={`farmId${index}`}>
-                            <CheckBoxOff width={24} height={24} />
-                            <p style={{ width: "120px" }}>{data}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </S.Dropdown>
+                  <SearchDropdown
+                    width={"168px"}
+                    type={"farmHouseId"}
+                    dataList={farmHouseIdList}
+                    selectData={selectData.farmHouseId}
+                    setSearchText={setSearchFarmHouseId}
+                  />
                 )}
               </div>
 
@@ -1002,23 +937,13 @@ function StatisticsStatus() {
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
                 {isFarmName && (
-                  <S.Dropdown style={{ width: "224px" }}>
-                    <div className="input-wrap">
-                      <SearchIcon width={18} height={18} />
-                      <input placeholder="검색어 입력" />
-                    </div>
-                    <S.DotBorder />
-                    <div className="drop-down-list-wrap">
-                      {farmNameList.map((data, index) => {
-                        return (
-                          <div className="drop-down-list" key={`farmName${index}`}>
-                            <CheckBoxOff width={24} height={24} />
-                            <p style={{ width: "120px" }}>{data}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </S.Dropdown>
+                  <SearchDropdown
+                    width={"224px"}
+                    type={"farmHouseName"}
+                    dataList={farmHouseIdList}
+                    selectData={selectData.farmHouseName}
+                    setSearchText={setSearchFarmHouseId}
+                  />
                 )}
               </div>
 
@@ -1029,23 +954,13 @@ function StatisticsStatus() {
                 </S.HeaderDropDown>
 
                 {isCropsName && (
-                  <S.Dropdown style={{ width: "154px", height: "270px" }}>
-                    <div className="input-wrap">
-                      <SearchIcon width={18} height={18} />
-                      <input placeholder="검색어 입력" />
-                    </div>
-                    <S.DotBorder />
-                    <div className="drop-down-list-wrap">
-                      {cropsName.map((data, index) => {
-                        return (
-                          <div className="drop-down-list" key={`cropsName${index}`}>
-                            <CheckBoxOff width={24} height={24} />
-                            <p style={{ width: "120px" }}>{data}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </S.Dropdown>
+                  <SearchDropdown
+                    width={"154px"}
+                    type={"cropName"}
+                    dataList={farmHouseIdList}
+                    selectData={selectData.cropName}
+                    setSearchText={setSearchFarmHouseId}
+                  />
                 )}
               </div>
 
@@ -1062,23 +977,13 @@ function StatisticsStatus() {
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
                 {isTrayCount && (
-                  <S.Dropdown style={{ width: "154px", height: "350px" }}>
-                    <div className="input-wrap">
-                      <SearchIcon width={18} height={18} />
-                      <input placeholder="검색어 입력" />
-                    </div>
-                    <S.DotBorder />
-                    <div className="drop-down-list-wrap">
-                      {trayCount.map((data, index) => {
-                        return (
-                          <div className="drop-down-list" key={`trayCount${index}`}>
-                            <CheckBoxOff width={24} height={24} />
-                            <p style={{ width: "120px" }}>{data}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </S.Dropdown>
+                  <SearchDropdown
+                    width={"154px"}
+                    type={"trayTotal"}
+                    dataList={farmHouseIdList}
+                    selectData={selectData.trayTotal}
+                    setSearchText={setSearchFarmHouseId}
+                  />
                 )}
               </div>
 

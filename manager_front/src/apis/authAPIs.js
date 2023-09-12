@@ -26,7 +26,21 @@ export const getStatics = async (
     );
     return res.data;
   } catch (error) {
-    console.log(error);
     throw new Error(error.response?.status || "통계현황 정보를 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+// 농가ID 목록
+export const getFarmHouseIdList = async (searchText) => {
+  try {
+    const res = await axios.get(
+      process.env.NEXT_PUBLIC_END_POINT + `/api/admin/auth/search/farm_house_id?search=${searchText}`,
+      {
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "농가ID 정보를 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
