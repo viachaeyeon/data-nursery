@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ScrollContainer from "react-indiana-drag-scroll";
 import Image from "next/image";
@@ -11,7 +11,7 @@ import WorkTab from "@components/dashboard/WorkTab";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import TodayOutputIcon from "@images/dashboard/icon-output.svg";
 import UseTimeIcon from "@images/dashboard/icon-time.svg";
-import { NumberFormatting } from "@utils/Formatting";
+import { NumberFormatting, HourFormatting, MinFormatting } from "@utils/Formatting";
 
 const S = {
   Wrap: styled.div`
@@ -161,8 +161,6 @@ function MainPage() {
     },
   });
 
-  // console.log(dashBoardInfo);
-
   return (
     <MainLayout pageName={"main"}>
       <S.Wrap>
@@ -213,13 +211,17 @@ function MainPage() {
               <div className="time-wrap">
                 <div className="data-wrap">
                   <p className="bold-text">
-                    {!!dashBoardInfo?.today_planter_usage.time ? dashBoardInfo?.today_planter_usage.time : 0}
+                    {!!dashBoardInfo?.today_planter_usage.time
+                      ? HourFormatting(dashBoardInfo?.today_planter_usage.time)
+                      : 0}
                   </p>
                   <p className="suffix-text">시간</p>
                 </div>
                 <div className="data-wrap">
                   <p className="bold-text">
-                    {!!dashBoardInfo?.today_planter_usage.time ? dashBoardInfo?.today_planter_usage.time : 0}
+                    {!!dashBoardInfo?.today_planter_usage.time
+                      ? MinFormatting(dashBoardInfo?.today_planter_usage.time)
+                      : 0}
                   </p>
                   <p className="suffix-text">분</p>
                 </div>

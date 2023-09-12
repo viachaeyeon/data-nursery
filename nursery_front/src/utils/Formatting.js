@@ -3,6 +3,18 @@ export function NumberFormatting(number) {
   return formatter.format(number);
 }
 
+export function HourFormatting(second) {
+  return parseInt(second / 3600);
+}
+
+export function MinFormatting(second) {
+  if (second % 60 > 0) {
+    return parseInt((second % 3600) / 60) + 1;
+  } else {
+    return parseInt((second % 3600) / 60);
+  }
+}
+
 export function ImagePathCheck(imagePath) {
   const path = imagePath?.match(/^https?:\/\/[^/]*(\/[^?#]*)/i);
 
