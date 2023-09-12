@@ -1,2 +1,3 @@
 export const staticsKey = "staticsKey";
-export const farmHouseIdKey = "farmHouseIdKey";
+export const farmHouseIdListKey = "farmHouseIdListKey";
+export const farmHouseNameListKey = "farmHouseNameListKey";

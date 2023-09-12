@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getFarmHouseIdList } from "@apis/authAPIs";
+import { getTrayTotalList } from "@apis/planterAPIs";
 
-import { farmHouseIdListKey } from "@src/utils/query-keys/AuthQueryKeys";
+import { trayTotalListKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
-export default function useFarmHouseIdList({ searchText, errorFn, successFn }) {
-  return useQuery([farmHouseIdListKey, searchText], () => getFarmHouseIdList(searchText), {
+export default function useTrayTotalList({ searchText, errorFn, successFn }) {
+  return useQuery([trayTotalListKey, searchText], () => getTrayTotalList(searchText), {
     staleTime: 10 * (60 * 1000), // 10 mins
     cacheTime: 15 * (60 * 1000), // 15 mins
     retry: 0,

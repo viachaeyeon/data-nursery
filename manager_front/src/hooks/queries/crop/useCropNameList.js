@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getFarmHouseIdList } from "@apis/authAPIs";
+import { getCropNameList } from "@apis/cropAPIs";
 
-import { farmHouseIdListKey } from "@src/utils/query-keys/AuthQueryKeys";
+import { cropNameListKey } from "@src/utils/query-keys/CropQueryKeys";
 
-export default function useFarmHouseIdList({ searchText, errorFn, successFn }) {
-  return useQuery([farmHouseIdListKey, searchText], () => getFarmHouseIdList(searchText), {
+export default function useCropNameList({ searchText, errorFn, successFn }) {
+  return useQuery([cropNameListKey, searchText], () => getCropNameList(searchText), {
     staleTime: 10 * (60 * 1000), // 10 mins
     cacheTime: 15 * (60 * 1000), // 15 mins
     retry: 0,

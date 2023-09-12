@@ -22,6 +22,9 @@ import SearchIcon from "@images/statistics/icon-search.svg";
 import useStatics from "@src/hooks/queries/auth/useStatics";
 import useFarmHouseIdList from "@src/hooks/queries/auth/useFarmHouseIdList";
 import SearchDropdown from "./SearchDropdown";
+import useFarmHouseNameList from "@src/hooks/queries/auth/useFarmHouseNameList";
+import useCropNameList from "@src/hooks/queries/crop/useCropNameList";
+import useTrayTotalList from "@src/hooks/queries/planter/useTrayTotalList";
 
 const S = {
   Wrap: styled.div`
@@ -467,6 +470,9 @@ function StatisticsStatus() {
 
   // Dropdown 검색어
   const [searchFarmHouseId, setSearchFarmHouseId] = useState("");
+  const [searchFarmHouseName, setSearchFarmHouseName] = useState("");
+  const [searchCropName, setSearchCropName] = useState("");
+  const [searchTrayTotal, setSearchTrayTotal] = useState("");
 
   // 선택된 연도
   const [selectYear, setSelectYear] = useState(0);
@@ -734,63 +740,6 @@ function StatisticsStatus() {
   //월 데이터
   const [monthList, setMonthList] = useState(GetMonthList(selectYear));
 
-  //농가 ID 데이터
-  const farmIdList = [
-    "PF_0021350",
-    "PF_0021351",
-    "PF_0021352",
-    "PF_0021352",
-    "PF_0021353",
-    "PF_0021354",
-    "PF_0021355",
-    "PF_0021356",
-    "PF_0021350",
-    "PF_0021351",
-    "PF_0021352",
-    "PF_0021352",
-    "PF_0021353",
-    "PF_0021354",
-    "PF_0021355",
-    "PF_0021356",
-  ];
-
-  //농가명 데이터
-  const farmNameList = [
-    "하나공정육묘장영농조합법인dddddd",
-    "김해고송육묘",
-    "보천육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-    "대곡제일육묘장",
-  ];
-
-  //작물명 데이터
-  const cropsName = [
-    "토마토",
-    "수박",
-    "오이",
-    "고추",
-    "상추",
-    "복숭아",
-    "마늘",
-    "당근",
-    "고추",
-    "상추",
-    "복숭아",
-    "마늘",
-    "당근",
-  ];
-
-  //트레이 데이터
-  const trayCount = ["128", "64", "128", "64", "128", "64", "128", "64", "128", "64", "128", "64", "128", "64"];
-
   // 통계현황 API
   const { data: staticsInfo } = useStatics({
     year: selectYear,
@@ -812,9 +761,36 @@ function StatisticsStatus() {
     },
   });
 
-  // 통계현황 API
+  // 농가ID 목록 API
   const { data: farmHouseIdList } = useFarmHouseIdList({
     searchText: searchFarmHouseId,
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 농가명 목록 API
+  const { data: farmHouseNameList } = useFarmHouseNameList({
+    searchText: searchFarmHouseName,
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 작물명 목록 API
+  const { data: cropNameList } = useCropNameList({
+    searchText: searchCropName,
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 트레이 총 홀 수 목록 API
+  const { data: trayTotalList } = useTrayTotalList({
+    searchText: searchTrayTotal,
     successFn: () => {},
     errorFn: (err) => {
       alert(err);
@@ -926,6 +902,7 @@ function StatisticsStatus() {
                     type={"farmHouseId"}
                     dataList={farmHouseIdList}
                     selectData={selectData.farmHouseId}
+                    searchText={searchFarmHouseId}
                     setSearchText={setSearchFarmHouseId}
                   />
                 )}
@@ -940,9 +917,10 @@ function StatisticsStatus() {
                   <SearchDropdown
                     width={"224px"}
                     type={"farmHouseName"}
-                    dataList={farmHouseIdList}
+                    dataList={farmHouseNameList}
                     selectData={selectData.farmHouseName}
-                    setSearchText={setSearchFarmHouseId}
+                    searchText={searchFarmHouseName}
+                    setSearchText={setSearchFarmHouseName}
                   />
                 )}
               </div>
@@ -952,14 +930,14 @@ function StatisticsStatus() {
                   <p>작물명</p>
                   <HeaderSelectArrowIcon width={20} height={20} />
                 </S.HeaderDropDown>
-
                 {isCropsName && (
                   <SearchDropdown
                     width={"154px"}
                     type={"cropName"}
-                    dataList={farmHouseIdList}
+                    dataList={cropNameList}
                     selectData={selectData.cropName}
-                    setSearchText={setSearchFarmHouseId}
+                    searchText={searchCropName}
+                    setSearchText={setSearchCropName}
                   />
                 )}
               </div>
@@ -980,9 +958,10 @@ function StatisticsStatus() {
                   <SearchDropdown
                     width={"154px"}
                     type={"trayTotal"}
-                    dataList={farmHouseIdList}
+                    dataList={trayTotalList}
                     selectData={selectData.trayTotal}
-                    setSearchText={setSearchFarmHouseId}
+                    searchText={searchTrayTotal}
+                    setSearchText={setSearchTrayTotal}
                   />
                 )}
               </div>

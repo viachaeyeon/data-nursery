@@ -85,13 +85,14 @@ const S = {
   `,
 };
 
-function SearchDropdown({ width, type, dataList, selectData, setSearchText }) {
+function SearchDropdown({ width, type, dataList, selectData, searchText, setSearchText }) {
   return (
     <S.Dropdown width={width}>
       <div className="input-wrap">
         <SearchIcon width={18} height={18} />
         <input
           placeholder="검색어 입력"
+          value={searchText}
           onChange={(e) => {
             setSearchText(e.target.value);
           }}
