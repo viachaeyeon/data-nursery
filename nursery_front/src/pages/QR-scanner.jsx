@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useRegisterPlanter from "@hooks/queries/planter/useRegisterPlanter";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultButton from "@components/common/button/DefaultButton";
@@ -14,6 +15,7 @@ import FontSmallDefaultButton from "@components/common/button/FontSmallDefaultBu
 import QRCodeImage from "@images/login/img-qrcode.svg";
 import { defaultButtonColor, greyButtonColor } from "@utils/ButtonColor";
 import CloseIcon from "@images/common/close-icon.svg";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -124,6 +126,7 @@ const S = {
 
 function QRScannerPage() {
   const router = useRouter();
+  const clearQueries = useAllCacheClear();
   const [step, setStep] = useState("first");
 
   const [qrCodeScanner, setQRCodeScanner] = useState(null);
@@ -212,7 +215,7 @@ function QRScannerPage() {
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 

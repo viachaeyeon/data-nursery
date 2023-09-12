@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useWorkHistoryList from "@hooks/queries/planter/useWorkHistoryList";
@@ -19,6 +20,7 @@ import { DateDotFormatting, DateKoreanFormatting, ImagePathCheck, NumberFormatti
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import { workHistoryKey } from "@utils/query-keys/PlanterQueryKeys";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -272,6 +274,7 @@ const S = {
 
 function WorkHistoryPage() {
   const router = useRouter();
+  const clearQueries = useAllCacheClear();
   const invalidateQueries = useInvalidateQueries();
 
   // inView : 요소가 뷰포트에 진입했는지 여부
@@ -337,7 +340,7 @@ function WorkHistoryPage() {
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 

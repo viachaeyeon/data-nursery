@@ -2,11 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import styled, { css } from "styled-components";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
+import { useRouter } from "next/router";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useWorkingWorkInfo from "@hooks/queries/planter/useWorkingWorkInfo";
 import useWaitWorkList from "@hooks/queries/planter/useWaitWorkList";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import WorkContent from "@components/dashboard/WorkContent";
 import WaitContent from "@components/dashboard/WaitContent";
@@ -14,6 +16,7 @@ import WaitContent from "@components/dashboard/WaitContent";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import theme from "@src/styles/theme";
 import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -95,6 +98,8 @@ const S = {
 };
 
 function WorkTab() {
+  const router = useRouter();
+  const clearQueries = useAllCacheClear();
   const invalidateQueries = useInvalidateQueries();
 
   const [selectTab, setSelectTab] = useState("working");
@@ -127,7 +132,7 @@ function WorkTab() {
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 

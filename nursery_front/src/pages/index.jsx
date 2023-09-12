@@ -161,6 +161,8 @@ function MainPage() {
     },
   });
 
+  // console.log(dashBoardInfo);
+
   return (
     <MainLayout pageName={"main"}>
       <S.Wrap>

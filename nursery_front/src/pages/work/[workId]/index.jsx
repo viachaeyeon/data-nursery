@@ -8,6 +8,7 @@ import useWorkingWorkInfo from "@hooks/queries/planter/useWorkingWorkInfo";
 import useWorkInfo from "@hooks/queries/planter/useWorkInfo";
 import useUpdateWorkStatus from "@hooks/queries/planter/useWorkStatusUpdate";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultInput from "@components/common/input/DefaultInput";
@@ -15,9 +16,9 @@ import DefaultInput from "@components/common/input/DefaultInput";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import { defaultButtonColor } from "@utils/ButtonColor";
 import { DateFormatting } from "@utils/Formatting";
-import PauseIcon from "@images/dashboard/icon-pause.svg";
 import CheckIcon from "@images/work/icon-check.svg";
 import { waitWorkListKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -59,6 +60,7 @@ const S = {
 
 function WorkInfoPage({ workId }) {
   const router = useRouter();
+  const clearQueries = useAllCacheClear();
   const invalidateQueries = useInvalidateQueries();
 
   // BottomButton 정보
@@ -79,7 +81,7 @@ function WorkInfoPage({ workId }) {
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 
