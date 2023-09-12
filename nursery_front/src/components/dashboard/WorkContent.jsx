@@ -14,7 +14,7 @@ import { borderButtonColor } from "@utils/ButtonColor";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import theme from "@src/styles/theme";
-import { dashBoardKey, workHistoryKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
+import { dashBoardKey, statisticsKey, workHistoryKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
 import DashboardArrowIcon from "@images/dashboard/dashboard-arrow-icon.svg";
 
 const S = {
@@ -148,6 +148,8 @@ function WorkContent({ workingWorkInfo }) {
         invalidateQueries([dashBoardKey]);
         // 작업이력 정보 다시 불러오기 위해 쿼리키 삭제
         invalidateQueries([workHistoryKey]);
+        // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
+        invalidateQueries([statisticsKey]);
         setWorkComplete(!workComplete);
       }
     },

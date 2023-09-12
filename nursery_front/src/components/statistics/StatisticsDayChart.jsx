@@ -4,31 +4,43 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 import theme from "@src/styles/theme";
+import { NumberFormatting } from "@utils/Formatting";
 
 const S = {
   Wrap: styled.div`
     height: 200px;
     width: 100%;
-    /* display: flex;
-    flex-direction: column;
-    gap: 37px; */
   `,
 };
 
-function StatisticsChart({ dailyOutput }) {
+function StatisticsDayChart({ dailyOutput, selectDate, isOutput }) {
   const graphRef = useRef(null);
   let graphInstance = null;
 
-  //   const data1 = [];
-  //   for (let i = 0; i < 12; i++) {
-  //     const randomNumber = Math.floor(Math.random() * 50) + 1;
-  //     data1.push(randomNumber);
-  //   }
-
   useEffect(() => {
-    if (dailyOutput === 0) {
+    if (!dailyOutput) {
       return;
     }
+
+    // X축 라벨 및 데이터 생성
+    const dayLabel = []; // x축 라벨
+    const outputArray = []; // 데이터
+
+    const date = new Date(selectDate.year, selectDate.month - 1, 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+
+    for (let day = 1; day <= lastDay; day++) {
+      dayLabel.push(day);
+
+      if (isOutput) {
+        if (dailyOutput.filter((output) => output.day === day).length !== 0) {
+          outputArray.push(dailyOutput.filter((output) => output.day === day)[0].output);
+        } else {
+          outputArray.push(0);
+        }
+      }
+    }
+
     const graphCtx = graphRef.current?.getContext("2d");
 
     const annotationline = {
@@ -40,36 +52,34 @@ function StatisticsChart({ dailyOutput }) {
           ctx.beginPath();
           ctx.moveTo(chart.tooltip._active[0].element.x, chart.chartArea.top);
           ctx.lineTo(chart.tooltip._active[0].element.x, chart.chartArea.bottom);
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 1;
           ctx.setLineDash([2, 2]); // 세로선 점선 표시
-          ctx.strokeStyle = "#C2D6E1"; // 세로 점선 색상
+          ctx.strokeStyle = theme.basic.grey30; // 세로 점선 색상
           ctx.stroke();
           ctx.restore();
         }
       },
     };
 
-    console.log(dailyOutput);
-
     const graphChart = () => {
       Chart.register(...registerables);
       graphInstance = new Chart(graphCtx, {
         type: "line",
         data: {
-          labels: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+          labels: dayLabel,
           datasets: [
             {
-              data: dailyOutput,
-              label: "토마토",
+              data: outputArray,
+              // label: (day) => `${day}일`,
               fill: false,
               lineTension: 0.6,
-              pointHoverRadius: 6,
-              borderWidth: 3,
+              pointHoverRadius: 4,
+              borderWidth: 2.5,
               borderColor: "#FB97A3",
               pointBackgroundColor: "#FB97A3",
               pointBorderColor: "#4F5B6C",
               pointRadius: 0,
-              pointHoverBorderWidth: 5,
+              pointHoverBorderWidth: 3,
               pointHoverBackgroundColor: "#fff",
             },
           ],
@@ -93,12 +103,14 @@ function StatisticsChart({ dailyOutput }) {
               title: {
                 display: true,
                 align: "end",
-                text: "월",
+                text: "일",
+                color: theme.basic.grey40,
               },
               ticks: {
                 align: "start",
-                stepSize: 5,
+                stepSize: 10,
                 color: theme.basic.grey40,
+                style: "normal",
               },
             },
             y: {
@@ -109,8 +121,9 @@ function StatisticsChart({ dailyOutput }) {
               },
               ticks: {
                 stepSize: 10,
+                color: theme.basic.grey40,
               },
-              min: 1,
+              min: 0,
             },
           },
           interaction: {
@@ -125,22 +138,22 @@ function StatisticsChart({ dailyOutput }) {
               display: false,
             },
             tooltip: {
-              backgroundColor: "#4F5B6C",
+              backgroundColor: theme.basic.grey60,
               borderRadius: 8,
-              padding: 16,
+              padding: (6, 16),
               xAlign: "center",
               yAlign: "bottom",
               displayColors: false,
               titleAlign: "center",
               bodyAlign: "center",
-              titleColor: "#C2D6E1",
+              titleColor: theme.basic.grey30,
               bodyColor: "#fff",
               callbacks: {
                 title: function (context) {
-                  return context[0].dataset.label;
+                  return context[0].label + "일";
                 },
                 beforeBody: function (context) {
-                  return context[0].formattedValue + "개";
+                  return NumberFormatting(context[0].formattedValue) + "개";
                 },
                 label: function (context) {
                   return "";
@@ -171,4 +184,4 @@ function StatisticsChart({ dailyOutput }) {
   );
 }
 
-export default StatisticsChart;
+export default StatisticsDayChart;

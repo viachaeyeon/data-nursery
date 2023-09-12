@@ -20,7 +20,8 @@ const textStyle = {
   h7Bold: "font-weight: 700; font-size: 16px; line-height: 18px;",
   h7Regular: "font-weight: 400; font-size: 16px; line-height: 18px;",
   h8Regular: "font-weight: 400; font-size: 14px; line-height: 16px;",
-  h9Regular: "font-weight: 400; font-size: 12px; line-height: 10.1px; letter-spacing: -2%; paragraph-spacing: 10.14px",
+  h9Regular:
+    "font-weight: 400; font-size: 12px; line-height: 10.1px; letter-spacing: -0.24px; paragraph-spacing: 10.14px;",
 };
 
 const basic = {

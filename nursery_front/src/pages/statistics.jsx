@@ -4,17 +4,20 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 
 import useStatistics from "@hooks/queries/planter/useStatistics";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultYearMonthSelect from "@components/common/calendar/DefaultYearMonthSelect";
 import DefaultYearMonthList from "@components/common/calendar/DefaultYearMonthList";
-import StatisticsChart from "@components/statistics/StatisticsChart";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import theme from "@src/styles/theme";
 import { ImagePathCheck, NumberFormatting } from "@utils/Formatting";
 import PopularCropKindIcon from "@images/common/popular-crop-kind.svg";
 import NoneIcon from "@images/dashboard/none-icon.svg";
+import StatisticsDayChart from "@components/statistics/StatisticsDayChart";
+import { statisticsKey } from "@utils/query-keys/PlanterQueryKeys";
+import StatisticsMonthChart from "@components/statistics/StatisticsMonthChart";
 
 const S = {
   Wrap: styled.div`
@@ -96,9 +99,34 @@ const S = {
     margin-top: 24px;
     background-color: #ffffff;
     border-radius: 8px;
-    padding: 24px;
-    /* height: 329px; */
+    padding: 24px 24px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
     filter: drop-shadow(4px 4px 16px rgba(89, 93, 107, 0.1));
+
+    .output-title {
+      ${({ theme }) => theme.textStyle.h5Bold}
+    }
+
+    .y-tick-text {
+      ${({ theme }) => theme.textStyle.h9Regular}
+      color: ${({ theme }) => theme.basic.grey40};
+    }
+
+    ${(props) =>
+      props.isOutput
+        ? css`
+            .output-title {
+              color: ${({ theme }) => theme.basic.grey60};
+            }
+          `
+        : css`
+            .output-title {
+              color: ${({ theme }) => theme.basic.grey30};
+            }
+          `}
   `,
   PopularCropKindIconWrap: styled.div`
     width: 100%;
@@ -189,11 +217,25 @@ const S = {
             background-color: #ebebf5;
           `}
   `,
+  NoDataText: styled.p`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff50;
+    top: 0;
+    left: 0;
+
+    ${({ theme }) => theme.textStyle.h6Bold}
+    color: ${({ theme }) => theme.basic.grey60};
+  `,
 };
 
 function StatisticsPage() {
   const router = useRouter();
-  const [dailyOutput, setDailyOutput] = useState([]);
+  const invalidateQueries = useInvalidateQueries();
 
   // 선택한 년도, 월
   const [date, setDate] = useState({
@@ -214,6 +256,7 @@ function StatisticsPage() {
         ...prev,
         [name]: value,
       }));
+      invalidateQueries([statisticsKey]);
     },
     [date],
   );
@@ -233,24 +276,11 @@ function StatisticsPage() {
   const { data: statisticsInfo } = useStatistics({
     year: date.year,
     month: date.month,
-    successFn: (res) => {
-      const outputArray = [];
-
-      for (let i = 1; i <= 12; i++) {
-        if (res.daily_output.filter((output) => output.day === i).length !== 0) {
-          outputArray.push(res.daily_output.filter((output) => output.day === i)[0].output);
-        } else {
-          outputArray.push(0);
-        }
-      }
-      setDailyOutput(outputArray);
-    },
+    successFn: () => {},
     errorFn: (err) => {
       alert(err);
     },
   });
-
-  console.log(statisticsInfo);
 
   return (
     <MainLayout
@@ -265,7 +295,8 @@ function StatisticsPage() {
         </S.DateSelectWrap>
         <S.ContentWrap>
           <S.SelectedDateWrap>
-            <p>{date.month}월 생산량</p>
+            {date.month === 0 && <p>{date.year}년 생산량</p>}
+            {date.month !== 0 && <p>{date.month}월 생산량</p>}
           </S.SelectedDateWrap>
           <S.TotalValueWrap>
             <div className="row-layout">
@@ -278,38 +309,59 @@ function StatisticsPage() {
               <p className="suffix-text">회</p>
             </div>
           </S.TotalValueWrap>
-          <S.MonthOutputWrap>
-            <StatisticsChart dailyOutput={dailyOutput} />
+          <S.MonthOutputWrap isOutput={statisticsInfo?.total_output !== 0}>
+            {date.month === 0 && <p className="output-title">년간 생산량</p>}
+            {date.month !== 0 && <p className="output-title">월간 생산량</p>}
+            <p className="y-tick-text">개 (단위 : 천)</p>
+            {date.month === 0 && (
+              <StatisticsMonthChart
+                dailyOutput={statisticsInfo?.daily_output}
+                isOutput={statisticsInfo?.total_output !== 0}
+              />
+            )}
+            {date.month !== 0 && (
+              <StatisticsDayChart
+                dailyOutput={statisticsInfo?.daily_output}
+                selectDate={date}
+                isOutput={statisticsInfo?.total_output !== 0}
+              />
+            )}
+            {statisticsInfo?.total_output === 0 && <S.NoDataText>완료된 작업이 없습니다</S.NoDataText>}
           </S.MonthOutputWrap>
-          <S.PopularCropKindIconWrap>
-            <PopularCropKindIcon />
-            <p className="popular-crop-kind-text">인기품종</p>
-          </S.PopularCropKindIconWrap>
-          {statisticsInfo?.popular_crop.map((crop, index) => {
-            return (
-              <S.PopularCropKindContent key={`crop${index}`}>
-                <p className="index-text">{index + 1}</p>
-                <div className="info-wrap">
-                  <S.CropImage isCropImage={!!crop.image}>
-                    {!!crop.image ? (
-                      <Image src={ImagePathCheck(crop.image)} layout="fill" alt="crop image" />
-                    ) : (
-                      <NoneIcon width={30} height={30} fill={"#BCBCD9"} />
-                    )}
-                  </S.CropImage>
-                  <div className="text-wrap">
-                    <p className="crop-kind-text">{crop.name}</p>
-                    <div className="count-text-wrap">
-                      <p className="count-text">{NumberFormatting(crop.output)}</p>
-                      <p className="crop-kind-text suffix-text">개</p>
+          {statisticsInfo?.total_output !== 0 && (
+            <>
+              <S.PopularCropKindIconWrap>
+                <PopularCropKindIcon />
+                <p className="popular-crop-kind-text">인기품종</p>
+              </S.PopularCropKindIconWrap>
+              {statisticsInfo?.popular_crop.map((crop, index) => {
+                return (
+                  <S.PopularCropKindContent key={`crop${index}`}>
+                    <p className="index-text">{index + 1}</p>
+                    <div className="info-wrap">
+                      <S.CropImage isCropImage={!!crop.image}>
+                        {!!crop.image ? (
+                          <Image src={ImagePathCheck(crop.image)} layout="fill" alt="crop image" />
+                        ) : (
+                          <NoneIcon width={30} height={30} fill={"#BCBCD9"} />
+                        )}
+                      </S.CropImage>
+                      <div className="text-wrap">
+                        <p className="crop-kind-text">{crop.name}</p>
+                        <div className="count-text-wrap">
+                          <p className="count-text">{NumberFormatting(crop.output)}</p>
+                          <p className="crop-kind-text suffix-text">개</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </S.PopularCropKindContent>
-            );
-          }, [])}
+                  </S.PopularCropKindContent>
+                );
+              }, [])}
+            </>
+          )}
         </S.ContentWrap>
         <DefaultYearMonthList
+          isStatistics={true}
           date={date}
           yearMonthOpen={yearMonthOpen}
           handleDateChange={handleDateChange}

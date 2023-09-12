@@ -9,7 +9,7 @@ export default function useStatistics({ year, month, errorFn, successFn }) {
     staleTime: 10 * (60 * 1000), // 10 mins
     cacheTime: 15 * (60 * 1000), // 15 mins
     retry: 0,
-    enabled: !!year && !!month ? true : false,
+    enabled: true,
     refetchOnWindowFocus: true,
     refetchOnMount: "always",
     refetchOnReconnect: false,
