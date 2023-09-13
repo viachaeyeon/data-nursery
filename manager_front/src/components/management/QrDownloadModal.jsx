@@ -146,13 +146,14 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
 
   console.log("qrDownloadModalOpen", qrDownloadModalOpen);
 
-  const qrImage = "http://localhost:8000" + qrDownloadModalOpen?.data?.data?.qr_image;
+  const qrImage = "http://localhost:8000" + qrDownloadModalOpen?.data?.data?.planter?.qrcode;
+  // const qrImage = "http://localhost:8000" + qrDownloadModalOpen?.data?.data?.qr_image;
 
   console.log("qrImage", qrImage);
 
   const qrCodeDownloadClick = useCallback(() => {
     let url = qrImage;
-    saveAs(url, qrDownloadModalOpen?.data?.data?.serial_number + "-qrcode");
+    saveAs(url, qrDownloadModalOpen?.data?.data?.planter?.serial_number + "-qrcode");
   }, [qrImage]);
 
   return (
@@ -170,7 +171,7 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
           <div className="input-inner">
             <p className="title-info">농가명</p>
             <div className="input-wrap">
-              <input value={qrDownloadModalOpen.data.data.farm_name} />
+              <input value={qrDownloadModalOpen.data.data.name} />
             </div>
           </div>
           <div className="input-inner">
