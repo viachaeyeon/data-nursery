@@ -462,6 +462,7 @@ def get_farm_house_list(
             producer_name=farm_house.producer_name,
             address=farm_house.address,
             phone=farm_house.phone,
+            user_id=farm_house.owner_id,
             planter=planter_response,
             last_planter_status=last_status_response,
         )
