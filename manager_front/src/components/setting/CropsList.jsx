@@ -186,15 +186,8 @@ function CropsList() {
     alert("선택삭제");
   }, []);
 
-  //작물 추가 정보
-  const [cropsName, setCropsName] = useState("");
-  const [cropsColor, setCropsColor] = useState("#929FA6");
-
   //작물 추가 모달 오픈
   const [addCropsModalOpen, setAddCropsModalOpen] = useState(false);
-
-  //작물 이미지 추가
-  const [image, setImage] = useState(null);
 
   //작물 삭제 모달 오픈
   const [deleteCropsModalOpen, setDeleteCropsModalOpen] = useState({
@@ -368,16 +361,7 @@ function CropsList() {
       {/* 작물추가 모달 */}
       {addCropsModalOpen && (
         <div className="modal-wrap">
-          <AddCropsModal
-            addCropsModalOpen={addCropsModalOpen}
-            setAddCropsModalOpen={setAddCropsModalOpen}
-            cropsName={cropsName}
-            setCropsName={setCropsName}
-            cropsColor={cropsColor}
-            setCropsColor={setCropsColor}
-            image={image}
-            setImage={setImage}
-          />
+          <AddCropsModal addCropsModalOpen={addCropsModalOpen} setAddCropsModalOpen={setAddCropsModalOpen} />
         </div>
       )}
 
