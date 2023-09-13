@@ -278,7 +278,9 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
             <input
               placeholder="연락처를 입력하세요."
               value={editPhone}
-              onChange={(e) => setEditPhone(e.target.value.replace(/[^0-9]/g, "").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`))}
+              onChange={(e) =>
+                setEditPhone(e.target.value.replace(/[^0-9]/g, "").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`))
+              }
             />
           </div>
           <p className="title-info">주소</p>
