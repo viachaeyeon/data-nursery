@@ -83,21 +83,19 @@ const S = {
   `,
 };
 
-function AddFarmModal({ deleteModalOpen, setDeleteModalOpen,checkArray }) {
+function AddFarmModal({ deleteModalOpen, setDeleteModalOpen, checkArray }) {
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const invalidateQueries = useInvalidateQueries();
 
-  console.log("checkArray",checkArray);
-  console.log("deleteModalOpen",deleteModalOpen?.data?.data?.id);
+  console.log("checkArray", checkArray);
+  console.log("deleteModalOpen", deleteModalOpen?.data?.data?.id);
 
   const closeModal = useCallback(() => {
     setDeleteModalOpen({ open: false, data: undefined });
   }, []);
 
-
   //체크한 선택삭제는 배열로 들어가고
   //개별삭제는 딕셔너리로 들어옴 data.id값으로 삭제
-
 
   const handleDeleteOkClick = useCallback(() => {
     // alert("확인 클릭");

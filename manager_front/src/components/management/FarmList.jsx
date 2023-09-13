@@ -166,36 +166,40 @@ const S = {
       width: 100%;
     }
 
-    .header-table{
+    .header-table {
       width: 120px;
     }
-    .header-table-second{
+    .header-table-second {
       width: 140px;
     }
-    .header-table-third{
-      width:200px;
+    .header-table-third {
+      width: 200px;
     }
-    .header-table-fourth{
+    .header-table-fourth {
       width: 130px;
     }
-    .header-table-eighth{
+    .header-table-eighth {
       width: 160px;
     }
 
-    .table-first{
+    .table-first {
       width: 100px;
     }
-    .table-second{
+    .table-second {
       width: 150px;
     }
-    .table-third{
-      width:200px;
+    .table-third {
+      width: 200px;
     }
-    .table-text{
+    .table-text {
       width: 120px;
     }
-    .table-eighth{
+    .table-eighth {
       width: 90px;
+    }
+
+    .address {
+      display: block !important;
     }
   `,
 
@@ -344,6 +348,8 @@ function FarmList() {
   const [isNameOrderBy, setIsNameOrderBy] = useState(0);
   const [isStateOrderBy, setIsStateOrderBy] = useState(0);
 
+  const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
+
   const { data: farmhouseList } = useFarmAllList({
     nameOrder: isNameOrderBy,
     statusOrder: isStateOrderBy,
@@ -356,7 +362,6 @@ function FarmList() {
   });
 
   console.log("farmhouseList", farmhouseList);
-
 
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
@@ -416,8 +421,6 @@ function FarmList() {
     },
     [optionModalOpen],
   );
-
-
 
   // 농가추가 모달
   const handleAddFarmModalClick = useCallback(() => {
@@ -539,12 +542,11 @@ function FarmList() {
 
   // console.log("checkArray",checkArray);
 
-    // 선택삭제 클릭
-    const handelSelectDeleteClick = useCallback(() => {
-      alert(checkArray);
-      setDeleteModalOpen({ open: true, data: {data:{id : checkArray}} });
-    }, [checkArray]);
-
+  // 선택삭제 클릭
+  const handelSelectDeleteClick = useCallback(() => {
+    alert(checkArray);
+    setDeleteModalOpen({ open: true, data: { data: { id: checkArray } } });
+  }, [checkArray]);
 
   return (
     <S.Wrap>
@@ -631,7 +633,9 @@ function FarmList() {
                 <p className="table-first serial_number">{data?.serial_number}</p>
                 <p className="table-second farm_id">{data?.farm_id}</p>
                 <div className="table-third farm_name_wrap">
-                  <div className="farm-name-first" style={{backgroundColor:colorArray[index%listData.length]}}>{data?.farm_name?.slice(0, 1)}</div>
+                  <div className="farm-name-first" style={{ backgroundColor: colorArray[index % listData.length] }}>
+                    {data?.farm_name?.slice(0, 1)}
+                  </div>
                   <p className="farm_name">{data?.farm_name}</p>
                 </div>
                 <p className="table-text name">{data?.name}</p>
@@ -759,7 +763,11 @@ function FarmList() {
       {/* 삭제 모달 */}
       {deleteModalOpen.open && (
         <div className="modal-wrap">
-          <DeleteModal setDeleteModalOpen={setDeleteModalOpen} deleteModalOpen={deleteModalOpen} checkArray={checkArray}/>
+          <DeleteModal
+            setDeleteModalOpen={setDeleteModalOpen}
+            deleteModalOpen={deleteModalOpen}
+            checkArray={checkArray}
+          />
         </div>
       )}
 
