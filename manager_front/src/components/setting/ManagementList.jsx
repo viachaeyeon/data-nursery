@@ -346,6 +346,8 @@ function ManagementList() {
     }
   };
 
+  console.log("checkArray",checkArray)
+
   return (
     <S.Wrap>
       <S.TitleWrap>

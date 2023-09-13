@@ -4,6 +4,8 @@ import { Tooltip } from "react-tooltip";
 
 import useFarmAllList from "@src/hooks/queries/auth/useFarmAllList";
 
+import colorArray from "@components/common/ListColor";
+
 // import DaumPostcode from "react-daum-postcode";
 import OptionModal from "./OptionModal";
 import AddFarmModal from "./AddFarmModal";
@@ -192,7 +194,7 @@ const S = {
     }
 
     .farm-name-frist {
-      background-color: #79cec8;
+      /* background-color: #79cec8; */
       border-radius: 30px;
       padding: 8px;
       color: #fff;
@@ -318,7 +320,8 @@ function FarmList() {
     },
   });
 
-  // console.log("farmhouseList", farmhouseList);
+  console.log("farmhouseList", farmhouseList);
+
 
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
@@ -379,10 +382,7 @@ function FarmList() {
     [optionModalOpen],
   );
 
-  // 선택삭제 클릭
-  const handelSelectDeleteClick = useCallback(() => {
-    alert("선택삭제");
-  }, []);
+
 
   // 농가추가 모달
   const handleAddFarmModalClick = useCallback(() => {
@@ -450,11 +450,9 @@ function FarmList() {
   }, []);
 
   const [selectAll, setSelectAll] = useState(false);
-  const [isChecked, setIsChecked] = useState([]);
-  // const [isChecked, setIsChecked] = useState(listData?.map(() => false));
+  // const [isChecked, setIsChecked] = useState([]);
+  const [isChecked, setIsChecked] = useState(listData?.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
-
-  // console.log("checkArray", checkArray);
 
   useEffect(() => {
     if (!!listData) {
@@ -478,11 +476,11 @@ function FarmList() {
     // 그렇지 않다면 전체 선택 체크박스를 false로 설정
     setSelectAll(allChecked);
 
-    const selectedItemId = listData[index].number;
+    const selectedItemId = listData[index].id;
     if (updatedIsCheckedArray[index]) {
       setCheckArray((prevArray) => [...prevArray, selectedItemId]);
     } else {
-      setCheckArray((prevArray) => prevArray.filter((number) => number !== selectedItemId));
+      setCheckArray((prevArray) => prevArray.filter((id) => id !== selectedItemId));
     }
   };
 
@@ -495,13 +493,22 @@ function FarmList() {
     setIsChecked(updatedIsCheckedArray);
     setSelectAll(allChecked);
 
-    const selectedIds = listData.map((item) => item.number);
+    const selectedIds = listData.map((item) => item.id);
     if (allChecked) {
       setCheckArray(selectedIds);
     } else {
       setCheckArray([]);
     }
   };
+
+  // console.log("checkArray",checkArray);
+
+    // 선택삭제 클릭
+    const handelSelectDeleteClick = useCallback(() => {
+      alert(checkArray);
+      setDeleteModalOpen({ open: true, data: {data:{id : checkArray}} });
+    }, [checkArray]);
+
 
   return (
     <S.Wrap>
@@ -588,7 +595,7 @@ function FarmList() {
                 <p className="serial_number">{data?.serial_number}</p>
                 <p className="farm_id">{data?.farm_id}</p>
                 <div className="farm_name_wrap">
-                  <div className="farm-name-frist">{data?.farm_name?.slice(0, 1)}</div>
+                  <div className="farm-name-frist" style={{backgroundColor:colorArray[index%listData.length]}}>{data?.farm_name?.slice(0, 1)}</div>
                   <p className="farm_name">{data?.farm_name}</p>
                 </div>
                 <p className="name">{data?.name}</p>
@@ -716,7 +723,7 @@ function FarmList() {
       {/* 삭제 모달 */}
       {deleteModalOpen.open && (
         <div className="modal-wrap">
-          <DeleteModal setDeleteModalOpen={setDeleteModalOpen} deleteModalOpen={deleteModalOpen} />
+          <DeleteModal setDeleteModalOpen={setDeleteModalOpen} deleteModalOpen={deleteModalOpen} checkArray={checkArray}/>
         </div>
       )}
 
