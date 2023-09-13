@@ -7,7 +7,6 @@ from utils.database import get_db
 from utils.db_shortcuts import get_current_user, get_
 from utils.file_upload import single_file_uploader, delete_file
 import src.crops.models as cropModels
-from settings import BASE_DIR
 
 
 router = APIRouter()
