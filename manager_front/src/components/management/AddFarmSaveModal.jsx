@@ -204,7 +204,6 @@ function AddFarmSaveModal({
 
   const { mutate: createFarmhouseMutate } = useCreateFarmhouse(
     () => {
-      invalidateQueries([useFarmAllListKey]);
       closeModal();
       setIsDefaultAlertShowState({
         isShow: true,
@@ -212,6 +211,7 @@ function AddFarmSaveModal({
         text: "정상적으로 저장되었습니다.",
         okClick: null,
       });
+      invalidateQueries([useFarmAllListKey]);
     },
     (error) => {
       setIsDefaultAlertShowState({

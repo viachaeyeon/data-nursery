@@ -248,6 +248,7 @@ const S = {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      display: block !important;
     }
     .address {
       width: 110px;

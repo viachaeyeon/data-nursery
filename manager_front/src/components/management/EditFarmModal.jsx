@@ -179,8 +179,8 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
     updateFarmhouseMutate({
       data: {
         id: editModalOpen.data.data.id,
-        name: editName,
-        producer_name: editFarmName,
+        name: editFarmName,
+        producer_name: editName,
         phone: editPhone,
         address: editAddressCode + "||" + editAddress + "||" + editAddressData,
       },
@@ -225,6 +225,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
         text: "정상적으로 저장되었습니다.",
         okClick: null,
       });
+      invalidateQueries([useFarmAllListKey]);
     },
     (error) => {
       setIsDefaultAlertShowState({
@@ -277,7 +278,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
             <input
               placeholder="연락처를 입력하세요."
               value={editPhone}
-              onChange={(e) => setEditPhone(e.target.value)}
+              onChange={(e) => setEditPhone(e.target.value.replace(/[^0-9]/g, "").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`))}
             />
           </div>
           <p className="title-info">주소</p>
