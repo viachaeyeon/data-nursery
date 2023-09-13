@@ -133,3 +133,15 @@ export const getFarmHouseNameList = async (searchText) => {
     throw new Error(error.response?.status || "농가명 목록을 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
+
+//설정 페이지 : 관리자 추가
+export const addAdminAPI = async (data) => {
+  try {
+    const res = await axios.post(process.env.NEXT_PUBLIC_END_POINT + `/api/admin/auth/admin/create`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "관리자를 추가하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
