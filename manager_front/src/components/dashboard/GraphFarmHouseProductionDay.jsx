@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
+import usePlanterFarm from "@src/hooks/queries/planter/usePlanterFarm";
+
 const S = {
   Wrap: styled.div`
     padding: 0px 40px;
@@ -19,6 +21,22 @@ const S = {
 };
 
 function GraphFarmHouseProductionDay() {
+  const { data: planterFarm } = usePlanterFarm({
+    queryType: "day",
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
+  //육묘장 이름
+  const nameArray = planterFarm?.map((item) => item.farmhouse_name);
+
+  //육묘장 데이터
+  const dataArray = planterFarm?.map((item) => item.total_output);
+
+  console.log("planterFarm", planterFarm);
+
   const graphRef = useRef(null);
   const graphUnitRef = useRef(null);
 
@@ -57,23 +75,25 @@ function GraphFarmHouseProductionDay() {
       graphInstance = new Chart(graphCtx, {
         type: "bar",
         data: {
-          labels: [
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-          ],
+          labels: nameArray,
+          // [
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          // ],
           datasets: [
             {
-              data: [6, 20, 10, 5, 23, 5, 1, 4, 3, 7, 8, 10],
+              data: dataArray,
+              // data: [6, 20, 10, 5, 23, 5, 1, 4, 3, 7, 8, 10],
               backgroundColor: "#FFB78E",
               hoverBackgroundColor: "#FFB78E",
               borderWidth: 1,
@@ -190,11 +210,11 @@ function GraphFarmHouseProductionDay() {
     <S.Wrap>
       <div className="scrollBox">
         <div className="scrollBoxBody">
-          <canvas ref={graphRef} height={450} />
+          <canvas ref={graphRef} height={450} width={530} />
         </div>
       </div>
       <div className="box">
-        <canvas ref={graphUnitRef} height={45} />
+        <canvas ref={graphUnitRef} height={45} width={530} />
       </div>
     </S.Wrap>
   );

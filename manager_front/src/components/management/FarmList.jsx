@@ -1,6 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
+
+import useFarmAllList from "@src/hooks/queries/auth/useFarmAllList";
+
+import colorArray from "@components/common/ListColor";
 
 // import DaumPostcode from "react-daum-postcode";
 import OptionModal from "./OptionModal";
@@ -69,31 +73,31 @@ const S = {
     }
   `,
 
-  ExcelButton: styled.div`
-    cursor: pointer;
-    gap: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 16px 24px;
-    border: 1px solid #5899fb;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+  // ExcelButton: styled.div`
+  //   cursor: pointer;
+  //   gap: 16px;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   padding: 16px 24px;
+  //   border: 1px solid #5899fb;
+  //   background-color: #fff;
+  //   border-radius: 8px;
+  //   box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
 
-    p {
-      color: #5899fb;
-      ${({ theme }) => theme.textStyle.h6Bold}
-    }
+  //   p {
+  //     color: #5899fb;
+  //     ${({ theme }) => theme.textStyle.h6Bold}
+  //   }
 
-    &:hover {
-      border: 1px solid ${({ theme }) => theme.basic.btnAction};
-    }
-    &:active {
-      border: 1px solid ${({ theme }) => theme.basic.btnAction};
-      background-color: ${({ theme }) => theme.basic.lightSky};
-    }
-  `,
+  //   &:hover {
+  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
+  //   }
+  //   &:active {
+  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
+  //     background-color: ${({ theme }) => theme.basic.lightSky};
+  //   }
+  // `,
   AddButton: styled.div`
     cursor: pointer;
     gap: 16px;
@@ -136,6 +140,9 @@ const S = {
     p {
       ${({ theme }) => theme.textStyle.h7Reguler};
       color: ${({ theme }) => theme.basic.gray60};
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .arrow-wrap {
@@ -157,6 +164,42 @@ const S = {
 
     .btn-wrap {
       width: 100%;
+    }
+
+    .header-table {
+      width: 120px;
+    }
+    .header-table-second {
+      width: 140px;
+    }
+    .header-table-third {
+      width: 200px;
+    }
+    .header-table-fourth {
+      width: 130px;
+    }
+    .header-table-eighth {
+      width: 160px;
+    }
+
+    .table-first {
+      width: 100px;
+    }
+    .table-second {
+      width: 150px;
+    }
+    .table-third {
+      width: 200px;
+    }
+    .table-text {
+      width: 120px;
+    }
+    .table-eighth {
+      width: 90px;
+    }
+
+    .address {
+      display: block !important;
     }
   `,
 
@@ -189,11 +232,16 @@ const S = {
       justify-content: center;
     }
 
-    .farm-name-frist {
-      background-color: #79cec8;
+    .farm-name-first {
+      /* background-color: #79cec8; */
       border-radius: 30px;
       padding: 8px;
       color: #fff;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      display: flex;
     }
     .farm_name {
       width: 132px;
@@ -202,7 +250,7 @@ const S = {
       white-space: nowrap;
     }
     .address {
-      width: 132px;
+      width: 110px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -297,8 +345,42 @@ const S = {
 };
 
 function FarmList() {
-  const [isNameOrderBy, setIsNameOrderBy] = useState(true);
-  const [isStateOrderBy, setIsStateOrderBy] = useState(true);
+  const [isNameOrderBy, setIsNameOrderBy] = useState(0);
+  const [isStateOrderBy, setIsStateOrderBy] = useState(0);
+
+    // 농가명 정렬
+    const sortByFarmName = useCallback(() => {
+      if(isNameOrderBy === 0){
+        setIsNameOrderBy(1);
+      }else{
+        setIsNameOrderBy(0);
+      }
+    }, [isNameOrderBy]);
+  
+    // 상태 정렬
+    const sortByStatus = useCallback(() => {
+      if(isStateOrderBy === 0){
+        setIsStateOrderBy(1);
+      }else{
+        setIsStateOrderBy(0);
+      }
+    }, [isStateOrderBy]);
+
+  const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
+
+  const { data: farmhouseList } = useFarmAllList({
+    nameOrder: isNameOrderBy,
+    statusOrder: isStateOrderBy,
+    page: 1,
+    size: 15,
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
+  console.log("farmhouseList", farmhouseList);
+
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
   // 농가추가시 필요한 데이터
@@ -309,6 +391,9 @@ function FarmList() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [addressData, setAddressData] = useState("");
   const [addressDetailData, setAddressDetailData] = useState("");
+  const [addressCode, setAddressCode] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [nameOrder,setNameOrder] = useState(0)
 
   // ...클릭시 나오는 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
@@ -356,84 +441,49 @@ function FarmList() {
     [optionModalOpen],
   );
 
-  // 선택삭제 클릭
-  const handelSelectDeleteClick = useCallback(() => {
-    alert("선택삭제");
-  }, []);
-
   // 농가추가 모달
   const handleAddFarmModalClick = useCallback(() => {
     setAddFarmModalOpen(true);
   }, [addFarmModalOpen]);
 
   // 농가목록 데이터
-  const [listData, setListData] = useState([
-    {
-      id: 1,
-      serial_number: "KN001DS0958",
-      farm_id: "PF_0021350",
-      farm_name: "하나공정육묘장영농조합법인",
-      name: "이형채",
-      farm_number: "제 13-부산-2018-06-01",
-      address: "전라북도 전주시 완산구 123456454",
-      address_code: "50402",
-      phone: "010-1234-1234",
-      status: "ON",
-    },
-    {
-      id: 2,
-      serial_number: "KN001DS0958 ",
-      farm_id: "PF_0021350",
-      farm_name: "가야프러그영농조합",
-      name: "이형채",
-      farm_number: "제 13-부산-2018-06-01",
-      address: "경상남도 밀양시 부북면 감운로 256 256",
-      address_code: "50402",
-      phone: "010-1234-1234",
-      status: "OFF",
-    },
-    {
-      id: 3,
-      serial_number: "KN001DS0958 ",
-      farm_id: "PF_0021350",
-      farm_name: "김해고송육묘",
-      name: "이형채",
-      farm_number: "제 13-부산-2018-06-01",
-      address: "경상남도 밀양시 부북면 감운로 256 256",
-      address_code: "50402",
-      phone: "010-1234-1234",
-      status: "OFF",
-    },
-  ]);
+  // const listData = useMemo(() => {
+  //   const array = [];
+  //   farmhouseList?.farm_houses?.map((data) => {
+  //     array.push({
+  //       id: data?.id,
+  //       serial_number: data?.planter?.serial_number,
+  //       farm_id: data?.farm_house_id,
+  //       farm_name: data?.name,
+  //       name: data?.producer_name,
+  //       farm_number: data?.nursery_number,
+  //       address_code: data?.address.split("||")[0],
+  //       address: data?.address.split("||")[1],
+  //       address_detail: data?.address.split("||")[2],
+  //       phone: data?.phone,
+  //       status: data?.last_planter_status?.status,
+  //       qr_image: data?.planter?.qrcode,
+  //     });
+  //   });
+  //   return array;
+  // }, []);
+
+  // console.log("farmhouseList", farmhouseList);
+  // console.log("listData", listData);
 
   //정렬 토글
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
   const [isStatusAscending, setIsStatusAscending] = useState(true);
 
-  // 농가명 정렬
-  const sortByFarmName = useCallback(() => {
-    setIsFarmNameAscending(!isFarmNameAscending);
-    setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
-    listData.sort((a, b) => {
-      const compareResult = a.farm_name.localeCompare(b.farm_name);
-      return isFarmNameAscending ? compareResult : -compareResult;
-    });
-  }, [isFarmNameAscending, isNameOrderBy]);
 
-  // 상태 정렬
-  const sortByStatus = useCallback(() => {
-    setIsStatusAscending(!isStatusAscending);
-    setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
-    listData.sort((a, b) => {
-      const compareResult = a.status.localeCompare(b.status);
-      return isStatusAscending ? compareResult : -compareResult;
-    });
-  }, [isStatusAscending, isStateOrderBy]);
 
-  // 엑셀 다운로드 버튼
-  const handleExcelClick = useCallback(() => {
-    alert("엑셀 다운로드 클릭");
-  }, []);
+  console.log("isNameOrderBy",isNameOrderBy)
+  console.log("isStateOrderBy",isStateOrderBy)
+
+  // // 엑셀 다운로드 버튼
+  // const handleExcelClick = useCallback(() => {
+  //   alert("엑셀 다운로드 클릭");
+  // }, []);
 
   // 농가목록 더보기
   const listMoreView = useCallback(() => {
@@ -441,45 +491,64 @@ function FarmList() {
   }, []);
 
   const [selectAll, setSelectAll] = useState(false);
-  const [isChecked, setIsChecked] = useState(listData.map(() => false));
+  // const [isChecked, setIsChecked] = useState([]);
+  // const [isChecked, setIsChecked] = useState(farmhouseList?.farm_houses?.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
 
-  const toggleItem = (index) => {
-    const updatedIsCheckedArray = [...isChecked];
-    updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
-    setIsChecked(updatedIsCheckedArray);
+  // useEffect(() => {
+  //   if (!!listData) {
+  //     const dateArr = [];
+  //     listData.map(() => {
+  //       return dateArr.push(false);
+  //     });
+  //     setIsChecked(dateArr);
+  //   }
+  // }, [farmhouseList]);
 
-    // 모든 항목이 체크되었는지 확인
-    const allChecked = updatedIsCheckedArray.every((checked) => checked);
+  // const toggleItem = (index) => {
+  //   const updatedIsCheckedArray = [...isChecked];
+  //   updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
+  //   setIsChecked(updatedIsCheckedArray);
 
-    // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
-    // 그렇지 않다면 전체 선택 체크박스를 false로 설정
-    setSelectAll(allChecked);
+  //   // 모든 항목이 체크되었는지 확인
+  //   const allChecked = updatedIsCheckedArray.every((checked) => checked);
 
-    const selectedItemId = listData[index].number;
-    if (updatedIsCheckedArray[index]) {
-      setCheckArray((prevArray) => [...prevArray, selectedItemId]);
-    } else {
-      setCheckArray((prevArray) => prevArray.filter((number) => number !== selectedItemId));
-    }
-  };
+  //   // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
+  //   // 그렇지 않다면 전체 선택 체크박스를 false로 설정
+  //   setSelectAll(allChecked);
 
-  const toggleAll = () => {
-    const allChecked = !selectAll;
+  //   // const selectedItemId = listData[index].id;
 
-    // 모든 항목을 전부 선택 또는 해제
-    const updatedIsCheckedArray = isChecked.map(() => allChecked);
+  //   if (updatedIsCheckedArray[index]) {
+  //     setCheckArray((prevArray) => [...prevArray, selectedItemId]);
+  //   } else {
+  //     setCheckArray((prevArray) => prevArray.filter((id) => id !== selectedItemId));
+  //   }
+  // };
 
-    setIsChecked(updatedIsCheckedArray);
-    setSelectAll(allChecked);
+  // const toggleAll = () => {
+  //   const allChecked = !selectAll;
 
-    const selectedIds = listData.map((item) => item.number);
-    if (allChecked) {
-      setCheckArray(selectedIds);
-    } else {
-      setCheckArray([]);
-    }
-  };
+  //   // 모든 항목을 전부 선택 또는 해제
+  //   const updatedIsCheckedArray = isChecked.map(() => allChecked);
+
+  //   setIsChecked(updatedIsCheckedArray);
+  //   setSelectAll(allChecked);
+
+  //   // const selectedIds = listData.map((item) => item.id);
+
+  //   if (allChecked) {
+  //     setCheckArray(selectedIds);
+  //   } else {
+  //     setCheckArray([]);
+  //   }
+  // };
+
+  // 선택삭제 클릭
+  const handelSelectDeleteClick = useCallback(() => {
+    alert(checkArray);
+    setDeleteModalOpen({ open: true, data: { data: { id: checkArray } } });
+  }, [checkArray]);
 
   return (
     <S.Wrap>
@@ -490,10 +559,10 @@ function FarmList() {
             <p className="info-sub">농가 목록 추가, 수정, 삭제, QR코드 관리</p>
           </div>
           <div className="button-wrap">
-            <S.ExcelButton onClick={handleExcelClick}>
+            {/* <S.ExcelButton onClick={handleExcelClick}>
               <ExcelIcon width={20} height={25} />
               <p>엑셀 내려받기</p>
-            </S.ExcelButton>
+            </S.ExcelButton> */}
             <S.AddButton onClick={handleAddFarmModalClick}>
               <AddIcon width={24} height={24} />
               <p>농가 추가</p>
@@ -504,26 +573,27 @@ function FarmList() {
       <S.ContentList>
         <div className="list-table-head">
           <div>
-            <label>
+            <CheckBoxOff width={24} height={24} />
+            {/* <label>
               <input type="checkbox" checked={selectAll} onChange={toggleAll} style={{ display: "none" }} />
               <div>{selectAll ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}</div>
-            </label>
+            </label> */}
           </div>
           {checkArray.length === 0 ? (
             <>
-              <p>파종기 S/N</p>
-              <p>농가 ID</p>
-              <div className="arrow-wrap">
+              <p className="header-table">파종기 S/N</p>
+              <p className="header-table-second">농가 ID</p>
+              <div className="header-table-third arrow-wrap">
                 <p>농가명</p>
                 <div className="icon-wrap" onClick={sortByFarmName}>
                   {isNameOrderBy ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
-              <p>생산자명</p>
-              <p>육묘업등록번호</p>
-              <p>주소</p>
-              <p>연락처</p>
-              <div className="arrow-wrap">
+              <p className="header-table-fourth">생산자명</p>
+              <p className="header-table">육묘업등록번호</p>
+              <p className="header-table">주소</p>
+              <p className="header-table">연락처</p>
+              <div className="header-table-eighth arrow-wrap">
                 <p>상태</p>
                 <div className="icon-wrap" onClick={sortByStatus}>
                   {isStateOrderBy ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
@@ -542,16 +612,17 @@ function FarmList() {
             </>
           )}
         </div>
-        {listData.length === 0 ? (
+        {farmhouseList?.farm_houses.length === 0 ? (
           <S.EmptyData>
             <FarmIcon width={56} height={56} />
             <p>등록된 농가가 없습니다.</p>
           </S.EmptyData>
         ) : (
-          listData.map((data, index, item) => {
+          farmhouseList?.farm_houses.map((data, index, item) => {
             return (
-              <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
-                <label key={item.id} className="table-row">
+              // <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
+              <S.ListBlock key={`map${index}`} className={`table-row}`}>
+                {/* <label key={item.id} className="table-row">
                   <input
                     type="checkbox"
                     checked={isChecked[index]}
@@ -562,23 +633,28 @@ function FarmList() {
                     {isChecked[index] ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}
                   </div>
                   <div>{item.name}</div>
-                </label>
-                <p className="serial_number">{data.serial_number}</p>
-                <p className="farm_id">{data.farm_id}</p>
-                <div className="farm_name_wrap">
-                  <div className="farm-name-frist">{data.farm_name.slice(0, 1)}</div>
-                  <p className="farm_name">{data.farm_name}</p>
+                </label> */}
+                <CheckBoxOff width={24} height={24} />
+                <p className="table-first serial_number">{data.planter.serial_number}</p>
+                <p className="table-second farm_id">{data.farm_house_id}</p>
+                <div className="table-third farm_name_wrap">
+                  <div
+                    className="farm-name-first"
+                    style={{ backgroundColor: colorArray[index % farmhouseList?.farm_houses.length] }}>
+                    {data?.name?.slice(0, 1)}
+                  </div>
+                  <p className="farm_name">{data?.name}</p>
                 </div>
-                <p className="name">{data.name}</p>
-                <p className="farm_number">{data.farm_number}</p>
-                <p className="address" id={`address${index}`}>
-                  {data.address}
+                <p className="table-text name">{data?.producer_name}</p>
+                <p className="table-text farm_number">{data?.nursery_number}</p>
+                <p className="table-text address" id={`address${index}`}>
+                  {data?.address.split("||")[1] + data?.address.split("||")[2]}
                 </p>
-                <p className="phone">{data.phone}</p>
-                {data.status === "ON" ? (
-                  <p className="status-on">{data.status}</p>
+                <p className="table-text phone">{data?.phone}</p>
+                {data?.status === "ON" ? (
+                  <p className="table-eighth status-on">{data?.last_planter_status.status}</p>
                 ) : (
-                  <p className="status-off">{data.status}</p>
+                  <p className="table-eighth status-off">{data?.last_planter_status.status}</p>
                 )}
 
                 <div className="option-modal-wrap">
@@ -617,7 +693,8 @@ function FarmList() {
                   content={
                     <div className="text-wrap">
                       <p>
-                        ({data.address_code}) {data.address}
+                        {/* ({data?.address_code}) */}
+                        {"(" + data?.address.split("||")[0] + ") " + data?.address.split("||")[1]}
                       </p>
                     </div>
                   }
@@ -626,7 +703,7 @@ function FarmList() {
             );
           })
         )}
-        {listData.length !== 0 && (
+        {farmhouseList?.farm_houses.length !== 0 && (
           <S.ButtonWrap>
             <S.MoreButton onClick={listMoreView}>
               <p>더보기</p>
@@ -645,6 +722,8 @@ function FarmList() {
             createQrcode={createQrcode}
             setCreateQrcode={setCreateQrcode}
             setAddFarmSaveModalOpen={setAddFarmSaveModalOpen}
+            qrCodeUrl={qrCodeUrl}
+            setQrCodeUrl={setQrCodeUrl}
           />
         </div>
       )}
@@ -671,6 +750,10 @@ function FarmList() {
             setAddressDetailData={setAddressDetailData}
             setCreateQrcode={setCreateQrcode}
             setAddFarmSerialNumber={setAddFarmSerialNumber}
+            qrCodeUrl={qrCodeUrl}
+            setQrCodeUrl={setQrCodeUrl}
+            addressCode={addressCode}
+            setAddressCode={setAddressCode}
           />
         </div>
       )}
@@ -688,7 +771,11 @@ function FarmList() {
       {/* 삭제 모달 */}
       {deleteModalOpen.open && (
         <div className="modal-wrap">
-          <DeleteModal setDeleteModalOpen={setDeleteModalOpen} />
+          <DeleteModal
+            setDeleteModalOpen={setDeleteModalOpen}
+            deleteModalOpen={deleteModalOpen}
+            checkArray={checkArray}
+          />
         </div>
       )}
 

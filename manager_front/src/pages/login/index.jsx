@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
+import { useRouter } from "next/router";
+import { loginAPI } from "@apis/authAPIs";
+import secureLocalStorage from "react-secure-storage";
 
 import Logo from "@images/common/logo-data-nursery.svg";
 import UserIcon from "@images/common/ico-user.svg";
 import PwIcon from "@images/common/icon-key.svg";
 import CheckOn from "@images/common/check-icon-on.svg";
 import CheckOff from "@images/common/check-icon-off.svg";
+import { loginCheckAuthentication } from "@src/utils/LoginCheckAuthentication";
 
 const S = {
   Wrap: styled.div`
@@ -68,7 +72,7 @@ const S = {
       font-size: 16px;
       font-style: normal;
       font-weight: 400;
-      line-height: 20px; /* 125% */
+      line-height: 20px;
       letter-spacing: -0.32px;
       color: #929fa6;
     }
@@ -120,13 +124,78 @@ const S = {
 };
 
 function Login() {
-  const [inputId, setInputId] = useState("");
-  const [inputPw, setInputPw] = useState("");
-  const [isSaveId, setIsSaveId] = useState(false);
+  const router = useRouter();
 
-  const toggleSaveId = () => {
-    setIsSaveId((prevState) => !prevState);
-  };
+  const [loginInfo, setLoginInfo] = useState({
+    login_id: "",
+    password: "",
+    isStayLogin: false,
+    l_type: "99",
+  });
+
+  const handleInputChange = useCallback(
+    (name, value) => {
+      setLoginInfo((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    [loginInfo],
+  );
+
+  // 이메일 저장했는지 확인
+  useEffect(() => {
+    const saveId = secureLocalStorage.getItem("login_id");
+
+    if (saveId) {
+      setLoginInfo({
+        login_id: saveId,
+        password: "",
+        isStayLogin: true,
+        l_type: "99",
+      });
+    }
+  }, []);
+
+  const stayLoginCheckBoxClick = useCallback(() => {
+    handleInputChange("isStayLogin", !loginInfo.isStayLogin);
+  }, [loginInfo.isStayLogin]);
+
+  const tempLoginCheck = useCallback(async () => {
+    try {
+      const res = await loginAPI(loginInfo);
+
+      // 아이디 저장 시 실행
+      if (loginInfo.isStayLogin) {
+        // 아이디 로컬스토리지에 저장
+        secureLocalStorage.setItem("login_id", loginInfo.login_id);
+      } else {
+        // 아이디 로컬스토리지에서 삭제
+        secureLocalStorage.removeItem("login_id");
+      }
+
+      router.push("/");
+    } catch (e) {
+      alert("로그인에 실패하였습니다. 아이디 및 비밀번호를 확인해주세요.");
+    }
+  }, [loginInfo]);
+
+  // enter 키 입력 시 실행
+  // const enterKeyUp = useCallback(() => {
+  //   if (window.event.keyCode === 13) {
+  //     if (loginInfo.login_id === "") {
+  //       alert("아이디를 입력해주세요.");
+  //       return;
+  //     }
+
+  //     if (loginInfo.password === "") {
+  //       alert("비밀번호를 입력해주세요.");
+  //       return;
+  //     }
+
+  //     tempLoginCheck();
+  //   }
+  // }, [loginInfo]);
 
   return (
     <S.Wrap>
@@ -143,8 +212,10 @@ function Login() {
             <UserIcon width={20} height={20} />
             <input
               className="input-style"
-              value={inputId}
-              onChange={(e) => setInputId(e.target.value)}
+              value={loginInfo.login_id}
+              onChange={(e) => {
+                handleInputChange("login_id", e.target.value);
+              }}
               placeholder="아이디를 입력해주세요"
             />
           </S.InputWrap>
@@ -153,24 +224,32 @@ function Login() {
             <input
               className="input-style"
               type="password"
-              value={inputPw}
-              onChange={(e) => setInputPw(e.target.value)}
+              value={loginInfo.password}
+              maxLength={20}
+              onChange={(e) => {
+                handleInputChange("password", e.target.value);
+              }}
               placeholder="비밀번호를 입력해주세요"
             />
           </S.InputWrap>
         </S.InputButtonWrap>
         <S.IdSaveWrap>
-          <div className="check-box" onClick={toggleSaveId}>
-            {isSaveId ? <CheckOn width={24} height={24} /> : <CheckOff width={24} height={24} />}
+          <div className="check-box" onClick={stayLoginCheckBoxClick}>
+            {loginInfo.isStayLogin ? <CheckOn width={24} height={24} /> : <CheckOff width={24} height={24} />}
           </div>
           <p>아이디 저장</p>
         </S.IdSaveWrap>
-        <S.LoginButton>
+        <S.LoginButton onClick={tempLoginCheck}>
           <p>로그인</p>
         </S.LoginButton>
       </S.ContentWrap>
     </S.Wrap>
   );
 }
+
+// 로그인 되어있을 경우 메인페이지로 이동
+export const getServerSideProps = loginCheckAuthentication((context) => {
+  return { props: {} };
+});
 
 export default Login;

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import MainSideMenu from "@components/layout/MainSideMenu";
+import DefaultAlert from "@components/common/alert/DefaultAlert";
 
 const S = {
   Wrap: styled.div`
@@ -26,6 +27,7 @@ function MainLayout({ children }) {
       <S.MainContent>
         <MainSideMenu />
         <section className="main-children-section">{children}</section>
+        <DefaultAlert />
       </S.MainContent>
     </S.Wrap>
   );

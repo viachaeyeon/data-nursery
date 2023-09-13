@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
+import usePlanterFarm from "@src/hooks/queries/planter/usePlanterFarm";
+
 const S = {
   Wrap: styled.div`
     padding: 0px 40px;
@@ -19,6 +21,37 @@ const S = {
 };
 
 function GraphFarmHouseProductionMonth() {
+  const { data: planterFarm } = usePlanterFarm({
+    queryType: "month",
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
+  console.log("planterFarm", planterFarm);
+  // const dataArray = planterTotal?.map((item) => item.output);
+
+  //육묘장 이름
+  const nameArray = planterFarm?.map((item) => item.farmhouse_name);
+  // nameArray.push(' ')
+  // nameArray.push(' ')
+  // nameArray.push(' ')
+  // nameArray.push(' ')
+  // nameArray.push(' ')
+  // nameArray.push(' ')
+  // nameArray.push(' ')
+
+  //육묘장 데이터
+  const dataArray = planterFarm?.map((item) => item.total_output);
+  // dataArray.push('null')
+  // dataArray.push('null')
+  // dataArray.push('null')
+  // dataArray.push('null')
+  // dataArray.push('null')
+  // dataArray.push('null')
+  // dataArray.push('null')
+
   const graphRef = useRef(null);
   const graphUnitRef = useRef(null);
 
@@ -57,23 +90,25 @@ function GraphFarmHouseProductionMonth() {
       graphInstance = new Chart(graphCtx, {
         type: "bar",
         data: {
-          labels: [
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-            "보천육묘장",
-          ],
+          labels: nameArray,
+          // [
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          //   "보천육묘장",
+          // ],
           datasets: [
             {
-              data: [12, 20, 3, 10, 2, 3, 9, 1, 3, 3, 9, 10],
+              data: dataArray,
+              // data: [12, 20, 3, 10, 2, 3, 9, 1, 3, 3, 9, 10],
               backgroundColor: "#FFB78E",
               hoverBackgroundColor: "#FFB78E",
               borderRadius: 4,
@@ -190,11 +225,11 @@ function GraphFarmHouseProductionMonth() {
     <S.Wrap>
       <div className="scrollBox">
         <div className="scrollBoxBody">
-          <canvas ref={graphRef} height={450} />
+          <canvas ref={graphRef} height={450} width={530} />
         </div>
       </div>
       <div className="box">
-        <canvas ref={graphUnitRef} height={45} />
+        <canvas ref={graphUnitRef} height={45} width={530} />
       </div>
     </S.Wrap>
   );
