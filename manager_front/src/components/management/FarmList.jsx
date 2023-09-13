@@ -14,7 +14,7 @@ import QrDownloadModal from "./QrDownloadModal";
 import DeleteModal from "./DeleteModal";
 import EditFarmModal from "./EditFarmModal";
 
-import ExcelIcon from "@images/management/excel-icon.svg";
+// import ExcelIcon from "@images/management/excel-icon.svg";
 import AddIcon from "@images/management/add-icon.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
 import CheckBoxOn from "@images/common/check-icon-on.svg";

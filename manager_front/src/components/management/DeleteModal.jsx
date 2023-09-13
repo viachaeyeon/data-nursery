@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 
@@ -87,9 +87,6 @@ function AddFarmModal({ deleteModalOpen, setDeleteModalOpen, checkArray }) {
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const invalidateQueries = useInvalidateQueries();
 
-  console.log("checkArray", checkArray);
-  console.log("deleteModalOpen", deleteModalOpen?.data?.data?.id);
-
   const closeModal = useCallback(() => {
     setDeleteModalOpen({ open: false, data: undefined });
   }, []);
@@ -105,8 +102,6 @@ function AddFarmModal({ deleteModalOpen, setDeleteModalOpen, checkArray }) {
       },
     });
   }, [deleteModalOpen]);
-
-  console.log("deleteModalOpen", deleteModalOpen);
 
   const { mutate: deleteFarmhouseMutate } = useDeleteFarmhouse(
     () => {
