@@ -1,15 +1,19 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import Image from "next/image";
-
 import { ChromePicker } from "react-color";
+
+import useUpdateCrop from "@src/hooks/queries/crop/useUpdateCrop";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+
+import CropsImgDeleteModal from "./CropsImgDeleteModal";
 
 import XIcon from "@images/common/icon-x.svg";
 import CropsNoIcon from "@images/setting/crops-no-img.svg";
 import RainbowIcon from "@images/setting/rainbow-color.svg";
 import CheckRainbowIcon from "@images/setting/check-rainbow-icon.svg";
 import { ImagePathCheck } from "@src/utils/Formatting";
-import CropsImgDeleteModal from "./CropsImgDeleteModal";
+import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -210,10 +214,12 @@ const S = {
 };
 
 function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
+  const invalidateQueries = useInvalidateQueries();
   const [editCropsName, setEditCropsName] = useState(editCropsModalOpen.data.name);
 
   //작물 이미지 수정
-  const [editCropsImg, setEditCropsImg] = useState(null);
+  const [editCropsImg, setEditCropsImg] = useState(editCropsModalOpen.data.image);
+  const [imageView, setImageView] = useState(""); // 메뉴 이미지 보여주기 위해 사용
 
   //작물 이미지 삭제 모달 오픈
   const [deleteCropsImgModalOpen, setDeleteCropsImgModalOpen] = useState({
@@ -221,18 +227,8 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
     data: undefined,
   });
 
-  useEffect(() => {
-    setEditCropsImg(editCropsModalOpen.data.image);
-  }, []);
-
   const closeModal = useCallback(() => {
     setEditCropsModalOpen(false);
-  }, []);
-
-  // 저장 버튼
-  const handleTraySaveClick = useCallback(() => {
-    // closeModal();
-    // setCropsColor("#929FA6");
   }, []);
 
   const handleImgDeleteClick = useCallback(() => {
@@ -278,21 +274,44 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
     setSelectedColor(newColor.hex);
   };
 
-  // 이미지가 선택되었을 때 호출되는 핸들러 함수
-  const handleImageChange = (e) => {
-    const selectedImage = e.target.files[0];
+  // 등록한 작물 이미지 확인하기 위함
+  const encodeFileToBase64 = useCallback((fileBlob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
 
-    // 이미지 미리보기 생성
-    if (selectedImage) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setEditCropsImg(e.target.result);
+    return new Promise((resolve) => {
+      reader.onload = () => {
+        setImageView(reader.result);
+        resolve();
       };
-      reader.readAsDataURL(selectedImage);
-    }
-  };
+    });
+  }, []);
 
   const isColorInArray = colors.includes(selectedColor);
+
+  // 작물정보 수정 API
+  const { mutate: updateCropMutate } = useUpdateCrop(
+    () => {
+      // 작물목록 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([cropListKey]);
+      // setIsDefaultAlertShowState({
+      //   isShow: true,
+      //   type: "success",
+      //   text: "정상적으로 저장되었습니다.",
+      //   okClick: null,
+      // });
+      closeModal();
+    },
+    (error) => {
+      alert(error);
+      // setIsDefaultAlertShowState({
+      //   isShow: true,
+      //   type: "error",
+      //   text: "오류가 발생했습니다.",
+      //   okClick: null,
+      // });
+    },
+  );
 
   return (
     <>
@@ -315,7 +334,11 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
                 {/* 이미지 미리보기 클릭 시 파일 선택 창 열기 */}
                 <div onClick={handleImagePreviewClick} className="img-inner">
                   {!!editCropsImg ? (
-                    <Image src={ImagePathCheck(editCropsImg)} layout="fill" alt="crop image" />
+                    <Image
+                      src={typeof editCropsImg === "string" ? ImagePathCheck(editCropsImg) : imageView}
+                      layout="fill"
+                      alt="crop image"
+                    />
                   ) : (
                     <CropsNoIcon width={200} height={200} />
                   )}
@@ -333,7 +356,10 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
             <input
               type="file"
               accept="image/*"
-              onChange={handleImageChange}
+              onChange={(e) => {
+                encodeFileToBase64(e.target.files[0]);
+                setEditCropsImg(e.target.files[0]);
+              }}
               ref={fileInputRef}
               style={{ display: "none" }}
             />
@@ -412,7 +438,17 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
               <p>저장</p>
             </S.ButtonWrapOff>
           ) : (
-            <S.ButtonWrap onClick={handleTraySaveClick}>
+            <S.ButtonWrap
+              onClick={() => {
+                updateCropMutate({
+                  data: {
+                    cropId: editCropsModalOpen.data.id,
+                    name: editCropsName,
+                    image: typeof editCropsImg === "string" ? null : editCropsImg,
+                    color: selectedColor,
+                  },
+                });
+              }}>
               <p>저장</p>
             </S.ButtonWrap>
           )}

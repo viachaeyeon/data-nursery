@@ -41,3 +41,18 @@ export const createCropAPI = async (data) => {
     throw new Error(error.response?.data?.message || "작물 등록에 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
+
+// 작물정보 수정
+export const updateCropAPI = async (data) => {
+  try {
+    const res = await axios.patch(process.env.NEXT_PUBLIC_END_POINT + `/api/admin/crop/update/${data.cropId}`, data, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "작물정보를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};

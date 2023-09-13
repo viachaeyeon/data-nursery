@@ -220,7 +220,7 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
     fileInputRef.current.click();
   };
 
-  // 등록한 메뉴 이미지 확인하기 위함
+  // 등록한 작물 이미지 확인하기 위함
   const encodeFileToBase64 = useCallback((fileBlob) => {
     const reader = new FileReader();
     reader.readAsDataURL(fileBlob);
@@ -260,6 +260,8 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
   // 작물 등록 API
   const { mutate: createCropMutate } = useCreateCrop(
     () => {
+      // 작물목록 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([cropListKey]);
       // setModalOpen({
       //   open: true,
       //   type: "success",
@@ -271,8 +273,6 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
       //   },
       // });
       closeModal();
-      // 작물목록 정보 다시 불러오기 위해 쿼리키 삭제
-      invalidateQueries([cropListKey]);
     },
     (error) => {
       alert(error);
