@@ -823,7 +823,7 @@ function StatisticsStatus() {
                 <p>엑셀 내려받기</p>
               </S.ExcelButton>
             </div>
-          )} */}
+          )}
         </div>
       </S.InfoBlock>
       <S.ContentList>
