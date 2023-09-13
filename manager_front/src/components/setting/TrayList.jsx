@@ -2,6 +2,8 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
 import useTrayList from "@src/hooks/queries/planter/useTrayList";
+import useDeleteMultipleTray from "@src/hooks/queries/planter/useDeleteMultipleTray";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import AddTrayModal from "./AddTrayModal";
 import OptionModal from "./TrayOptionModal";
@@ -14,6 +16,7 @@ import CheckBoxOn from "@images/common/check-icon-on.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import TrayIcon from "@images/setting/tray-no-data.svg";
 import DeleteIcon from "@images/setting/icon-delete.svg";
+import { trayListKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -179,6 +182,8 @@ const S = {
 };
 
 function TrayList() {
+  const invalidateQueries = useInvalidateQueries();
+
   // 옵션 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
@@ -201,6 +206,28 @@ function TrayList() {
     deleteId: undefined,
   });
 
+  const [checkArray, setCheckArray] = useState([]);
+
+  // 트레이 목록 API
+  const { data: trayList } = useTrayList({
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 트레이 다중 삭제 API
+  const { mutate: deleteMultipleTrayMutate } = useDeleteMultipleTray(
+    () => {
+      // 트레이목록 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([trayListKey]);
+      setCheckArray([]);
+    },
+    (error) => {
+      alert(error);
+    },
+  );
+
   // 트레이 목록 : 눌렀을때 나오는 모달
   const handleCropsOptionModalClick = useCallback(
     (index, data) => {
@@ -213,17 +240,24 @@ function TrayList() {
     [optionModalOpen],
   );
 
-  // 트레이 추가 모달
-  const handleAddTrayModalClick = useCallback(() => {
-    setAddTrayModalOpen(true);
-  }, [addTrayModalOpen]);
+  // 체크박스 전제 선택 및 전체 해제
+  const toggleAll = useCallback(
+    (isAllCheck) => {
+      if (isAllCheck) {
+        // 전부 체크되어 있는 경우
+        setCheckArray([]);
+      } else {
+        // 전부 체크 안되어 있는 경우
+        const allCheckArray = [];
 
-  // 선택삭제 클릭
-  const handelSelectDeleteClick = useCallback(() => {
-    alert("선택삭제");
-  }, []);
-
-  const [checkArray, setCheckArray] = useState([]);
+        trayList?.planter_trays.map((tray) => {
+          allCheckArray.push(tray.id);
+        });
+        setCheckArray(allCheckArray);
+      }
+    },
+    [trayList],
+  );
 
   const toggleItem = useCallback(
     (isCheck, id) => {
@@ -238,29 +272,6 @@ function TrayList() {
     [checkArray],
   );
 
-  const toggleAll = useCallback((isAllCheck) => {
-    if (isAllCheck) {
-      // 전부 체크되어 있는 경우
-      setCheckArray([]);
-    } else {
-      // 전부 체크 안되어 있는 경우
-      const allCheckArray = [];
-
-      trayList?.planter_trays.map((tray) => {
-        allCheckArray.push(tray.id);
-      });
-      setCheckArray(allCheckArray);
-    }
-  }, []);
-
-  // 트레이 목록 API
-  const { data: trayList } = useTrayList({
-    successFn: () => {},
-    errorFn: (err) => {
-      alert(err);
-    },
-  });
-
   return (
     <S.Wrap>
       <S.TitleWrap>
@@ -268,7 +279,10 @@ function TrayList() {
           <p className="title">트레이목록</p>
           <p className="sub-title">트레이목록 추가, 변경</p>
         </S.Title>
-        <S.AddButton onClick={handleAddTrayModalClick}>
+        <S.AddButton
+          onClick={() => {
+            setAddTrayModalOpen(true);
+          }}>
           <AddIcon width={24} height={24} />
           <p>트레이 추가</p>
         </S.AddButton>
@@ -312,7 +326,14 @@ function TrayList() {
               ) : (
                 <>
                   <div className="btn-wrap">
-                    <S.SelectDeleteBtn onClick={handelSelectDeleteClick}>
+                    <S.SelectDeleteBtn
+                      onClick={() => {
+                        deleteMultipleTrayMutate({
+                          data: {
+                            deleteTray: checkArray.join("||"),
+                          },
+                        });
+                      }}>
                       <DeleteIcon width={12} height={12} />
                       <p>선택삭제</p>
                     </S.SelectDeleteBtn>
