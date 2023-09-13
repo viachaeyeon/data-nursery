@@ -46,7 +46,7 @@ function MainHeader({ currentDateTime }) {
       <S.DateWrap>{/* <p>{currentDateTime}</p> */}</S.DateWrap>
       <S.profileWrap>
         <ProfileIcon width={21} height={22} />
-        <p>안녕하세요, {userInfo.user.name}님</p>
+        <p>안녕하세요, {userInfo?.user?.name}님</p>
       </S.profileWrap>
     </S.Wrap>
   );
