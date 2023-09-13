@@ -70,6 +70,8 @@ const S = {
       input {
         background-color: ${({ theme }) => theme.blackWhite.white};
         border: 1px solid ${({ theme }) => theme.blackWhite.white};
+        outline: none;
+
         width: 100%;
         ${({ theme }) => theme.textStyle.h6Bold};
       }
@@ -134,9 +136,9 @@ const S = {
 };
 
 function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
-  const [editWidth, setEditWidth] = useState(editTrayModalOpen.data.data.width_count);
-  const [editHeight, setEditHeight] = useState(editTrayModalOpen.data.data.height_count);
-  const [editTray, setEditTray] = useState(editTrayModalOpen.data.data.tray_number);
+  const [editWidth, setEditWidth] = useState(editTrayModalOpen.data.width);
+  const [editHeight, setEditHeight] = useState(editTrayModalOpen.data.height);
+  const [editTray, setEditTray] = useState(editTrayModalOpen.data.total);
 
   useEffect(() => {
     setEditTray(editWidth * editHeight);
@@ -192,7 +194,7 @@ function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
             <p className="input-info">※ 가로,세로값이 입력되면 자동으로 계산됩니다.</p>
           </S.TextWrap>
           <div className="input-wrap-off">
-            <input value={editTray} />
+            <input value={editTray} readOnly={true} />
           </div>
         </S.InputWrap>
 

@@ -42,7 +42,7 @@ export const createCropAPI = async (data) => {
   }
 };
 
-// 작물정보 수정
+// 작물정보 수정 및 삭제
 export const updateCropAPI = async (data) => {
   try {
     const res = await axios.patch(process.env.NEXT_PUBLIC_END_POINT + `/api/admin/crop/update/${data.cropId}`, data, {

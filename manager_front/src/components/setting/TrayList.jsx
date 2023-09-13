@@ -355,7 +355,6 @@ function TrayList() {
                             optionModalOpen={optionModalOpen}
                             setOptionModalOpen={setOptionModalOpen}
                             setEditTrayModalOpen={setEditTrayModalOpen}
-                            deleteTrayModalOpen={deleteTrayModalOpen}
                             setDeleteTrayModalOpen={setDeleteTrayModalOpen}
                           />
                         )}

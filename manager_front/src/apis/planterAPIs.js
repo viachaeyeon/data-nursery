@@ -116,3 +116,31 @@ export const getTrayListAPI = async () => {
     throw new Error(error.response?.status || "트레이 목록을 가져오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
+
+// 트레이 추가
+export const createTrayAPI = async (data) => {
+  try {
+    const res = await axios.post(process.env.NEXT_PUBLIC_END_POINT + `/api/planter/tray/create`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "트레이 등록에 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
+// 트레이 수정 및 삭제
+// export const updateTrayAPI = async (data) => {
+//   try {
+//     const res = await axios.patch(
+//       process.env.NEXT_PUBLIC_END_POINT + `/api/auth/farmhouse/delete?farmhouse_id=${data.farmhouseId}`,
+//       data,
+//       {
+//         withCredentials: true,
+//       },
+//     );
+//     return res.data;
+//   } catch (error) {
+//     throw new Error(error.response?.status || "농가를 삭제하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+//   }
+// };

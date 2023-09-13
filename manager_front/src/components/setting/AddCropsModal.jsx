@@ -268,7 +268,7 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
       setIsDefaultAlertShowState({
         isShow: true,
         type: "success",
-        text: "정상적으로 저장되었습니다.",
+        text: "정상적으로 추가되었습니다.",
         okClick: null,
       });
       closeModal();
