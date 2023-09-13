@@ -192,7 +192,7 @@ function CropsList() {
   //작물 삭제 모달 오픈
   const [deleteCropsModalOpen, setDeleteCropsModalOpen] = useState({
     open: false,
-    data: undefined,
+    deleteId: undefined,
   });
 
   //작물 수정 모달 오픈
@@ -343,7 +343,6 @@ function CropsList() {
                           <CropsOptionModal
                             optionModalOpen={optionModalOpen}
                             setOptionModalOpen={setOptionModalOpen}
-                            deleteCropsModalOpen={deleteCropsModalOpen}
                             setDeleteCropsModalOpen={setDeleteCropsModalOpen}
                             setEditCropsModalOpen={setEditCropsModalOpen}
                           />
@@ -368,7 +367,10 @@ function CropsList() {
       {/* 작물삭제 모달 */}
       {deleteCropsModalOpen.open && (
         <div className="modal-wrap">
-          <CropsDeleteModal setDeleteCropsModalOpen={setDeleteCropsModalOpen} />
+          <CropsDeleteModal
+            deleteId={deleteCropsModalOpen.deleteId}
+            setDeleteCropsModalOpen={setDeleteCropsModalOpen}
+          />
         </div>
       )}
 

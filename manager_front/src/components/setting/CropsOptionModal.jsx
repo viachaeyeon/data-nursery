@@ -67,13 +67,7 @@ const S = {
   `,
 };
 
-function CropsOptionModal({
-  optionModalOpen,
-  setOptionModalOpen,
-  deleteCropsModalOpen,
-  setDeleteCropsModalOpen,
-  setEditCropsModalOpen,
-}) {
+function CropsOptionModal({ optionModalOpen, setOptionModalOpen, setDeleteCropsModalOpen, setEditCropsModalOpen }) {
   // 수정
   const handelEditClick = useCallback(() => {
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
@@ -82,7 +76,7 @@ function CropsOptionModal({
 
   //삭제
   const handleDeleteClick = useCallback(() => {
-    setDeleteCropsModalOpen({ open: true, data: deleteCropsModalOpen });
+    setDeleteCropsModalOpen({ open: true, deleteId: optionModalOpen.data.id });
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
   });
 

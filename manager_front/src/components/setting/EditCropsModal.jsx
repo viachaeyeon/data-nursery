@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import Image from "next/image";
 import { ChromePicker } from "react-color";
+import { useRecoilState } from "recoil";
 
 import useUpdateCrop from "@src/hooks/queries/crop/useUpdateCrop";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
@@ -14,6 +15,7 @@ import RainbowIcon from "@images/setting/rainbow-color.svg";
 import CheckRainbowIcon from "@images/setting/check-rainbow-icon.svg";
 import { ImagePathCheck } from "@src/utils/Formatting";
 import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 
 const S = {
   Wrap: styled.div`
@@ -215,6 +217,7 @@ const S = {
 
 function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
   const invalidateQueries = useInvalidateQueries();
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const [editCropsName, setEditCropsName] = useState(editCropsModalOpen.data.name);
 
   //작물 이미지 수정
@@ -294,22 +297,22 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
     () => {
       // 작물목록 정보 다시 불러오기 위해 쿼리키 삭제
       invalidateQueries([cropListKey]);
-      // setIsDefaultAlertShowState({
-      //   isShow: true,
-      //   type: "success",
-      //   text: "정상적으로 저장되었습니다.",
-      //   okClick: null,
-      // });
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 저장되었습니다.",
+        okClick: null,
+      });
       closeModal();
     },
     (error) => {
       alert(error);
-      // setIsDefaultAlertShowState({
-      //   isShow: true,
-      //   type: "error",
-      //   text: "오류가 발생했습니다.",
-      //   okClick: null,
-      // });
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
     },
   );
 

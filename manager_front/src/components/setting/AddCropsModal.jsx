@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { ChromePicker } from "react-color";
+import { useRecoilState } from "recoil";
 
 import useCreateCrop from "@src/hooks/queries/crop/useCreateCrop";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
@@ -10,6 +11,7 @@ import CropsNoIcon from "@images/setting/crops-no-img.svg";
 import RainbowIcon from "@images/setting/rainbow-color.svg";
 import CheckRainbowIcon from "@images/setting/check-rainbow-icon.svg";
 import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 
 const S = {
   Wrap: styled.div`
@@ -187,6 +189,7 @@ const S = {
 function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
   const fileInputRef = useRef(null);
   const invalidateQueries = useInvalidateQueries();
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
   const colors = [
     "#EF7E7E",
@@ -262,20 +265,21 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
     () => {
       // 작물목록 정보 다시 불러오기 위해 쿼리키 삭제
       invalidateQueries([cropListKey]);
-      // setModalOpen({
-      //   open: true,
-      //   type: "success",
-      //   title: "등록이 완료되었습니다.",
-      //   description: "메인화면으로 이동합니다.",
-      //   btnType: "one",
-      //   afterFn: () => {
-      //     router.push("/");
-      //   },
-      // });
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 저장되었습니다.",
+        okClick: null,
+      });
       closeModal();
     },
     (error) => {
-      alert(error);
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
     },
   );
 
