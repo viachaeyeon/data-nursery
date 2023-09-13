@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import XIcon from "@images/common/icon-x.svg";
@@ -133,15 +133,12 @@ const S = {
   `,
 };
 
-function AddTrayModal({
-  setAddTrayModalOpen,
-  trayWidthNum,
-  setTrayWidthNum,
-  trayHeighthNum,
-  setTrayHeighthNum,
-  trayNum,
-  setTrayNum,
-}) {
+function AddTrayModal({ setAddTrayModalOpen }) {
+  //트레이 가로 숫자
+  const [trayWidthNum, setTrayWidthNum] = useState("");
+  const [trayHeighthNum, setTrayHeighthNum] = useState("");
+  const [trayNum, setTrayNum] = useState("");
+
   useEffect(() => {
     setTrayNum(trayWidthNum * trayHeighthNum);
   }, [trayWidthNum, trayHeighthNum]);

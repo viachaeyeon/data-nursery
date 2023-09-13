@@ -89,6 +89,10 @@ const S = {
         ${({ theme }) => theme.textStyle.h7Reguler}
       }
 
+      svg {
+        cursor: pointer;
+      }
+
       .btn-wrap {
         width: 100%;
       }
