@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useRecoilState } from "recoil";
+
+import useUpdateTray from "@src/hooks/queries/planter/useUpdateTray";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import XIcon from "@images/common/icon-x.svg";
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+import { trayListKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -136,6 +142,9 @@ const S = {
 };
 
 function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
+  const invalidateQueries = useInvalidateQueries();
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
+
   const [editWidth, setEditWidth] = useState(editTrayModalOpen.data.width);
   const [editHeight, setEditHeight] = useState(editTrayModalOpen.data.height);
   const [editTray, setEditTray] = useState(editTrayModalOpen.data.total);
@@ -150,10 +159,28 @@ function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
     setEditHeight("");
   }, [editWidth, editHeight]);
 
-  const handleTraySaveClick = useCallback(() => {
-    alert("변경");
-    closeModal();
-  }, []);
+  // 작물정보 수정 API
+  const { mutate: updateTrayMutate } = useUpdateTray(
+    () => {
+      // 작물목록 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([trayListKey]);
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 저장되었습니다.",
+        okClick: null,
+      });
+      closeModal();
+    },
+    (error) => {
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
+    },
+  );
 
   return (
     <S.Wrap>
@@ -203,7 +230,18 @@ function EditTrayModal({ setEditTrayModalOpen, editTrayModalOpen }) {
             <p>변경</p>
           </S.ButtonWrapOff>
         ) : (
-          <S.ButtonWrap onClick={handleTraySaveClick}>
+          <S.ButtonWrap
+            onClick={() => {
+              updateTrayMutate({
+                data: {
+                  trayId: editTrayModalOpen.data.id,
+                  width: editWidth,
+                  height: editHeight,
+                  total: editTray,
+                  is_del: false,
+                },
+              });
+            }}>
             <p>변경</p>
           </S.ButtonWrap>
         )}

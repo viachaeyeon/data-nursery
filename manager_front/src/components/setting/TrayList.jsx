@@ -198,7 +198,7 @@ function TrayList() {
   //트레이 삭제 모달 오픈
   const [deleteTrayModalOpen, setDeleteTrayModalOpen] = useState({
     open: false,
-    data: undefined,
+    deleteId: undefined,
   });
 
   // 트레이 목록 : 눌렀을때 나오는 모달
@@ -260,8 +260,6 @@ function TrayList() {
       alert(err);
     },
   });
-
-  console.log(trayList);
 
   return (
     <S.Wrap>
@@ -346,7 +344,6 @@ function TrayList() {
                           className="option-dot"
                           onClick={() => {
                             handleCropsOptionModalClick(index, tray);
-                            setDeleteTrayModalOpen({ open: false, data: tray });
                           }}>
                           <OptionDot width={32} height={32} />
                         </div>
@@ -385,7 +382,7 @@ function TrayList() {
       {/* 트레이 삭제 모달 */}
       {deleteTrayModalOpen.open && (
         <div className="modal-wrap">
-          <TrayDeleteModal setDeleteTrayModalOpen={setDeleteTrayModalOpen} />
+          <TrayDeleteModal deleteId={deleteTrayModalOpen.deleteId} setDeleteTrayModalOpen={setDeleteTrayModalOpen} />
         </div>
       )}
     </S.Wrap>

@@ -130,17 +130,21 @@ export const createTrayAPI = async (data) => {
 };
 
 // 트레이 수정 및 삭제
-// export const updateTrayAPI = async (data) => {
-//   try {
-//     const res = await axios.patch(
-//       process.env.NEXT_PUBLIC_END_POINT + `/api/auth/farmhouse/delete?farmhouse_id=${data.farmhouseId}`,
-//       data,
-//       {
-//         withCredentials: true,
-//       },
-//     );
-//     return res.data;
-//   } catch (error) {
-//     throw new Error(error.response?.status || "농가를 삭제하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
-//   }
-// };
+export const updateTrayAPI = async (data) => {
+  try {
+    const res = await axios.patch(
+      process.env.NEXT_PUBLIC_END_POINT + `/api/admin/planter/tray/update/${data.trayId}`,
+      data,
+      {
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  } catch (error) {
+    if (data.is_del) {
+      throw new Error(error.response?.status || "트레이 삭제에 실패하였습니다. 잠시 후 다시 시도해주세요.");
+    } else {
+      throw new Error(error.response?.status || "트레이 정보를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+};

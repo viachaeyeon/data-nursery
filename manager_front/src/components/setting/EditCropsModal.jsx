@@ -306,7 +306,6 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
       closeModal();
     },
     (error) => {
-      alert(error);
       setIsDefaultAlertShowState({
         isShow: true,
         type: "error",

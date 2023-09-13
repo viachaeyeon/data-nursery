@@ -53,6 +53,10 @@ export const updateCropAPI = async (data) => {
     });
     return res.data;
   } catch (error) {
-    throw new Error(error.response?.status || "작물정보를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+    if (!!data.is_del) {
+      throw new Error(error.response?.status || "작물 삭제에 실패하였습니다. 잠시 후 다시 시도해주세요.");
+    } else {
+      throw new Error(error.response?.status || "작물정보를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+    }
   }
 };

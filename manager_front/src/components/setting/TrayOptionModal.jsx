@@ -75,7 +75,7 @@ function TrayOptionModal({ optionModalOpen, setOptionModalOpen, setEditTrayModal
 
   //삭제
   const handleDeleteClick = useCallback(() => {
-    setDeleteTrayModalOpen({ open: true, data: optionModalOpen.data });
+    setDeleteTrayModalOpen({ open: true, deleteId: optionModalOpen.data.id });
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
   });
 
