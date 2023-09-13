@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import GlobalStyle from "@src/styles/globalStyle";
 import { QueryClient, QueryClientProvider, Hydrate } from "@tanstack/react-query";
+import { RecoilRoot } from "recoil";
+import GlobalStyle from "@src/styles/globalStyle";
+import SSRProvider from "react-bootstrap/SSRProvider";
 import Head from "next/head";
 import { ThemeProvider } from "styled-components";
 import theme from "@src/styles/theme";
@@ -23,13 +25,17 @@ export default function App({ Component, pageProps }) {
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <ThemeProvider theme={theme}>
-          <GlobalStyle />
-          <Head>
-            <title>Data Nursery</title>
-          </Head>
-          <Component {...pageProps} />
-        </ThemeProvider>
+        <SSRProvider>
+          <RecoilRoot>
+            <ThemeProvider theme={theme}>
+              <GlobalStyle />
+              <Head>
+                <title>Data Nursery</title>
+              </Head>
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </RecoilRoot>
+        </SSRProvider>
       </Hydrate>
     </QueryClientProvider>
   );

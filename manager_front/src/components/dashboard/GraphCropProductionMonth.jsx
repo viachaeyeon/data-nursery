@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
+import usePlanterCrop from "@src/hooks/queries/planter/usePlanterCrop";
+
 const S = {
   Wrap: styled.div`
     height: 340px;
@@ -25,7 +27,17 @@ const S = {
   `,
 };
 
-function GraphTotalProduction() {
+function GraphCropProductionMonth() {
+  const { data: planterCrops } = usePlanterCrop({
+    queryType: "day",
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
+  console.log("작물별 생산량 월별", planterCrops);
+
   const graphRef = useRef(null);
   let graphInstance = null;
 
@@ -252,4 +264,4 @@ function GraphTotalProduction() {
   );
 }
 
-export default GraphTotalProduction;
+export default GraphCropProductionMonth;

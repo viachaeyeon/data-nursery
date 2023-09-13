@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
+import usePlanterTotal from "@src/hooks/queries/planter/usePlanterTotal";
+
 const S = {
   Wrap: styled.div`
     height: 360px;
@@ -12,6 +14,26 @@ const S = {
 };
 
 function GraphTotalProduction() {
+  const { data: planterTotal } = usePlanterTotal({
+    queryType: "day",
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
+  const dataArray = [];
+  for (let i = 0; i < 31; i++) {
+    const data = null;
+    dataArray.push(data);
+  }
+
+  planterTotal?.map((data) => {
+    dataArray[data?.day - 1] = data?.output;
+  });
+
+  console.log("dataArray", dataArray);
+
   const graphRef = useRef(null);
   let graphInstance = null;
 
@@ -51,7 +73,7 @@ function GraphTotalProduction() {
           labels: monthDay,
           datasets: [
             {
-              data: [12, 19, 3, 10, 2, 3, 9, 1, 3, 3, 9, 10, 10, 10, 15],
+              data: dataArray,
               backgroundColor: (context) => {
                 const index = context.dataIndex;
                 if (index > 0 && index % 5 === 4) {
@@ -106,9 +128,9 @@ function GraphTotalProduction() {
                 align: "end",
                 text: "개 (단위 : 만)",
               },
-              ticks: {
-                stepSize: 10,
-              },
+              // ticks: {
+              //   stepSize: 10,
+              // },
             },
           },
           interaction: {
@@ -135,7 +157,7 @@ function GraphTotalProduction() {
               bodyColor: "#fff",
               callbacks: {
                 title: function (context) {
-                  return context[0].label + "월";
+                  return context[0].label + "일";
                 },
                 beforeBody: function (context) {
                   return context[0].formattedValue + "개";

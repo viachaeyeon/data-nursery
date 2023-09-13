@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
+import usePlanterOperatingTime from "@src/hooks/queries/planter/usePlanterOperatingTime";
+
 const S = {
   Wrap: styled.div`
     height: 360px;
@@ -56,6 +58,14 @@ const S = {
 };
 
 function GraphOperateTimeMonth() {
+  const { data: planterOperation } = usePlanterOperatingTime({
+    queryType: "month",
+    successFn: () => {},
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  });
+
   const graphRef = useRef(null);
   let graphInstance = null;
 
@@ -73,7 +83,8 @@ function GraphOperateTimeMonth() {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(
-          "평균" + "\n" + data.datasets[0].data[0] + "h",
+          "평균" + "\n" + planterOperation?.total_avg + "h",
+          // "평균" + "\n" + data.datasets[0].data[0] + "h",
           chart.getDatasetMeta(0).data[0].x,
           chart.getDatasetMeta(0).data[0].y,
         );
@@ -87,7 +98,7 @@ function GraphOperateTimeMonth() {
         data: {
           datasets: [
             {
-              data: [2, 8], // 여기서 첫 번째 데이터는 강조하고자 하는 값, 두 번째 데이터는 나머지 비율
+              data: [planterOperation?.min?.farmhouse_name, 10 - planterOperation?.min?.farmhouse_name], // 여기서 첫 번째 데이터는 강조하고자 하는 값, 두 번째 데이터는 나머지 비율
               backgroundColor: ["#8DBAEF", "#F7F7FA"],
               borderColor: ["#8DBAEF", "#F7F7FA"],
               hoverBackgroundColor: ["#8DBAEF", "#F7F7FA"],
@@ -145,13 +156,13 @@ function GraphOperateTimeMonth() {
       <S.InfoBlockWrap>
         <S.InfoBlock>
           <p className="info-title">최대 가동 시간</p>
-          <p className="info-hour">10h</p>
-          <p className="info-name">김해고송육묘장</p>
+          <p className="info-hour">{planterOperation?.max?.operating_time}h</p>
+          <p className="info-name">{planterOperation?.max?.farmhouse_name}</p>
         </S.InfoBlock>
         <S.InfoBlock>
           <p className="info-title">최소 가동 시간</p>
-          <p className="info-hour">10h</p>
-          <p className="info-name">김해고송육묘장</p>
+          <p className="info-hour">{planterOperation?.min?.operating_time}h</p>
+          <p className="info-name">{planterOperation?.min?.farmhouse_name}</p>
         </S.InfoBlock>
       </S.InfoBlockWrap>
     </S.Wrap>
