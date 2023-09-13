@@ -1,4 +1,4 @@
- const colorArray = [
+const colorArray = [
   "#EF7E7E",
   "#F7AD77",
   "#F9E37A",

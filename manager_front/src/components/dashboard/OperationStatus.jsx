@@ -163,8 +163,6 @@ const S = {
 function OperationStatus({ currentDate }) {
   const invalidateQueries = useInvalidateQueries();
 
-
-
   const [operationListPage, setOperationListPage] = useState(1);
   const [operationList, setOperationList] = useState([]);
 
@@ -197,19 +195,19 @@ function OperationStatus({ currentDate }) {
     },
   });
 
-  console.log("planterOperationStatus",planterOperationStatus);
-  
+  console.log("planterOperationStatus", planterOperationStatus);
+
   useEffect(() => {
-    if(!planterOperationStatus){
+    if (!planterOperationStatus) {
       return;
     }
     const intervalId = setInterval(() => {
       // planterOperationStatus
-      invalidateQueries[(PlanterRealTimeKey)];
+      invalidateQueries[PlanterRealTimeKey];
     }, 30000); // 30초마다 업데이트
 
     return () => clearInterval(intervalId);
-  }, [planterOperationStatus,PlanterRealTimeKey]);
+  }, [planterOperationStatus, PlanterRealTimeKey]);
 
   return (
     <S.Wrap>

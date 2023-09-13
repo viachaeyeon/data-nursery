@@ -104,24 +104,20 @@ const S = {
       }
     }
 
-    .table-header-fir{
-width: 136px;
+    .table-header-fir {
+      width: 136px;
     }
-    .table-header-sec{
-width: 109px;
-      
+    .table-header-sec {
+      width: 109px;
     }
-    .table-header-thir{
+    .table-header-thir {
       width: 169px;
-
     }
-    .table-header-four{
+    .table-header-four {
       width: 78px;
-
     }
-    .table-header-five{
+    .table-header-five {
       width: 104px;
-
     }
   `,
   ListBlockWrap: styled.div`
@@ -132,7 +128,7 @@ width: 109px;
     .selected {
       border: 1px solid ${({ theme }) => theme.primery.primery};
     }
-    p{
+    p {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -147,24 +143,20 @@ width: 109px;
       position: relative;
     }
 
-    .table-text-fir{
+    .table-text-fir {
       width: 120px;
     }
-    .table-text-sec{
+    .table-text-sec {
       width: 120px;
-
     }
-    .table-text-thir{
+    .table-text-thir {
       width: 120px;
-
     }
-    .table-text-four{
+    .table-text-four {
       width: 120px;
-
     }
-    .table-text-fiv{
+    .table-text-fiv {
       width: 43px;
-
     }
   `,
   ListBlock: styled.div`

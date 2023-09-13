@@ -104,13 +104,13 @@ const S = {
       }
     }
 
-    .table-header-first{
+    .table-header-first {
       width: 120px;
     }
-    .table-header-sec{
+    .table-header-sec {
       width: 172px;
     }
-    .table-header-third{
+    .table-header-third {
       width: 46px;
     }
   `,
@@ -162,18 +162,15 @@ const S = {
       height: 32px;
       border-radius: 30px;
     }
-.table-text-first{
-  width: 100px;
-  
-}
-.table-text-fin{
-  width: 40px;
-}
-.crop_name{
-  display: block !important;
-
-}
-
+    .table-text-first {
+      width: 100px;
+    }
+    .table-text-fin {
+      width: 40px;
+    }
+    .crop_name {
+      display: block !important;
+    }
   `,
   EmptyData: styled.div`
     height: 420px;
