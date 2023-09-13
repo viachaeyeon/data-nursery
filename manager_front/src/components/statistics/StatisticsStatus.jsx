@@ -455,7 +455,6 @@ const S = {
 
 function StatisticsStatus() {
   const invalidateQueries = useInvalidateQueries();
-  const [state, setState] = useState(true);
 
   // 통계현황 페이지
   const [page, setPage] = useState(1);
@@ -469,7 +468,7 @@ function StatisticsStatus() {
     cropName: "",
     cropKindOrderType: 0,
     trayTotal: "",
-    seedQuantityOrderType: 1,
+    orderQuantityOrderType: 1,
     planterOutputOrderType: 1,
     sowingDateOrderType: 1,
     isShipmentCompletedOrderType: 1,
@@ -642,19 +641,6 @@ function StatisticsStatus() {
     }
   }, [isFarmName, yearModalOpen, monthModalOpen, isFarmId, isCropsName, isTrayCount, isTrayCount]);
 
-  //정렬 토글
-  const [isStatusAscending, setIsStatusAscending] = useState(true);
-
-  // 출하상태
-  const sortByState = useCallback(() => {
-    setIsStatusAscending(!isStatusAscending);
-    setState((prevState) => !prevState);
-    staticsList.sort((a, b) => {
-      const compareResult = a.state.localeCompare(b.state);
-      return isStatusAscending ? compareResult : -compareResult;
-    });
-  }, [isStatusAscending, state]);
-
   // 통계현황 검색 조건 선택
   const handleSelectChange = useCallback(
     (isSelect, name, value) => {
@@ -695,8 +681,6 @@ function StatisticsStatus() {
     [selectData],
   );
 
-  console.log(selectData);
-
   // 통계현황 API
   const { data: staticsInfo } = useStatics({
     year: selectYear,
@@ -710,7 +694,7 @@ function StatisticsStatus() {
     cropName: selectData.cropName,
     cropKindOrderType: selectData.cropKindOrderType,
     trayTotal: selectData.trayTotal,
-    seedQuantityOrderType: selectData.seedQuantityOrderType,
+    orderQuantityOrderType: selectData.orderQuantityOrderType,
     planterOutputOrderType: selectData.planterOutputOrderType,
     sowingDateOrderType: selectData.sowingDateOrderType,
     isShipmentCompletedOrderType: selectData.isShipmentCompletedOrderType,
@@ -766,9 +750,6 @@ function StatisticsStatus() {
     },
   });
 
-  console.log(staticsInfo);
-  console.log("staticsList : ", staticsList);
-
   return (
     <S.Wrap>
       <S.InfoBlock>
@@ -781,8 +762,6 @@ function StatisticsStatus() {
                 <UpArrow width={15} height={15} />
                 <p className="info-sub">정렬기능 )</p>
               </div>
-              {/* {staticsList.length !== 0 && (
-                <> */}
               <S.DateChooseWrap>
                 <S.YearDropDown onClick={handelYearDropDown}>
                   {selectYear === 0 ? <p>연도별</p> : <p>{selectYear}</p>}
@@ -831,8 +810,6 @@ function StatisticsStatus() {
                   })}
                 </S.YearMonthDropDownList>
               )}
-              {/* </>
-              )} */}
             </div>
           </div>
         </div>
@@ -848,183 +825,188 @@ function StatisticsStatus() {
         </div>
       </S.InfoBlock>
       <S.ContentList>
+        <div className="list-table-head">
+          <p className="no">NO</p>
+
+          <div className="search-select-modal-wrap">
+            <S.HeaderDropDown style={{ width: "168px" }} onClick={handleFarmIdClick}>
+              <p>농가 ID</p>
+              <HeaderSelectArrowIcon width={20} height={20} />
+            </S.HeaderDropDown>
+            {isFarmId && (
+              <SearchDropdown
+                width={"168px"}
+                type={"farmHouseId"}
+                dataList={farmHouseIdList}
+                selectData={selectData.farmHouseId}
+                searchText={searchFarmHouseId}
+                setSearchText={setSearchFarmHouseId}
+                dataClick={handleSelectChange}
+              />
+            )}
+          </div>
+
+          <div className="search-select-modal-wrap">
+            <S.HeaderDropDown style={{ width: "224px" }} onClick={handleFarmNameClick}>
+              <p>농가명</p>
+              <HeaderSelectArrowIcon width={20} height={20} />
+            </S.HeaderDropDown>
+            {isFarmName && (
+              <SearchDropdown
+                width={"224px"}
+                type={"farmHouseName"}
+                dataList={farmHouseNameList}
+                selectData={selectData.farmHouseName}
+                searchText={searchFarmHouseName}
+                setSearchText={setSearchFarmHouseName}
+                dataClick={handleSelectChange}
+              />
+            )}
+          </div>
+
+          <div className="search-select-modal-wrap">
+            <S.HeaderDropDown style={{ width: "154px" }} onClick={handleCropsNameClick}>
+              <p>작물명</p>
+              <HeaderSelectArrowIcon width={20} height={20} />
+            </S.HeaderDropDown>
+            {isCropsName && (
+              <SearchDropdown
+                width={"154px"}
+                type={"cropName"}
+                dataList={cropNameList}
+                selectData={selectData.cropName}
+                searchText={searchCropName}
+                setSearchText={setSearchCropName}
+                dataClick={handleSelectChange}
+              />
+            )}
+          </div>
+
+          <div className="arrow-wrap farm-name">
+            <p>품종명</p>
+            <div
+              className="icon-wrap"
+              onClick={() => {
+                handleSelectChange(undefined, "cropKindOrderType", !selectData.cropKindOrderType);
+              }}>
+              {!selectData.cropKindOrderType ? (
+                <UpArrow width={24} height={24} />
+              ) : (
+                <DownArrow width={24} height={24} />
+              )}
+            </div>
+          </div>
+
+          <div className="search-select-modal-wrap">
+            <S.HeaderDropDown style={{ width: "154px" }} onClick={handleTrayCountClick}>
+              <p>트레이</p>
+              <HeaderSelectArrowIcon width={20} height={20} />
+            </S.HeaderDropDown>
+            {isTrayCount && (
+              <SearchDropdown
+                width={"154px"}
+                type={"trayTotal"}
+                dataList={trayTotalList}
+                selectData={selectData.trayTotal}
+                searchText={searchTrayTotal}
+                setSearchText={setSearchTrayTotal}
+                dataClick={handleSelectChange}
+              />
+            )}
+          </div>
+
+          <div className="arrow-wrap order-count">
+            <p>주문수량</p>
+            <div
+              className="icon-wrap"
+              onClick={() => {
+                handleSelectChange(undefined, "orderQuantityOrderType", !selectData.orderQuantityOrderType);
+              }}>
+              {!selectData.orderQuantityOrderType ? (
+                <UpArrow width={24} height={24} />
+              ) : (
+                <DownArrow width={24} height={24} />
+              )}
+            </div>
+          </div>
+          <div className="arrow-wrap sowing">
+            <p>파종량</p>
+            <div
+              className="icon-wrap"
+              onClick={() => {
+                handleSelectChange(undefined, "planterOutputOrderType", !selectData.planterOutputOrderType);
+              }}>
+              {!selectData.planterOutputOrderType ? (
+                <UpArrow width={24} height={24} />
+              ) : (
+                <DownArrow width={24} height={24} />
+              )}
+            </div>
+          </div>
+          <div className="arrow-wrap sowing">
+            <p>파종일자</p>
+            <div
+              className="icon-wrap"
+              onClick={() => {
+                handleSelectChange(undefined, "sowingDateOrderType", !selectData.sowingDateOrderType);
+              }}>
+              {!selectData.sowingDateOrderType ? (
+                <UpArrow width={24} height={24} />
+              ) : (
+                <DownArrow width={24} height={24} />
+              )}
+            </div>
+          </div>
+          <div className="arrow-wrap state">
+            <p>출하상태</p>
+            <div
+              className="icon-wrap"
+              onClick={() => {
+                handleSelectChange(undefined, "isShipmentCompletedOrderType", !selectData.isShipmentCompletedOrderType);
+              }}>
+              {!selectData.isShipmentCompletedOrderType ? (
+                <UpArrow width={24} height={24} />
+              ) : (
+                <DownArrow width={24} height={24} />
+              )}
+            </div>
+          </div>
+        </div>
         {staticsList.length === 0 ? (
           <S.EmptyData>
             <img src="/images/statistics/w-icon-graph.png" alt="statistics-icon" />
             <p>등록된 통계현황이 없습니다.</p>
           </S.EmptyData>
         ) : (
-          <>
-            <div className="list-table-head">
-              <p className="no">NO</p>
-
-              <div className="search-select-modal-wrap">
-                <S.HeaderDropDown style={{ width: "168px" }} onClick={handleFarmIdClick}>
-                  <p>농가 ID</p>
-                  <HeaderSelectArrowIcon width={20} height={20} />
-                </S.HeaderDropDown>
-                {isFarmId && (
-                  <SearchDropdown
-                    width={"168px"}
-                    type={"farmHouseId"}
-                    dataList={farmHouseIdList}
-                    selectData={selectData.farmHouseId}
-                    searchText={searchFarmHouseId}
-                    setSearchText={setSearchFarmHouseId}
-                    dataClick={handleSelectChange}
-                  />
+          staticsList.map((data, index) => {
+            return (
+              <S.ListBlock key={`statics${data.id}`} className={data.farmhouse.is_del && "delete"}>
+                <p className="list_id">{index + 1}</p>
+                <p className="farm_id">{data.farmhouse.farm_house_id}</p>
+                <div className="farm_name_wrap">
+                  <div className="farm-name-first">{data.farmhouse.name.slice(0, 1)}</div>
+                  <p className="farm_name">{data.farmhouse.name}</p>
+                </div>
+                <p className="farm_plant">{data.crop.name}</p>
+                <p className="plant_name">{data.crop_kind}</p>
+                <p className="tray">{data.planter_tray.total}</p>
+                <p className="order_count">{NumberCommaFormatting(data.order_quantity)}</p>
+                <p className="sowing_count">{NumberCommaFormatting(data.planter_output.output)}</p>
+                <p className="sowing_date">{YYYYMMDDSlash(data.sowing_date)}</p>
+                {!data.is_shipment_completed && !data.farmhouse.is_del ? (
+                  <FinCheckIcon width={98} height={40} />
+                ) : !data.is_shipment_completed && !data.farmhouse.is_del ? (
+                  <WaitingIcon width={98} height={40} />
+                ) : data.is_shipment_completed && data.farmhouse.is_del ? (
+                  <GrayFinCheckIcon width={98} height={40} />
+                ) : data.is_shipment_completed && data.farmhouse.is_del ? (
+                  <GrayWaitingIcon width={98} height={40} />
+                ) : (
+                  <></>
                 )}
-              </div>
-
-              <div className="search-select-modal-wrap">
-                <S.HeaderDropDown style={{ width: "224px" }} onClick={handleFarmNameClick}>
-                  <p>농가명</p>
-                  <HeaderSelectArrowIcon width={20} height={20} />
-                </S.HeaderDropDown>
-                {isFarmName && (
-                  <SearchDropdown
-                    width={"224px"}
-                    type={"farmHouseName"}
-                    dataList={farmHouseNameList}
-                    selectData={selectData.farmHouseName}
-                    searchText={searchFarmHouseName}
-                    setSearchText={setSearchFarmHouseName}
-                    dataClick={handleSelectChange}
-                  />
-                )}
-              </div>
-
-              <div className="search-select-modal-wrap">
-                <S.HeaderDropDown style={{ width: "154px" }} onClick={handleCropsNameClick}>
-                  <p>작물명</p>
-                  <HeaderSelectArrowIcon width={20} height={20} />
-                </S.HeaderDropDown>
-                {isCropsName && (
-                  <SearchDropdown
-                    width={"154px"}
-                    type={"cropName"}
-                    dataList={cropNameList}
-                    selectData={selectData.cropName}
-                    searchText={searchCropName}
-                    setSearchText={setSearchCropName}
-                    dataClick={handleSelectChange}
-                  />
-                )}
-              </div>
-
-              <div className="arrow-wrap farm-name">
-                <p>품종명</p>
-                <div
-                  className="icon-wrap"
-                  onClick={() => {
-                    handleSelectChange(undefined, "cropKindOrderType", !selectData.cropKindOrderType);
-                  }}>
-                  {selectData.cropKindOrderType ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
-                </div>
-              </div>
-
-              <div className="search-select-modal-wrap">
-                <S.HeaderDropDown style={{ width: "154px" }} onClick={handleTrayCountClick}>
-                  <p>트레이</p>
-                  <HeaderSelectArrowIcon width={20} height={20} />
-                </S.HeaderDropDown>
-                {isTrayCount && (
-                  <SearchDropdown
-                    width={"154px"}
-                    type={"trayTotal"}
-                    dataList={trayTotalList}
-                    selectData={selectData.trayTotal}
-                    searchText={searchTrayTotal}
-                    setSearchText={setSearchTrayTotal}
-                    dataClick={handleSelectChange}
-                  />
-                )}
-              </div>
-
-              <div className="arrow-wrap order-count">
-                <p>주문수량</p>
-                <div
-                  className="icon-wrap"
-                  onClick={() => {
-                    handleSelectChange(undefined, "planterOutputOrderType", !selectData.planterOutputOrderType);
-                  }}>
-                  {selectData.planterOutputOrderType ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
-                </div>
-              </div>
-              <div className="arrow-wrap sowing">
-                <p>파종량</p>
-                <div
-                  className="icon-wrap"
-                  onClick={() => {
-                    handleSelectChange(undefined, "seedQuantityOrderType", !selectData.seedQuantityOrderType);
-                  }}>
-                  {selectData.seedQuantityOrderType ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
-                </div>
-              </div>
-              <div className="arrow-wrap sowing">
-                <p>파종일자</p>
-                <div
-                  className="icon-wrap"
-                  onClick={() => {
-                    handleSelectChange(undefined, "sowingDateOrderType", !selectData.sowingDateOrderType);
-                  }}>
-                  {selectData.sowingDateOrderType ? (
-                    <UpArrow width={24} height={24} />
-                  ) : (
-                    <DownArrow width={24} height={24} />
-                  )}
-                </div>
-              </div>
-              <div className="arrow-wrap state">
-                <p>출하상태</p>
-                <div className="icon-wrap" onClick={sortByState}>
-                  {state ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
-                </div>
-              </div>
-            </div>
-
-            {staticsList.map((data, index) => {
-              return (
-                <S.ListBlock key={`statics${data.id}`} className={data.farmhouse.is_del && "delete"}>
-                  <p className="list_id">{index + 1}</p>
-                  <p className="farm_id">{data.farmhouse.farm_house_id}</p>
-                  <div className="farm_name_wrap">
-                    <div className="farm-name-first">{data.farmhouse.name.slice(0, 1)}</div>
-                    <p className="farm_name">{data.farmhouse.name}</p>
-                  </div>
-                  <p className="farm_plant">{data.crop.name}</p>
-                  <p className="plant_name">{data.crop_kind}</p>
-                  <p className="tray">{data.planter_tray.total}</p>
-                  <p className="order_count">{NumberCommaFormatting(data.order_quantity)}</p>
-                  <p className="sowing_count">{NumberCommaFormatting(data.order_quantity * data.planter_tray.total)}</p>
-                  <p className="sowing_date">{YYYYMMDDSlash(data.sowing_date)}</p>
-                  {!data.is_shipment_completed && !data.farmhouse.is_del ? (
-                    <FinCheckIcon width={98} height={40} />
-                  ) : !data.is_shipment_completed && !data.farmhouse.is_del ? (
-                    <WaitingIcon width={98} height={40} />
-                  ) : data.is_shipment_completed && data.farmhouse.is_del ? (
-                    <GrayFinCheckIcon width={98} height={40} />
-                  ) : data.is_shipment_completed && data.farmhouse.is_del ? (
-                    <GrayWaitingIcon width={98} height={40} />
-                  ) : (
-                    <></>
-                  )}
-                </S.ListBlock>
-              );
-            })}
-          </>
+              </S.ListBlock>
+            );
+          })
         )}
         {staticsInfo?.total !== 0 && staticsList.length !== staticsInfo?.total && (
           <S.ButtonWrap>
