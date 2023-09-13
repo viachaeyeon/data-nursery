@@ -1,11 +1,5 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
-import { useRecoilState } from "recoil";
-
-import useCreateManager from "@src/hooks/queries/auth/useCreateManager";
-import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
-import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
-import { settingManagerListKey } from "@src/utils/query-keys/AuthQueryKeys";
 
 import XIcon from "@images/common/icon-x.svg";
 
@@ -137,9 +131,6 @@ function AddManagerModal({
   managerPassword,
   setManagerPassword,
 }) {
-  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
-  const invalidateQueries = useInvalidateQueries();
-
   const closeModal = useCallback(() => {
     setAddManagerModalOpen(false);
     setManagerId("");
@@ -152,47 +143,9 @@ function AddManagerModal({
   }, []);
 
   const handleTraySaveClick = useCallback(() => {
-    createAdminMutate({
-      data: {
-        user_data: {
-          login_id: managerId,
-          password: managerPassword,
-          name: managerName,
-          code: "99",
-        },
-        admin_user_info_data: {
-          company: managerCompany,
-          department: managerDepartment,
-          position: managerPosition,
-          phone: managerPhone,
-        },
-      },
-    });
-
+    alert("저장");
     closeModal();
-  }, [managerId, managerCompany, managerDepartment, managerPosition, managerName, managerPhone, managerPassword]);
-
-  const { mutate: createAdminMutate } = useCreateManager(
-    () => {
-      closeModal();
-      setIsDefaultAlertShowState({
-        isShow: true,
-        type: "success",
-        text: "정상적으로 저장되었습니다.",
-        okClick: null,
-      });
-      invalidateQueries([settingManagerListKey]);
-    },
-    (error) => {
-      alert(error);
-      setIsDefaultAlertShowState({
-        isShow: true,
-        type: "error",
-        text: "오류가 발생했습니다.",
-        okClick: null,
-      });
-    },
-  );
+  }, []);
 
   return (
     <S.Wrap>
@@ -268,12 +221,7 @@ function AddManagerModal({
             <input
               placeholder="숫자만 입력하세요"
               value={managerPhone}
-              onChange={(e) =>
-                setManagerPhone(
-                  e.target.value.replace(/[^0-9]/g, "").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`),
-                )
-              }
-              maxLength="13"
+              onChange={(e) => setManagerPhone(e.target.value.replace(/[^0-9]/g, ""))}
             />
           </div>
 
