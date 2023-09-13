@@ -88,12 +88,26 @@ const S = {
       p {
         color: ${({ theme }) => theme.basic.gray60};
         ${({ theme }) => theme.textStyle.h7Reguler}
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .btn-wrap {
         width: 100%;
       }
     }
+
+    .header-table-first{
+      width: 250px;
+    }
+    .header-table{
+      width: 160px;
+    }
+    .header-table-fin{
+      width: 100px;
+    }
+
   `,
   ListBlockWrap: styled.div`
     max-height: 444px;
@@ -113,6 +127,20 @@ const S = {
     .option-modal-wrap {
       position: relative;
     }
+    .table-first{
+      width: 155px;
+      margin-left: 50px;
+    }
+    .table-text{
+      width: 130px;
+    }
+    .table-thir{
+      width: 50px;
+    }
+    .table-sec{
+      width: 110px;
+    }
+
   `,
   ListBlock: styled.div`
     align-items: center;
@@ -126,6 +154,9 @@ const S = {
     p {
       color: ${({ theme }) => theme.basic.gray50};
       ${({ theme }) => theme.textStyle.h7Bold}
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .option-dot {
@@ -385,14 +416,14 @@ function ManagementList() {
           </div>
           {checkArray.length === 0 ? (
             <>
-              <p>회원유형</p>
-              <p>계정아이디</p>
-              <p>회사명</p>
-              <p>부서명</p>
-              <p>직책</p>
-              <p>이름</p>
-              <p>연락처</p>
-              <p></p>
+              <p className="header-table-first">회원유형</p>
+              <p className="header-table">계정아이디</p>
+              <p className="header-table">회사명</p>
+              <p className="header-table">부서명</p>
+              <p className="header-table">직책</p>
+              <p className="header-table">이름</p>
+              <p className="header-table">연락처</p>
+              <p className="header-table-fin"></p>
             </>
           ) : (
             <>
@@ -432,17 +463,17 @@ function ManagementList() {
                   )}
 
                   {data.admin_user_info.is_top_admin === true ? (
-                    <TopManager width={107} height={28} />
+                    <TopManager width={107} height={28} className="table-first" />
                   ) : (
-                    <CommonManager width={107} height={28} />
+                    <CommonManager width={107} height={28} className="table-first"/>
                   )}
-                  <p>{data.user.id}</p>
-                  <p>{data.admin_user_info.company}</p>
-                  <p>{data.admin_user_info.department}</p>
-                  <p>{data.admin_user_info.position}</p>
-                  <p>{data.user.name}</p>
-                  <p>{data.admin_user_info.phone}</p>
-                  <div className="option-modal-wrap">
+                  <p className="table-sec">{data.user.id}</p>
+                  <p className="table-text">{data.admin_user_info.company}</p>
+                  <p className="table-text">{data.admin_user_info.department}</p>
+                  <p className="table-text">{data.admin_user_info.position}</p>
+                  <p className="table-text">{data.user.name}</p>
+                  <p className="table-text">{data.admin_user_info.phone}</p>
+                  <div className="option-modal-wrap table-thir">
                     <div
                       className="option-dot"
                       onClick={() => {
