@@ -1027,20 +1027,36 @@ def get_farmhouse_month_statics(
     user = get_current_user("01", request.cookies, db)
     planter = user.user_farm_house.farm_house_planter
 
+    # total_output = (
+    #     db.query(func.sum(models.PlanterOutput.output))
+    #     .join(
+    #         models.PlanterWork,
+    #         (models.PlanterWork.planter_id == planter.id)
+    #         & (models.PlanterOutput.planter_work_id == models.PlanterWork.id),
+    #     )
+    #     .filter(
+    #         extract(
+    #             "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+    #         )
+    #         == year,
+    #     )
+    # )
     total_output = (
-        db.query(func.sum(models.PlanterOutput.output))
+        db.query(func.sum(models.PlanterWork.seed_quantity))
         .join(
-            models.PlanterWork,
+            models.PlanterWorkStatus,
             (models.PlanterWork.planter_id == planter.id)
-            & (models.PlanterOutput.planter_work_id == models.PlanterWork.id),
+            & (models.PlanterWorkStatus.planter_work_id == models.PlanterWork.id),
         )
         .filter(
             extract(
-                "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+                "year", func.timezone("Asia/Seoul", models.PlanterWork.updated_at)
             )
             == year,
+            models.PlanterWorkStatus.status == "DONE"
         )
     )
+
 
     done_count = (
         db.query(
@@ -1059,24 +1075,42 @@ def get_farmhouse_month_statics(
         )
     )
 
+    # popular_crop = (
+    #     db.query(
+    #         cropModels.Crop.name,
+    #         cropModels.Crop.image,
+    #         func.sum(models.PlanterOutput.output).label("total_output"),
+    #     )
+    #     .join(
+    #         models.PlanterWork,
+    #         (cropModels.Crop.id == models.PlanterWork.crop_id)
+    #         & (planter.id == models.PlanterWork.planter_id),
+    #     )
+    #     .join(
+    #         models.PlanterOutput,
+    #         models.PlanterWork.id == models.PlanterOutput.planter_work_id,
+    #     )
+    #     .filter(
+    #         extract(
+    #             "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+    #         )
+    #         == year,
+    #     )
+    # )
     popular_crop = (
         db.query(
             cropModels.Crop.name,
             cropModels.Crop.image,
-            func.sum(models.PlanterOutput.output).label("total_output"),
+            func.sum(models.PlanterWork.seed_quantity).label("total_output"),
         )
         .join(
             models.PlanterWork,
             (cropModels.Crop.id == models.PlanterWork.crop_id)
             & (planter.id == models.PlanterWork.planter_id),
         )
-        .join(
-            models.PlanterOutput,
-            models.PlanterWork.id == models.PlanterOutput.planter_work_id,
-        )
         .filter(
             extract(
-                "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+                "year", func.timezone("Asia/Seoul", models.PlanterWork.updated_at)
             )
             == year,
         )
@@ -1085,19 +1119,34 @@ def get_farmhouse_month_statics(
     if month == 0:
         total_output = total_output.scalar() or 0
         done_count = done_count.scalar() or 0
+        # daily_output = (
+        #     db.query(
+        #         extract("month", models.PlanterOutput.updated_at).label("month"),
+        #         func.sum(models.PlanterOutput.output).label("total_output"),
+        #     )
+        #     .join(
+        #         models.PlanterWork,
+        #         (models.PlanterWork.planter_id == planter.id)
+        #         & (models.PlanterWork.id == models.PlanterOutput.planter_work_id),
+        #     )
+        #     .filter(
+        #         extract(
+        #             "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+        #         )
+        #         == year,
+        #     )
+        #     .group_by("month")
+        #     .all()
+        # )
         daily_output = (
             db.query(
-                extract("month", models.PlanterOutput.updated_at).label("month"),
-                func.sum(models.PlanterOutput.output).label("total_output"),
-            )
-            .join(
-                models.PlanterWork,
-                (models.PlanterWork.planter_id == planter.id)
-                & (models.PlanterWork.id == models.PlanterOutput.planter_work_id),
+                extract("month", models.PlanterWork.updated_at).label("month"),
+                func.sum(models.PlanterWork.seed_quantity).label("total_output"),
             )
             .filter(
+                models.PlanterWork.planter_id == planter.id,
                 extract(
-                    "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+                    "year", func.timezone("Asia/Seoul", models.PlanterWork.updated_at)
                 )
                 == year,
             )
@@ -1119,7 +1168,8 @@ def get_farmhouse_month_statics(
             total_output.filter(
                 extract(
                     "month",
-                    func.timezone("Asia/Seoul", models.PlanterOutput.updated_at),
+                    # func.timezone("Asia/Seoul", models.PlanterOutput.updated_at),
+                    func.timezone("Asia/Seoul", models.PlanterWork.updated_at),
                 )
                 == month,
             ).scalar()
@@ -1135,24 +1185,44 @@ def get_farmhouse_month_statics(
             ).scalar()
             or 0
         )
+        # daily_output = (
+        #     db.query(
+        #         extract("day", models.PlanterOutput.updated_at).label("day"),
+        #         func.sum(models.PlanterOutput.output).label("total_output"),
+        #     )
+        #     .join(
+        #         models.PlanterWork,
+        #         (models.PlanterWork.planter_id == planter.id)
+        #         & (models.PlanterWork.id == models.PlanterOutput.planter_work_id),
+        #     )
+        #     .filter(
+        #         extract(
+        #             "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+        #         )
+        #         == year,
+        #         extract(
+        #             "month",
+        #             func.timezone("Asia/Seoul", models.PlanterOutput.updated_at),
+        #         )
+        #         == month,
+        #     )
+        #     .group_by("day")
+        #     .all()
+        # )
         daily_output = (
             db.query(
-                extract("day", models.PlanterOutput.updated_at).label("day"),
-                func.sum(models.PlanterOutput.output).label("total_output"),
-            )
-            .join(
-                models.PlanterWork,
-                (models.PlanterWork.planter_id == planter.id)
-                & (models.PlanterWork.id == models.PlanterOutput.planter_work_id),
+                extract("day", models.PlanterWork.updated_at).label("day"),
+                func.sum(models.PlanterWork.seed_quantity).label("total_output"),
             )
             .filter(
+                models.PlanterWork.planter_id == planter.id,
                 extract(
-                    "year", func.timezone("Asia/Seoul", models.PlanterOutput.updated_at)
+                    "year", func.timezone("Asia/Seoul", models.PlanterWork.updated_at)
                 )
                 == year,
                 extract(
                     "month",
-                    func.timezone("Asia/Seoul", models.PlanterOutput.updated_at),
+                    func.timezone("Asia/Seoul", models.PlanterWork.updated_at),
                 )
                 == month,
             )
@@ -1164,7 +1234,7 @@ def get_farmhouse_month_statics(
             popular_crop.filter(
                 extract(
                     "month",
-                    func.timezone("Asia/Seoul", models.PlanterOutput.updated_at),
+                    func.timezone("Asia/Seoul", models.PlanterWork.updated_at),
                 )
                 == month,
             )
