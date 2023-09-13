@@ -180,11 +180,11 @@ function GraphFarmHouseProductionMonth() {
               afterFit: (context) => {
                 context.height += 23;
               },
-              title: {
-                display: true,
-                align: "end",
-                text: "개 (단위 : 만)",
-              },
+              // title: {
+              //   display: true,
+              //   align: "end",
+              //   text: "개 (단위 : 만)",
+              // },
             },
             y: {
               afterFit: (context) => {

@@ -147,11 +147,11 @@ function GraphTotalProduction() {
                 drawOnChartArea: false,
               },
               position: "left",
-              title: {
-                display: true,
-                align: "end",
-                text: "개 (단위 : 만)",
-              },
+              // title: {
+              //   display: true,
+              //   align: "end",
+              //   text: "개 (단위 : 만)",
+              // },
               // ticks: {
               //   stepSize: 10,
               // },
