@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
+import useManagerList from "@src/hooks/queries/auth/useManagerList";
+
 import AddIcon from "@images/management/add-icon.svg";
 import CheckBoxNone from "@images/setting/check-icon-none.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
@@ -150,6 +152,19 @@ const S = {
 };
 
 function ManagementList() {
+
+  const { data: managerList }= useManagerList({
+    page:1,
+    size:8,
+    successFn: () => {
+    },
+    errorFn: (err) => {
+      console.log("!!err", err);
+    },
+  })
+
+  console.log("managerList",managerList?.data)
+
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
     index: undefined,
@@ -392,10 +407,10 @@ function ManagementList() {
         </div>
         <S.ListBlockWrap>
           <div className="list-inner">
-            {listData.map((data, index, item) => {
+            {managerList?.data?.map((data, index, item) => {
               return (
                 <S.ListBlock key={item.id} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
-                  {data.member_type === "top" ? (
+                  {data.admin_user_info.is_top_admin === true ? (
                     <CheckBoxNone width={24} height={24} />
                   ) : (
                     <label key={item.id} className="table-row">
@@ -416,17 +431,17 @@ function ManagementList() {
                     </label>
                   )}
 
-                  {data.member_type === "top" ? (
+                  {data.admin_user_info.is_top_admin === true ? (
                     <TopManager width={107} height={28} />
                   ) : (
                     <CommonManager width={107} height={28} />
                   )}
-                  <p>{data.accountId}</p>
-                  <p>{data.company}</p>
-                  <p>{data.department}</p>
-                  <p>{data.position}</p>
-                  <p>{data.name}</p>
-                  <p>{data.phone}</p>
+                  <p>{data.user.id}</p>
+                  <p>{data.admin_user_info.company}</p>
+                  <p>{data.admin_user_info.department}</p>
+                  <p>{data.admin_user_info.position}</p>
+                  <p>{data.user.name}</p>
+                  <p>{data.admin_user_info.phone}</p>
                   <div className="option-modal-wrap">
                     <div
                       className="option-dot"

@@ -145,3 +145,15 @@ export const addAdminAPI = async (data) => {
     throw new Error(error.response?.status || "관리자를 추가하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
+
+//설정 페이지 : 관리자 목록
+export const getAdminListAPI = async (page,size) => {
+  try {
+    const res = await axios.get(process.env.NEXT_PUBLIC_END_POINT + `/api/admin/auth/admin/user/list?page=${page}&size=${size}`,{
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "관리자 리스트를 불러오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};

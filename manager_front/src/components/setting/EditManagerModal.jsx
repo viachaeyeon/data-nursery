@@ -164,12 +164,12 @@ const S = {
 };
 
 function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEditManagerPWChangeModalOpen }) {
-  const [editManagerId, setEditManagerId] = useState(editManagerModalOpen.data.data.accountId);
-  const [editManagerCompany, setEditManagerCompany] = useState(editManagerModalOpen.data.data.company);
-  const [editManagerDepartment, setEditManagerDepartment] = useState(editManagerModalOpen.data.data.department);
-  const [editManagerPosition, setEditManagerPosition] = useState(editManagerModalOpen.data.data.position);
-  const [editManagerName, setEditManagerName] = useState(editManagerModalOpen.data.data.name);
-  const [editManagerPhone, setEditManagerPhone] = useState(editManagerModalOpen.data.data.phone);
+  const [editManagerId, setEditManagerId] = useState(editManagerModalOpen.data.data.user.login_id);
+  const [editManagerCompany, setEditManagerCompany] = useState(editManagerModalOpen.data.data.admin_user_info.company);
+  const [editManagerDepartment, setEditManagerDepartment] = useState(editManagerModalOpen.data.data.admin_user_info.department);
+  const [editManagerPosition, setEditManagerPosition] = useState(editManagerModalOpen.data.data.admin_user_info.position);
+  const [editManagerName, setEditManagerName] = useState(editManagerModalOpen.data.data.user.name);
+  const [editManagerPhone, setEditManagerPhone] = useState(editManagerModalOpen.data.data.admin_user_info.phone);
   const closeModal = useCallback(() => {
     setEditManagerModalOpen({ open: false, data: undefined });
     setEditManagerCompany("");
@@ -183,6 +183,8 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
     alert("저장");
     closeModal();
   }, []);
+  
+  console.log("editManagerModalOpen",editManagerModalOpen)
 
   const handlePasswordChangeClick = useCallback(() => {
     setEditManagerPWChangeModalOpen({ open: true, data: editManagerModalOpen });
@@ -267,7 +269,8 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
           </S.TextWrap>
           <div className="input-btn-wrap">
             <div className="input-wrap">
-              <input value={editManagerModalOpen.data.data.password} type="password" disabled />
+              <input value={"***********"} disabled />
+              {/* <input value={editManagerModalOpen.data.data.password} type="password" disabled /> */}
             </div>
             <S.PasswordChangeBtn onClick={handlePasswordChangeClick}>
               <p>비밀번호 변경</p>
