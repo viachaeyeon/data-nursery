@@ -502,46 +502,51 @@ def update_farm_house_info(
     status_code=200,
 )
 def delete_farmhouse(
-    request: Request, farmhouse_id: int, db: Session = Depends(get_db)
+    request: Request, farmhouse_ids: str, db: Session = Depends(get_db)
 ):
     get_current_user("99", request.cookies, db)
 
-    farmhouse = get_(db, models.FarmHouse, id=farmhouse_id)
+    # farmhouse = get_(db, models.FarmHouse, id=farmhouse_id)
+    target_ids = farmhouse_ids.split("||")
+    farmhouses = (
+        db.query(models.FarmHouse).filter(models.FarmHouse.id.in_(target_ids)).all()
+    )
 
-    # Farmhouse User 삭제
-    user = farmhouse.farm_house_user
-    user.is_del = True
+    for farmhouse in farmhouses:
+        # Farmhouse User 삭제
+        user = farmhouse.farm_house_user
+        user.is_del = True
 
-    # Famhouse Planter 삭제
-    planter = farmhouse.farm_house_planter
-    planter.is_del = True
+        # Famhouse Planter 삭제
+        planter = farmhouse.farm_house_planter
+        planter.is_del = True
 
-    # Planter status 삭제
-    planter_status_list = planter.planter__planter_status
-    for planter_status in planter_status_list:
-        planter_status.is_del = True
+        # Planter status 삭제
+        planter_status_list = planter.planter__planter_status
+        for planter_status in planter_status_list:
+            planter_status.is_del = True
 
-    # PlanterWork 목록 가져오기
-    planter_work_list = planter.planter__planter_work
+        # PlanterWork 목록 가져오기
+        planter_work_list = planter.planter__planter_work
 
-    for planter_work in planter_work_list:
-        # PlanterWOrk 삭제
-        planter_work.is_del = True
-        # lanterWorkStatus 가져오기
-        planter_work_status_list = planter_work.planter_work__planter_work_status
-        # PlanterWork별 PlanterWorkStatus 가져오기
-        for planter_work_status in planter_work_status_list:
-            # PlanterWorkStatus 삭제
-            planter_work_status.is_del = True
-        # PlanterOutput 가져오기
-        planter_work_output_list = planter_work.planter_works__planter_output
-        # PlanterWork별 PlanterOutput 가져오기
-        for planter_work_output in planter_work_output_list:
-            # PlanterOutput 삭제
-            planter_work_output.is_del = True
+        for planter_work in planter_work_list:
+            # PlanterWOrk 삭제
+            planter_work.is_del = True
+            # lanterWorkStatus 가져오기
+            planter_work_status_list = planter_work.planter_work__planter_work_status
+            # PlanterWork별 PlanterWorkStatus 가져오기
+            for planter_work_status in planter_work_status_list:
+                # PlanterWorkStatus 삭제
+                planter_work_status.is_del = True
+            # PlanterOutput 가져오기
+            planter_work_output_list = planter_work.planter_works__planter_output
+            # PlanterWork별 PlanterOutput 가져오기
+            for planter_work_output in planter_work_output_list:
+                # PlanterOutput 삭제
+                planter_work_output.is_del = True
 
-    # Farmhouse 삭제
-    farmhouse.is_del = True
+        # Farmhouse 삭제
+        farmhouse.is_del = True
 
     db.commit()
 
