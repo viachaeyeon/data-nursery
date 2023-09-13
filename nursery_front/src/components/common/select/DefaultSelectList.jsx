@@ -12,7 +12,7 @@ const S = {
     left: 0%;
   `,
   Wrap: styled.div`
-    max-height: 90vh;
+    max-height: 90svh;
     /* overflow-y: auto; */
     position: absolute;
     z-index: 99;
@@ -69,15 +69,15 @@ const S = {
 
       &::-webkit-scrollbar {
         display: block !important;
-        width: 6px;
-        border-radius: 4px;
-        background-color: ${({ theme }) => theme.basic.whiteGrey};
+        width: 6px !important;
+        border-radius: 4px !important;
+        background-color: ${({ theme }) => theme.basic.whiteGrey} !important;
         margin-left: 5px !important;
       }
 
       &::-webkit-scrollbar-thumb {
-        border-radius: 4px;
-        background-color: ${({ theme }) => theme.mobile.scrollBar};
+        border-radius: 4px !important;
+        background-color: ${({ theme }) => theme.mobile.scrollBar} !important;
       }
     }
 
