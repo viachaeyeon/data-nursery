@@ -432,7 +432,6 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
               <S.Border />
             </S.ColorWrap>
           </S.InputWrap>
-
           {editCropsName.length === 0 ? (
             <S.ButtonWrapOff>
               <p>저장</p>
@@ -445,6 +444,7 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
                     cropId: editCropsModalOpen.data.id,
                     name: editCropsName,
                     image: typeof editCropsImg === "string" ? null : editCropsImg,
+                    image_del: editCropsImg === null ? true : false,
                     color: selectedColor,
                   },
                 });
