@@ -547,7 +547,7 @@ function ManagementList() {
       {/* 관리자 삭제모달 */}
       {deleteManagerModalOpen.open && (
         <div className="modal-wrap">
-          <ManagerDeleteModal setDeleteManagerModalOpen={setDeleteManagerModalOpen} />
+          <ManagerDeleteModal deleteManagerModalOpen={deleteManagerModalOpen} setDeleteManagerModalOpen={setDeleteManagerModalOpen} />
         </div>
       )}
     </S.Wrap>

@@ -169,3 +169,15 @@ export const updateAdminAPI = async (data) => {
     throw new Error(error.response?.status || "관리자를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
+
+//설정 페이지 : 관리자 삭제
+export const deleteAdminAPI = async (data) => {
+  try {
+    const res = await axios.patch(process.env.NEXT_PUBLIC_END_POINT + `/api/admin/auth/user/multiple/delete/${data.userIds}`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "관리자를 삭제하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
