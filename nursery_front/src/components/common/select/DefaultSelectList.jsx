@@ -98,11 +98,16 @@ const S = {
   `,
 };
 
-function DefaultSelectList({ children }) {
+function DefaultSelectList({ onClickEvent, children }) {
   return (
-    <S.BackGroundWrap>
+    <S.BackGroundWrap onClick={onClickEvent}>
       <S.Wrap>
-        <S.SelectWrap>{children}</S.SelectWrap>
+        <S.SelectWrap
+          onClick={(e) => {
+            e.stopPropagation();
+          }}>
+          {children}
+        </S.SelectWrap>
       </S.Wrap>
     </S.BackGroundWrap>
   );
