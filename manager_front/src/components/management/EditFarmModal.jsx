@@ -170,6 +170,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   const [editAddressCode, setEditAddressCode] = useState(editModalOpen.data.data.address.split("||")[0]);
   const [editAddress, setEditAddress] = useState(editModalOpen.data.data.address.split("||")[1]);
   const [editAddressData, setEditAddressData] = useState(editModalOpen.data.data.address.split("||")[2]);
+  // const [editAddressAll,setEditAddressAll]= useState("");
 
   const closeModal = useCallback(() => {
     setEditModalOpen({ open: false, data: undefined });
@@ -178,7 +179,8 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   console.log("editModalOpen", editModalOpen);
 
   const FarmInfoSave = useCallback(() => {
-    let editAddressAll = editAddressCode + "||" + editAddress + "||" + editAddressData;
+    // let editAddressAll = editAddressCode + "||" + editAddress + "||" + editAddressData;
+    // setEditAddressAll(editAddressCode + "||" + editAddress + "||" + editAddressData);
 
     updateFarmhouseMutate({
       data: {
@@ -186,17 +188,17 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
         name: editName,
         producer_name: editFarmName,
         phone: editPhone,
-        address: editAddressAll,
+        address: editAddressCode + "||" + editAddress + "||" + editAddressData,
       },
     });
     console.log("아이디 : ", editModalOpen.data.data.id);
     console.log("농가명 : ", editFarmName);
     console.log("생산자명 : ", editName);
     console.log("연락처 : ", editPhone);
-    console.log("주소 : ", editAddressAll);
+    console.log("주소 : ", editAddressCode + "||" + editAddress + "||" + editAddressData);
 
     closeModal();
-  }, [editModalOpen, editName, editFarmName]);
+  }, [editModalOpen,editName, editFarmName,editAddressCode,editAddress,editAddressData]);
 
   const open = useDaumPostcodePopup("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js");
 

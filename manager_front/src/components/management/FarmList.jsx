@@ -650,7 +650,7 @@ function FarmList() {
                 <p className="table-text name">{data?.producer_name}</p>
                 <p className="table-text farm_number">{data?.nursery_number}</p>
                 <p className="table-text address" id={`address${index}`}>
-                  {data?.address.split("||")[1] + data?.address.split("||")[2]}
+                  {data?.address.split("||")[1] +" "+ data?.address.split("||")[2]}
                 </p>
                 <p className="table-text phone">{data?.phone}</p>
                 {data?.status === "ON" ? (
@@ -696,7 +696,7 @@ function FarmList() {
                     <div className="text-wrap">
                       <p>
                         {/* ({data?.address_code}) */}
-                        {"(" + data?.address.split("||")[0] + ") " + data?.address.split("||")[1]}
+                        {"(" + data?.address.split("||")[0] + ") " + data?.address.split("||")[1] + " " + data?.address.split("||")[2]}
                       </p>
                     </div>
                   }

@@ -259,7 +259,7 @@ function AddFarmSaveModal({
     console.log("농가명 : ", farmName);
     console.log("생산자명 : ", producerName);
     console.log("연락처 : ", phoneNumber);
-    console.log("주소 : ", addressCode + "||" + addressData.split(") ")[1] + addressDetailData);
+    console.log("주소 : ", addressCode + "||" + addressData.split(") ")[1] +"||"+ addressDetailData);
     console.log("큐알코드 : ", file);
     console.log("큐알코드 : ", qrCodeUrl);
     console.log("전체 주소 : ", addressData);
