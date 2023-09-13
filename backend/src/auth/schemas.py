@@ -74,6 +74,7 @@ class FarmHouseResponse(BaseModel):
     producer_name: str
     address: str
     phone: str
+    user_id: int
     planter: Planter
     last_planter_status: Optional[PlanterStatus]
 

@@ -514,7 +514,7 @@ def get_planter_work_statics(
     crop_name: str = None,
     crop_kind_order_type: int = 0,  # 0: 내림차순, 1: 올림차순
     tray_total: str = None,
-    seed_quantity_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
+    order_quantity_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
     planter_output_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
     sowing_date_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
     is_shipment_completed_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
@@ -654,7 +654,7 @@ def get_planter_work_statics(
         order_conditions.append(desc(planterModels.PlanterWork.crop_kind))
     else:
         order_conditions.append(asc(planterModels.PlanterWork.crop_kind))
-    if seed_quantity_order_type == 0:
+    if order_quantity_order_type == 0:
         order_conditions.append(desc(planterModels.PlanterWork.seed_quantity))
     else:
         order_conditions.append(asc(planterModels.PlanterWork.seed_quantity))
