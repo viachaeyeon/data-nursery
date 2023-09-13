@@ -235,10 +235,20 @@ const S = {
       justify-content: center;
     }
 
+    .order-none-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 5px;
+      ${({ theme }) => theme.textStyle.h3Bold}
+      color: ${({ theme }) => theme.basic.gray50};
+    }
+
     .icon-wrap {
       cursor: pointer;
       align-items: center;
       display: flex;
+      width: 24px;
+      height: 24px;
     }
 
     .check-box {
@@ -468,11 +478,11 @@ function StatisticsStatus() {
     farmHouseId: "",
     farmHouseName: "",
     cropName: "",
-    cropKindOrderType: 0,
+    cropKindOrderType: 2,
     trayTotal: "",
-    orderQuantityOrderType: 1,
-    planterOutputOrderType: 1,
-    sowingDateOrderType: 1,
+    orderQuantityOrderType: 2,
+    planterOutputOrderType: 2,
+    sowingDateOrderType: 2,
     isShipmentCompletedOrderType: 1,
   });
 
@@ -650,8 +660,52 @@ function StatisticsStatus() {
         setSelectData((prev) => ({
           // 정렬 값
           ...prev,
-          [name]: value ? 1 : 0,
+          [name]: value,
         }));
+
+        if (value === 0) {
+          if (name === "cropKindOrderType") {
+            setSelectData((prev) => ({
+              ...prev,
+              orderQuantityOrderType: 2,
+              planterOutputOrderType: 2,
+              sowingDateOrderType: 2,
+              isShipmentCompletedOrderType: 2,
+            }));
+          } else if (name === "orderQuantityOrderType") {
+            setSelectData((prev) => ({
+              ...prev,
+              cropKindOrderType: 2,
+              planterOutputOrderType: 2,
+              sowingDateOrderType: 2,
+              isShipmentCompletedOrderType: 2,
+            }));
+          } else if (name === "planterOutputOrderType") {
+            setSelectData((prev) => ({
+              ...prev,
+              cropKindOrderType: 2,
+              orderQuantityOrderType: 2,
+              sowingDateOrderType: 2,
+              isShipmentCompletedOrderType: 2,
+            }));
+          } else if (name === "sowingDateOrderType") {
+            setSelectData((prev) => ({
+              ...prev,
+              cropKindOrderType: 2,
+              planterOutputOrderType: 2,
+              orderQuantityOrderType: 2,
+              isShipmentCompletedOrderType: 2,
+            }));
+          } else {
+            setSelectData((prev) => ({
+              ...prev,
+              cropKindOrderType: 2,
+              planterOutputOrderType: 2,
+              orderQuantityOrderType: 2,
+              sowingDateOrderType: 2,
+            }));
+          }
+        }
       } else {
         // dropdown으로 선택하는 값
         const preValue = selectData[name];
@@ -883,18 +937,35 @@ function StatisticsStatus() {
               />
             )}
           </div>
-
           <div className="arrow-wrap farm-name">
             <p>품종명</p>
-            <div
-              className="icon-wrap"
-              onClick={() => {
-                handleSelectChange(undefined, "cropKindOrderType", !selectData.cropKindOrderType);
-              }}>
-              {!selectData.cropKindOrderType ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
+            <div className="icon-wrap">
+              {selectData.cropKindOrderType === 0 && (
+                <UpArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "cropKindOrderType", 1);
+                  }}
+                />
+              )}
+              {selectData.cropKindOrderType === 1 && (
+                <DownArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "cropKindOrderType", 2);
+                  }}
+                />
+              )}
+              {selectData.cropKindOrderType === 2 && (
+                <p
+                  className="order-none-icon"
+                  onClick={() => {
+                    handleSelectChange(undefined, "cropKindOrderType", 0);
+                  }}>
+                  -
+                </p>
               )}
             </div>
           </div>
@@ -919,57 +990,129 @@ function StatisticsStatus() {
 
           <div className="arrow-wrap order-count">
             <p>주문수량</p>
-            <div
-              className="icon-wrap"
-              onClick={() => {
-                handleSelectChange(undefined, "orderQuantityOrderType", !selectData.orderQuantityOrderType);
-              }}>
-              {!selectData.orderQuantityOrderType ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
+            <div className="icon-wrap">
+              {selectData.orderQuantityOrderType === 0 && (
+                <UpArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "orderQuantityOrderType", 1);
+                  }}
+                />
+              )}
+              {selectData.orderQuantityOrderType === 1 && (
+                <DownArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "orderQuantityOrderType", 2);
+                  }}
+                />
+              )}
+              {selectData.orderQuantityOrderType === 2 && (
+                <p
+                  className="order-none-icon"
+                  onClick={() => {
+                    handleSelectChange(undefined, "orderQuantityOrderType", 0);
+                  }}>
+                  -
+                </p>
               )}
             </div>
           </div>
           <div className="arrow-wrap sowing">
             <p>파종량</p>
-            <div
-              className="icon-wrap"
-              onClick={() => {
-                handleSelectChange(undefined, "planterOutputOrderType", !selectData.planterOutputOrderType);
-              }}>
-              {!selectData.planterOutputOrderType ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
+            <div className="icon-wrap">
+              {selectData.planterOutputOrderType === 0 && (
+                <UpArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "planterOutputOrderType", 1);
+                  }}
+                />
+              )}
+              {selectData.planterOutputOrderType === 1 && (
+                <DownArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "planterOutputOrderType", 2);
+                  }}
+                />
+              )}
+              {selectData.planterOutputOrderType === 2 && (
+                <p
+                  className="order-none-icon"
+                  onClick={() => {
+                    handleSelectChange(undefined, "planterOutputOrderType", 0);
+                  }}>
+                  -
+                </p>
               )}
             </div>
           </div>
           <div className="arrow-wrap sowing">
             <p>파종일자</p>
-            <div
-              className="icon-wrap"
-              onClick={() => {
-                handleSelectChange(undefined, "sowingDateOrderType", !selectData.sowingDateOrderType);
-              }}>
-              {!selectData.sowingDateOrderType ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
+            <div className="icon-wrap">
+              {selectData.sowingDateOrderType === 0 && (
+                <UpArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "sowingDateOrderType", 1);
+                  }}
+                />
+              )}
+              {selectData.sowingDateOrderType === 1 && (
+                <DownArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "sowingDateOrderType", 2);
+                  }}
+                />
+              )}
+              {selectData.sowingDateOrderType === 2 && (
+                <p
+                  className="order-none-icon"
+                  onClick={() => {
+                    handleSelectChange(undefined, "sowingDateOrderType", 0);
+                  }}>
+                  -
+                </p>
               )}
             </div>
           </div>
           <div className="arrow-wrap state">
             <p>출하상태</p>
-            <div
-              className="icon-wrap"
-              onClick={() => {
-                handleSelectChange(undefined, "isShipmentCompletedOrderType", !selectData.isShipmentCompletedOrderType);
-              }}>
-              {!selectData.isShipmentCompletedOrderType ? (
-                <UpArrow width={24} height={24} />
-              ) : (
-                <DownArrow width={24} height={24} />
+            <div className="icon-wrap">
+              {selectData.isShipmentCompletedOrderType === 0 && (
+                <UpArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "isShipmentCompletedOrderType", 1);
+                  }}
+                />
+              )}
+              {selectData.isShipmentCompletedOrderType === 1 && (
+                <DownArrow
+                  width={24}
+                  height={24}
+                  onClick={() => {
+                    handleSelectChange(undefined, "isShipmentCompletedOrderType", 2);
+                  }}
+                />
+              )}
+              {selectData.isShipmentCompletedOrderType === 2 && (
+                <p
+                  className="order-none-icon"
+                  onClick={() => {
+                    handleSelectChange(undefined, "isShipmentCompletedOrderType", 0);
+                  }}>
+                  -
+                </p>
               )}
             </div>
           </div>
