@@ -62,7 +62,7 @@ export const updateFarmhouseAPI = async (data) => {
 export const deleteFarmhouseAPI = async (data) => {
   try {
     const res = await axios.patch(
-      process.env.NEXT_PUBLIC_END_POINT + `/api/auth/farmhouse/delete?farmhouse_id=${data.farmhouseId}`,
+      process.env.NEXT_PUBLIC_END_POINT + `/api/auth/farmhouse/delete?farmhouse_ids=${data.farmhouseIds}`,
       data,
       {
         withCredentials: true,

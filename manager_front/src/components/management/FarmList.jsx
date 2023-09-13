@@ -378,7 +378,7 @@ function FarmList() {
     nameOrder: isNameOrderBy,
     statusOrder: isStateOrderBy,
     page: page,
-    size: 15,
+    size: 8,
     successFn: (res) => {
       if (isAddDataClick) {
         setFarmList((prev) => [...prev, ...res.farm_houses]);
@@ -642,7 +642,7 @@ function FarmList() {
                 <div className="table-third farm_name_wrap">
                   <div
                     className="farm-name-first"
-                    style={{ backgroundColor: colorArray[index % farmhouseList?.farm_houses.length] }}>
+                    style={{ backgroundColor: colorArray[index % farmList.length] }}>
                     {data?.name?.slice(0, 1)}
                   </div>
                   <p className="farm_name">{data?.name}</p>
