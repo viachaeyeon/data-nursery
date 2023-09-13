@@ -281,6 +281,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
               onChange={(e) =>
                 setEditPhone(e.target.value.replace(/[^0-9]/g, "").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`))
               }
+              maxLength="13"
             />
           </div>
           <p className="title-info">주소</p>

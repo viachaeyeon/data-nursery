@@ -4,8 +4,8 @@ import styled from "styled-components";
 import MainLayout from "../../components/layout/MainLayout";
 import MainHeader from "@components/layout/MainHeader";
 import ManagementList from "@components/setting/ManagementList";
-// import CropsList from "@components/setting/CropsList";
-// import TrayList from "@components/setting/TrayList";
+import CropsList from "@components/setting/CropsList";
+import TrayList from "@components/setting/TrayList";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 
@@ -55,8 +55,8 @@ function Setting() {
       <S.Wrap>
         <ManagementList />
         <S.BottomWrap>
-          {/* <CropsList />
-          <TrayList /> */}
+          <CropsList />
+          <TrayList />
         </S.BottomWrap>
       </S.Wrap>
     </MainLayout>
