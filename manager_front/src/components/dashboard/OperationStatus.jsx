@@ -159,6 +159,7 @@ const S = {
 
 function OperationStatus({ currentDate }) {
   const [operationListPage, setOperationListPage] = useState(1);
+  const [operationList, setOperationList] = useState([]);
 
   // inView : 요소가 뷰포트에 진입했는지 여부
   const { ref, inView, entry } = useInView({
@@ -167,8 +168,10 @@ function OperationStatus({ currentDate }) {
 
   // 페이지 변경
   const pageChange = useCallback(() => {
-    setOperationListPage(operationListPage + 1);
-  }, [operationListPage]);
+    if (planterOperationStatus?.total > operationList.length) {
+      setOperationListPage(operationListPage + 1);
+    }
+  }, [operationListPage, operationList]);
 
   useEffect(() => {
     if (inView) {
@@ -179,48 +182,13 @@ function OperationStatus({ currentDate }) {
   const { data: planterOperationStatus } = usePlanterRealTime({
     page: operationListPage,
     size: 20,
-    successFn: () => {},
+    successFn: (res) => {
+      setOperationList((prev) => [...prev, ...res.planter]);
+    },
     errorFn: (err) => {
       console.log("!!err", err);
     },
   });
-
-  // console.log("operationListPage",operationListPage)
-
-  // console.log("planterOperationStatus",planterOperationStatus)
-  // const testArray = {planter:[{planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'ON',planter_output:35000},
-  // {planter:1,farm_house_name:'육묘장2222222222',planter_status:'OFF',planter_output:35000}]}
 
   return (
     <S.Wrap>
