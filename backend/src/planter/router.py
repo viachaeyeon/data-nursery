@@ -953,20 +953,33 @@ def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db
         )
         .filter(
             pw.is_del == False,
-            pw.planter_id == user_planter.id,
             pws.status == "DONE",
-            func.Date(pws.created_at) == datetime.now(tz=utc).date(),
+            # func.Date(pws.created_at) == datetime.now(tz=utc).date(),
+            func.Date(pws.updated_at) == datetime.utcnow().date(),
         )
     )
 
-    today_total_seed_quantity = base_query.with_entities(
-        func.sum(pw.seed_quantity)
-    ).scalar()
+    # today_total_seed_quantity = base_query.with_entities(
+    #     func.sum(pw.seed_quantity)
+    # ).scalar()
+    today_total_seed_quantity_query = base_query.with_entities(
+        pw.id,
+        pw.seed_quantity
+    ).group_by(pw.id, pw.seed_quantity).all()
+    today_total_seed_quantity = 0
+    for _, pw_seed_quantity in today_total_seed_quantity_query:
+        today_total_seed_quantity += pw_seed_quantity
+
+    
 
     today_best_crop_kind = (
-        base_query.with_entities(pw.crop_kind, func.sum(pw.seed_quantity))
-        .group_by(pw.crop_kind)
-        .order_by(func.sum(pw.seed_quantity).desc())
+        # base_query.with_entities(pw.crop_kind, func.sum(pw.seed_quantity))
+        # .group_by(pw.crop_kind)
+        # .order_by(func.sum(pw.seed_quantity).desc())
+        # .first()
+        base_query.with_entities(pw.crop_kind, pw.seed_quantity)
+        .group_by(pw.crop_kind, pw.seed_quantity)
+        .order_by(pw.seed_quantity.desc())
         .first()
     )
 
@@ -978,7 +991,8 @@ def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db
             "total_seed_quantity": today_best_crop_kind[1],
         }
 
-    today_planter_usage = base_query.with_entities(func.count(pw.id)).first()
+    today_planter_usage = base_query.with_entities(pw.id).group_by(pw.id).count()
+
 
     planter_status_operating_time = (
         db.query(func.sum(models.PlanterStatus.operating_time))
@@ -995,7 +1009,7 @@ def get_farmhouse_today_dashboard(request: Request, db: Session = Depends(get_db
         "today_total_seed_quantity": today_total_seed_quantity,
         "today_best_crop_kind": today_best_crop_kind_result,
         "today_planter_usage": {
-            "working_times": today_planter_usage[0],
+            "working_times": today_planter_usage,
             "time": planter_status_operating_time,
         },
     }
