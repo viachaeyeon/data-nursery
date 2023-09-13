@@ -2,6 +2,8 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
 import useCropList from "@src/hooks/queries/crop/useCropList";
+import useDeleteMultipleCrop from "@src/hooks/queries/crop/useDeleteMultipleCrop";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import AddCropsModal from "./AddCropsModal";
 import CropsOptionModal from "./CropsOptionModal";
@@ -14,6 +16,7 @@ import CheckBoxOn from "@images/common/check-icon-on.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import PlantIcon from "@images/setting/plant-no-data.svg";
 import DeleteIcon from "@images/setting/icon-delete.svg";
+import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -179,16 +182,13 @@ const S = {
 };
 
 function CropsList() {
+  const invalidateQueries = useInvalidateQueries();
+
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
     index: undefined,
     data: undefined,
   });
-
-  // 선택삭제 클릭
-  const handelSelectDeleteClick = useCallback(() => {
-    alert("선택삭제");
-  }, []);
 
   //작물 추가 모달 오픈
   const [addCropsModalOpen, setAddCropsModalOpen] = useState(false);
@@ -205,6 +205,29 @@ function CropsList() {
     data: undefined,
   });
 
+  // 체크박스 선택 목록
+  const [checkArray, setCheckArray] = useState([]);
+
+  // 작물 목록 API
+  const { data: cropList } = useCropList({
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 작물 다중 삭제 API
+  const { mutate: deleteMultipleCropMutate } = useDeleteMultipleCrop(
+    () => {
+      // 작물목록 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([cropListKey]);
+      setCheckArray([]);
+    },
+    (error) => {
+      alert(error);
+    },
+  );
+
   // 작물목록 : 눌렀을때 나오는 모달
   const handleCropsOptionModalClick = useCallback(
     (index, data) => {
@@ -217,13 +240,25 @@ function CropsList() {
     [optionModalOpen],
   );
 
-  // 작물 추가 모달
-  const handleAddCropsModalClick = useCallback(() => {
-    setAddCropsModalOpen(true);
-  }, [addCropsModalOpen]);
+  // 체크박스 전제 선택 및 전체 해제
+  const toggleAll = useCallback(
+    (isAllCheck) => {
+      if (isAllCheck) {
+        // 전부 체크되어 있는 경우
+        setCheckArray([]);
+      } else {
+        // 전부 체크 안되어 있는 경우
+        const allCheckArray = [];
 
-  // 체크박스 선택 목록
-  const [checkArray, setCheckArray] = useState([]);
+        cropList?.crops.map((crop) => {
+          allCheckArray.push(crop.id);
+        });
+
+        setCheckArray(allCheckArray);
+      }
+    },
+    [cropList],
+  );
 
   const toggleItem = useCallback(
     (isCheck, id) => {
@@ -238,29 +273,6 @@ function CropsList() {
     [checkArray],
   );
 
-  const toggleAll = useCallback((isAllCheck) => {
-    if (isAllCheck) {
-      // 전부 체크되어 있는 경우
-      setCheckArray([]);
-    } else {
-      // 전부 체크 안되어 있는 경우
-      const allCheckArray = [];
-
-      cropList?.crops.map((crop) => {
-        allCheckArray.push(crop.id);
-      });
-      setCheckArray(allCheckArray);
-    }
-  }, []);
-
-  // 작물 목록 API
-  const { data: cropList } = useCropList({
-    successFn: () => {},
-    errorFn: (err) => {
-      alert(err);
-    },
-  });
-
   return (
     <S.Wrap>
       <S.TitleWrap>
@@ -268,7 +280,10 @@ function CropsList() {
           <p className="title">작물목록</p>
           <p className="sub-title">작물목록 추가, 변경</p>
         </S.Title>
-        <S.AddButton onClick={handleAddCropsModalClick}>
+        <S.AddButton
+          onClick={() => {
+            setAddCropsModalOpen(true);
+          }}>
           <AddIcon width={24} height={24} />
           <p>작물 추가</p>
         </S.AddButton>
@@ -311,7 +326,14 @@ function CropsList() {
               ) : (
                 <>
                   <div className="btn-wrap">
-                    <S.SelectDeleteBtn onClick={handelSelectDeleteClick}>
+                    <S.SelectDeleteBtn
+                      onClick={() => {
+                        deleteMultipleCropMutate({
+                          data: {
+                            deleteCrop: checkArray.join("||"),
+                          },
+                        });
+                      }}>
                       <DeleteIcon width={12} height={12} />
                       <p>선택삭제</p>
                     </S.SelectDeleteBtn>

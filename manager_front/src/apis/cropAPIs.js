@@ -60,3 +60,19 @@ export const updateCropAPI = async (data) => {
     }
   }
 };
+
+// 작물 다중 삭제
+export const deleteMultipleCropAPI = async (data) => {
+  try {
+    const res = await axios.patch(
+      process.env.NEXT_PUBLIC_END_POINT + `/api/admin/crop/multiple/delete/${data.deleteCrop}`,
+      {},
+      {
+        withCredentials: true,
+      },
+    );
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "작물 삭제에 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
