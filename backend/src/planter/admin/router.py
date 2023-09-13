@@ -512,11 +512,11 @@ def get_planter_work_statics(
     farm_house_id: str = None,
     farmhouse_name: str = None,
     crop_name: str = None,
-    crop_kind_order_type: int = 0,  # 0: 내림차순, 1: 올림차순
+    crop_kind_order_type: int = None,  # 0: 내림차순, 1: 올림차순
     tray_total: str = None,
-    order_quantity_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
-    planter_output_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
-    sowing_date_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
+    order_quantity_order_type: int = None,  # 0: 내림차순, 1: 올림차순
+    planter_output_order_type: int = None,  # 0: 내림차순, 1: 올림차순
+    sowing_date_order_type: int = None,  # 0: 내림차순, 1: 올림차순
     is_shipment_completed_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
     page: int = 1,
     size: int = 10,
@@ -652,28 +652,28 @@ def get_planter_work_statics(
     order_conditions = []
     if crop_kind_order_type == 0:
         order_conditions.append(desc(planterModels.PlanterWork.crop_kind))
-    else:
+    elif crop_kind_order_type == 1:
         order_conditions.append(asc(planterModels.PlanterWork.crop_kind))
     if order_quantity_order_type == 0:
-        order_conditions.append(desc(planterModels.PlanterWork.seed_quantity))
-    else:
-        order_conditions.append(asc(planterModels.PlanterWork.seed_quantity))
+        order_conditions.append(desc(planterModels.PlanterWork.order_quantity))
+    elif order_quantity_order_type == 1:
+        order_conditions.append(asc(planterModels.PlanterWork.order_quantity))
     if planter_output_order_type == 0:
         order_conditions.append(desc(planterModels.PlanterOutput.output))
-    else:
+    elif planter_output_order_type == 1:
         order_conditions.append(asc(planterModels.PlanterOutput.output))
     if sowing_date_order_type == 0:
         order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
-    else:
+    elif sowing_date_order_type == 1:
         order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
-    if sowing_date_order_type == 0:
-        order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
-    else:
-        order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
+    # if sowing_date_order_type == 0:
+    #     order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
+    # else:
+    #     order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
     if is_shipment_completed_order_type == 0:
-        order_conditions.append(asc(planterModels.PlanterWork.is_shipment_completed))
-    else:
         order_conditions.append(desc(planterModels.PlanterWork.is_shipment_completed))
+    elif is_shipment_completed_order_type == 1:
+        order_conditions.append(asc(planterModels.PlanterWork.is_shipment_completed))
 
     base_query = base_query.order_by(*order_conditions)
 
