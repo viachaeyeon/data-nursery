@@ -77,6 +77,7 @@ def create_planter_output(
     db: Session = Depends(get_db),
 ):
     planter = get_(db, models.Planter, serial_number=serial_number)
+    planter_status, operating_count, operating_time = planter_data.data.split("||")
 
     pw = aliased(models.PlanterWork)
     pws = aliased(models.PlanterWorkStatus)
@@ -104,13 +105,6 @@ def create_planter_output(
         .first()
     )
 
-    if not planter_work_status_in_working:
-        return JSONResponse(status_code=404, content=dict(msg="NOT_WORKING_STATUS"))
-
-    planter_status, operating_count, operating_time = planter_data.data.split("||")
-
-    planter_output = planter_work_status_in_working.planter_works__planter_output
-
     # 현재 파종기 동작 상태
     current_planter_status = (
         db.query(models.PlanterStatus)
@@ -118,6 +112,39 @@ def create_planter_output(
         .order_by(models.PlanterStatus.created_at.desc())
         .first()
     )
+    if not planter_work_status_in_working:
+        # 파종기에 작업중인 작업이 없을 경우에 파종기 상태만 종료하기 위해 사용
+        if planter_status == "0" and current_planter_status.status == "ON":
+            new_planter_status = create_(
+                db,
+                models.PlanterStatus,
+                status="OFF",
+                operating_time=operating_time,
+                planter_status__planter=planter,
+            )
+            db.add(new_planter_status)
+            db.commit()
+            db.refresh(new_planter_status)
+
+            return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+        elif planter_status == "1" and current_planter_status.status == "OFF":
+            new_planter_status = create_(
+                db,
+                models.PlanterStatus,
+                status="ON",
+                operating_time=operating_time,
+                planter_status__planter=planter,
+            )
+            db.add(new_planter_status)
+            db.commit()
+            db.refresh(new_planter_status)
+            return JSONResponse(status_code=201, content=dict(msg="SUCCESS"))
+        else:
+            return JSONResponse(status_code=404, content=dict(msg="NOT_WORKING_STATUS"))
+
+    planter_output = planter_work_status_in_working.planter_works__planter_output
+
+
 
     new_planter_status = None
 
