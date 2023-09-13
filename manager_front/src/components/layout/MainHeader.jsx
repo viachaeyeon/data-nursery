@@ -35,11 +35,10 @@ const S = {
 };
 
 function MainHeader({ currentDateTime }) {
-  const {data:userInfo} = useUserInfo({
-    successFn:()=>{},
-    errorFn:() => {
-    }
-  })
+  const { data: userInfo } = useUserInfo({
+    successFn: () => {},
+    errorFn: () => {},
+  });
 
   return (
     <S.Wrap>
