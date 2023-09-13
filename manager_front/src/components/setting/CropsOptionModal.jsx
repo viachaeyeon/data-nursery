@@ -73,16 +73,11 @@ function CropsOptionModal({
   deleteCropsModalOpen,
   setDeleteCropsModalOpen,
   setEditCropsModalOpen,
-  deleteCropsImgModalOpen,
-  setDeleteCropsImgModalOpen,
-  // setEditTrayModalOpen,
-  // deleteTrayModalOpen,
-  // setDeleteTrayModalOpen,
 }) {
   // 수정
   const handelEditClick = useCallback(() => {
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
-    setEditCropsModalOpen({ open: true, data: optionModalOpen });
+    setEditCropsModalOpen({ open: true, data: optionModalOpen.data });
   }, []);
 
   //삭제
