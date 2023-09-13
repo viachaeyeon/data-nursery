@@ -157,3 +157,15 @@ export const getAdminListAPI = async (page,size) => {
     throw new Error(error.response?.status || "관리자 리스트를 불러오는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
   }
 };
+
+//설정 페이지 : 관리자 수정
+export const updateAdminAPI = async (data) => {
+  try {
+    const res = await axios.post(process.env.NEXT_PUBLIC_END_POINT + `/api/admin/auth/admin/update/${data.userId}`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.status || "관리자를 수정하는데 실패하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};

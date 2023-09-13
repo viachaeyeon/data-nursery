@@ -467,7 +467,7 @@ function ManagementList() {
                   ) : (
                     <CommonManager width={107} height={28} className="table-first"/>
                   )}
-                  <p className="table-sec">{data.user.id}</p>
+                  <p className="table-sec">{data.user.login_id}</p>
                   <p className="table-text">{data.admin_user_info.company}</p>
                   <p className="table-text">{data.admin_user_info.department}</p>
                   <p className="table-text">{data.admin_user_info.position}</p>

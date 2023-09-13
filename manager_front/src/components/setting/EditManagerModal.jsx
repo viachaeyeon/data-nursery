@@ -1,5 +1,9 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
+import { useRecoilState } from "recoil";
+
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+import useUpdateManager from "@src/hooks/queries/auth/useUpdateManager";
 
 import XIcon from "@images/common/icon-x.svg";
 
@@ -164,6 +168,7 @@ const S = {
 };
 
 function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEditManagerPWChangeModalOpen }) {
+  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const [editManagerId, setEditManagerId] = useState(editManagerModalOpen.data.data.user.login_id);
   const [editManagerCompany, setEditManagerCompany] = useState(editManagerModalOpen.data.data.admin_user_info.company);
   const [editManagerDepartment, setEditManagerDepartment] = useState(editManagerModalOpen.data.data.admin_user_info.department);
@@ -180,15 +185,58 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
   }, []);
 
   const handleTraySaveClick = useCallback(() => {
-    alert("저장");
+    updateManagerList({
+      data:{
+        userId:editManagerModalOpen.data.data.user.id,
+        user_data: {
+          name: editManagerName,
+          is_del: false
+        },
+        admin_user_info_data: {
+          company: editManagerCompany,
+          department: editManagerDepartment,
+          position: editManagerPosition,
+          phone: editManagerPhone,
+          is_del: false
+        }
+      }
+    })
+
+    console.log("회사",editManagerCompany)
+    console.log("부서",editManagerDepartment)
+    console.log("직책",editManagerPosition)
+    console.log("이름",editManagerName)
+    console.log("전화번호",editManagerPhone)
+
     closeModal();
-  }, []);
+  }, [editManagerCompany,editManagerDepartment,editManagerPosition,editManagerName,editManagerPhone]);
   
   console.log("editManagerModalOpen",editManagerModalOpen)
 
   const handlePasswordChangeClick = useCallback(() => {
     setEditManagerPWChangeModalOpen({ open: true, data: editManagerModalOpen });
   });
+
+  const {mutate:updateManagerList} = useUpdateManager(
+    () => {
+      // invalidateQueries([useFarmAllListKey]);
+      // closeModal();
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "success",
+        text: "정상적으로 저장되었습니다.",
+        okClick: null,
+      });
+    },
+    (error) => {
+      setIsDefaultAlertShowState({
+        isShow: true,
+        type: "error",
+        text: "오류가 발생했습니다.",
+        okClick: null,
+      });
+    },
+  )
 
   return (
     <S.Wrap>
