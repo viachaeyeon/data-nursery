@@ -164,13 +164,12 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
-  const [editFarmName, setEditFarmName] = useState(editModalOpen.data.data.farm_name);
-  const [editName, setEditName] = useState(editModalOpen.data.data.name);
+  const [editFarmName, setEditFarmName] = useState(editModalOpen.data.data.name);
+  const [editName, setEditName] = useState(editModalOpen.data.data.producer_name);
   const [editPhone, setEditPhone] = useState(editModalOpen.data.data.phone);
-  const [editAddressCode, setEditAddressCode] = useState(editModalOpen.data.data.address_code);
-  const [editAddress, setEditAddress] = useState(editModalOpen.data.data.address);
-  const [editAddressData, setEditAddressData] = useState(editModalOpen.data.data.address_detail);
-  // const [editDetailAddress,setEditDetailAddress] = useState(editModalOpen.data.data.)
+  const [editAddressCode, setEditAddressCode] = useState(editModalOpen.data.data.address.split("||")[0]);
+  const [editAddress, setEditAddress] = useState(editModalOpen.data.data.address.split("||")[1]);
+  const [editAddressData, setEditAddressData] = useState(editModalOpen.data.data.address.split("||")[2]);
 
   const closeModal = useCallback(() => {
     setEditModalOpen({ open: false, data: undefined });
@@ -262,15 +261,15 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
         <S.InputWrap>
           <p className="title-info">파종기 시러얼번호</p>
           <div className="input-wrap-off">
-            <input value={editModalOpen.data.data.serial_number} disabled />
+            <input value={editModalOpen.data.data.planter.serial_number} disabled />
           </div>
           <p className="title-info">육묘업 등록번호</p>
           <div className="input-wrap-off">
-            <input value={editModalOpen.data.data.farm_number} />
+            <input value={editModalOpen.data.data.nursery_number} />
           </div>
           <p className="title-info">농가ID</p>
           <div className="input-wrap-off">
-            <input value={editModalOpen.data.data.farm_id} />
+            <input value={editModalOpen.data.data.farm_house_id} />
           </div>
           <p className="title-info">농가명</p>
           <div className="input-wrap">
@@ -315,7 +314,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
           </div>
         </S.InputWrap>
 
-        {editFarmName.length === 0 || editName.length === 0 || editPhone.length === 0 ? (
+        {editFarmName?.length === 0 || editName?.length === 0 || editPhone?.length === 0 ? (
           <>
             <S.ButtonWrapOff>
               <p>저장</p>

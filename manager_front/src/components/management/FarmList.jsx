@@ -428,26 +428,26 @@ function FarmList() {
   }, [addFarmModalOpen]);
 
   // 농가목록 데이터
-  const listData = useMemo(() => {
-    const array = [];
-    farmhouseList?.farm_houses?.map((data) => {
-      array.push({
-        id: data?.id,
-        serial_number: data?.planter?.serial_number,
-        farm_id: data?.farm_house_id,
-        farm_name: data?.name,
-        name: data?.producer_name,
-        farm_number: data?.nursery_number,
-        address_code: data?.address.split("||")[0],
-        address: data?.address.split("||")[1],
-        address_detail: data?.address.split("||")[2],
-        phone: data?.phone,
-        status: data?.last_planter_status?.status,
-        qr_image: data?.planter?.qrcode,
-      });
-    });
-    return array;
-  }, []);
+  // const listData = useMemo(() => {
+  //   const array = [];
+  //   farmhouseList?.farm_houses?.map((data) => {
+  //     array.push({
+  //       id: data?.id,
+  //       serial_number: data?.planter?.serial_number,
+  //       farm_id: data?.farm_house_id,
+  //       farm_name: data?.name,
+  //       name: data?.producer_name,
+  //       farm_number: data?.nursery_number,
+  //       address_code: data?.address.split("||")[0],
+  //       address: data?.address.split("||")[1],
+  //       address_detail: data?.address.split("||")[2],
+  //       phone: data?.phone,
+  //       status: data?.last_planter_status?.status,
+  //       qr_image: data?.planter?.qrcode,
+  //     });
+  //   });
+  //   return array;
+  // }, []);
 
   // console.log("farmhouseList", farmhouseList);
   // console.log("listData", listData);
@@ -490,57 +490,57 @@ function FarmList() {
 
   const [selectAll, setSelectAll] = useState(false);
   // const [isChecked, setIsChecked] = useState([]);
-  const [isChecked, setIsChecked] = useState(listData?.map(() => false));
+  // const [isChecked, setIsChecked] = useState(farmhouseList?.farm_houses?.map(() => false));
   const [checkArray, setCheckArray] = useState([]);
 
-  useEffect(() => {
-    if (!!listData) {
-      const dateArr = [];
-      listData.map(() => {
-        return dateArr.push(false);
-      });
-      setIsChecked(dateArr);
-    }
-  }, [listData]);
+  // useEffect(() => {
+  //   if (!!listData) {
+  //     const dateArr = [];
+  //     listData.map(() => {
+  //       return dateArr.push(false);
+  //     });
+  //     setIsChecked(dateArr);
+  //   }
+  // }, [farmhouseList]);
 
-  const toggleItem = (index) => {
-    const updatedIsCheckedArray = [...isChecked];
-    updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
-    setIsChecked(updatedIsCheckedArray);
+  // const toggleItem = (index) => {
+  //   const updatedIsCheckedArray = [...isChecked];
+  //   updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
+  //   setIsChecked(updatedIsCheckedArray);
 
-    // 모든 항목이 체크되었는지 확인
-    const allChecked = updatedIsCheckedArray.every((checked) => checked);
+  //   // 모든 항목이 체크되었는지 확인
+  //   const allChecked = updatedIsCheckedArray.every((checked) => checked);
 
-    // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
-    // 그렇지 않다면 전체 선택 체크박스를 false로 설정
-    setSelectAll(allChecked);
+  //   // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
+  //   // 그렇지 않다면 전체 선택 체크박스를 false로 설정
+  //   setSelectAll(allChecked);
 
-    const selectedItemId = listData[index].id;
-    if (updatedIsCheckedArray[index]) {
-      setCheckArray((prevArray) => [...prevArray, selectedItemId]);
-    } else {
-      setCheckArray((prevArray) => prevArray.filter((id) => id !== selectedItemId));
-    }
-  };
+  //   // const selectedItemId = listData[index].id;
 
-  const toggleAll = () => {
-    const allChecked = !selectAll;
+  //   if (updatedIsCheckedArray[index]) {
+  //     setCheckArray((prevArray) => [...prevArray, selectedItemId]);
+  //   } else {
+  //     setCheckArray((prevArray) => prevArray.filter((id) => id !== selectedItemId));
+  //   }
+  // };
 
-    // 모든 항목을 전부 선택 또는 해제
-    const updatedIsCheckedArray = isChecked.map(() => allChecked);
+  // const toggleAll = () => {
+  //   const allChecked = !selectAll;
 
-    setIsChecked(updatedIsCheckedArray);
-    setSelectAll(allChecked);
+  //   // 모든 항목을 전부 선택 또는 해제
+  //   const updatedIsCheckedArray = isChecked.map(() => allChecked);
 
-    const selectedIds = listData.map((item) => item.id);
-    if (allChecked) {
-      setCheckArray(selectedIds);
-    } else {
-      setCheckArray([]);
-    }
-  };
+  //   setIsChecked(updatedIsCheckedArray);
+  //   setSelectAll(allChecked);
 
-  // console.log("checkArray",checkArray);
+  //   // const selectedIds = listData.map((item) => item.id);
+
+  //   if (allChecked) {
+  //     setCheckArray(selectedIds);
+  //   } else {
+  //     setCheckArray([]);
+  //   }
+  // };
 
   // 선택삭제 클릭
   const handelSelectDeleteClick = useCallback(() => {
@@ -571,10 +571,11 @@ function FarmList() {
       <S.ContentList>
         <div className="list-table-head">
           <div>
-            <label>
+            <CheckBoxOff width={24} height={24} />
+            {/* <label>
               <input type="checkbox" checked={selectAll} onChange={toggleAll} style={{ display: "none" }} />
               <div>{selectAll ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}</div>
-            </label>
+            </label> */}
           </div>
           {checkArray.length === 0 ? (
             <>
@@ -609,16 +610,17 @@ function FarmList() {
             </>
           )}
         </div>
-        {listData?.length === 0 ? (
+        {farmhouseList?.farm_houses.length === 0 ? (
           <S.EmptyData>
             <FarmIcon width={56} height={56} />
             <p>등록된 농가가 없습니다.</p>
           </S.EmptyData>
         ) : (
-          listData?.map((data, index, item) => {
+          farmhouseList?.farm_houses.map((data, index, item) => {
             return (
-              <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
-                <label key={item.id} className="table-row">
+              // <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
+              <S.ListBlock key={`map${index}`} className={`table-row}`}>
+                {/* <label key={item.id} className="table-row">
                   <input
                     type="checkbox"
                     checked={isChecked[index]}
@@ -629,25 +631,28 @@ function FarmList() {
                     {isChecked[index] ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}
                   </div>
                   <div>{item.name}</div>
-                </label>
-                <p className="table-first serial_number">{data?.serial_number}</p>
-                <p className="table-second farm_id">{data?.farm_id}</p>
+                </label> */}
+                <CheckBoxOff width={24} height={24} />
+                <p className="table-first serial_number">{data.planter.serial_number}</p>
+                <p className="table-second farm_id">{data.farm_house_id}</p>
                 <div className="table-third farm_name_wrap">
-                  <div className="farm-name-first" style={{ backgroundColor: colorArray[index % listData.length] }}>
-                    {data?.farm_name?.slice(0, 1)}
+                  <div
+                    className="farm-name-first"
+                    style={{ backgroundColor: colorArray[index % farmhouseList?.farm_houses.length] }}>
+                    {data?.name?.slice(0, 1)}
                   </div>
-                  <p className="farm_name">{data?.farm_name}</p>
+                  <p className="farm_name">{data?.name}</p>
                 </div>
-                <p className="table-text name">{data?.name}</p>
-                <p className="table-text farm_number">{data?.farm_number}</p>
+                <p className="table-text name">{data?.producer_name}</p>
+                <p className="table-text farm_number">{data?.nursery_number}</p>
                 <p className="table-text address" id={`address${index}`}>
-                  {data?.address}
+                  {data?.address.split("||")[1] + data?.address.split("||")[2]}
                 </p>
                 <p className="table-text phone">{data?.phone}</p>
                 {data?.status === "ON" ? (
-                  <p className="table-eighth status-on">{data?.status}</p>
+                  <p className="table-eighth status-on">{data?.last_planter_status.status}</p>
                 ) : (
-                  <p className="table-eighth status-off">{data?.status}</p>
+                  <p className="table-eighth status-off">{data?.last_planter_status.status}</p>
                 )}
 
                 <div className="option-modal-wrap">
@@ -686,7 +691,8 @@ function FarmList() {
                   content={
                     <div className="text-wrap">
                       <p>
-                        ({data?.address_code}) {data?.address}
+                        {/* ({data?.address_code}) */}
+                        {"(" + data?.address.split("||")[0] + ") " + data?.address.split("||")[1]}
                       </p>
                     </div>
                   }
@@ -695,13 +701,13 @@ function FarmList() {
             );
           })
         )}
-        {listData?.length !== 0 && (
+        {/* {listData?.length !== 0 && (
           <S.ButtonWrap>
             <S.MoreButton onClick={listMoreView}>
               <p>더보기</p>
             </S.MoreButton>
           </S.ButtonWrap>
-        )}
+        )} */}
       </S.ContentList>
 
       {/* 농가추가 모달 */}
