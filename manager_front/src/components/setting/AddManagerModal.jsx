@@ -4,6 +4,9 @@ import { useRecoilState } from "recoil";
 
 import useCreateManager from "@src/hooks/queries/auth/useCreateManager";
 import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import { settingManagerListKey } from "@src/utils/query-keys/AuthQueryKeys";
+
 
 import XIcon from "@images/common/icon-x.svg";
 
@@ -136,6 +139,7 @@ function AddManagerModal({
   setManagerPassword,
 }) {
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
+  const invalidateQueries = useInvalidateQueries();
 
   const closeModal = useCallback(() => {
     setAddManagerModalOpen(false);
@@ -187,6 +191,7 @@ function AddManagerModal({
         text: "정상적으로 저장되었습니다.",
         okClick: null,
       });
+      invalidateQueries([settingManagerListKey]);
     },
     (error) => {
       alert(error);

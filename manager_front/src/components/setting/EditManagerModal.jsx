@@ -4,6 +4,8 @@ import { useRecoilState } from "recoil";
 
 import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 import useUpdateManager from "@src/hooks/queries/auth/useUpdateManager";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import { settingManagerListKey } from "@src/utils/query-keys/AuthQueryKeys";
 
 import XIcon from "@images/common/icon-x.svg";
 
@@ -168,6 +170,7 @@ const S = {
 };
 
 function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEditManagerPWChangeModalOpen }) {
+  const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const [editManagerId, setEditManagerId] = useState(editManagerModalOpen.data.data.user.login_id);
   const [editManagerCompany, setEditManagerCompany] = useState(editManagerModalOpen.data.data.admin_user_info.company);
@@ -227,6 +230,7 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
         text: "정상적으로 저장되었습니다.",
         okClick: null,
       });
+      invalidateQueries([settingManagerListKey]);
     },
     (error) => {
       setIsDefaultAlertShowState({
