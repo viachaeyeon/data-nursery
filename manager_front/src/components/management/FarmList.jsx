@@ -348,6 +348,24 @@ function FarmList() {
   const [isNameOrderBy, setIsNameOrderBy] = useState(0);
   const [isStateOrderBy, setIsStateOrderBy] = useState(0);
 
+    // 농가명 정렬
+    const sortByFarmName = useCallback(() => {
+      if(isNameOrderBy === 0){
+        setIsNameOrderBy(1);
+      }else{
+        setIsNameOrderBy(0);
+      }
+    }, [isNameOrderBy]);
+  
+    // 상태 정렬
+    const sortByStatus = useCallback(() => {
+      if(isStateOrderBy === 0){
+        setIsStateOrderBy(1);
+      }else{
+        setIsStateOrderBy(0);
+      }
+    }, [isStateOrderBy]);
+
   const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
 
   const { data: farmhouseList } = useFarmAllList({
@@ -375,6 +393,7 @@ function FarmList() {
   const [addressDetailData, setAddressDetailData] = useState("");
   const [addressCode, setAddressCode] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [nameOrder,setNameOrder] = useState(0)
 
   // ...클릭시 나오는 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
@@ -456,27 +475,10 @@ function FarmList() {
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
   const [isStatusAscending, setIsStatusAscending] = useState(true);
 
-  // 농가명 정렬
-  const sortByFarmName = useCallback(() => {
-    setIsFarmNameAscending(!isFarmNameAscending);
-    setIsNameOrderBy(1);
-    setIsNameOrderBy((prevIsNameOrderBy) => !prevIsNameOrderBy);
-    // listData.sort((a, b) => {
-    //   const compareResult = a.farm_name.localeCompare(b.farm_name);
-    //   return isFarmNameAscending ? compareResult : -compareResult;
-    // });
-  }, [isFarmNameAscending, isNameOrderBy]);
 
-  // 상태 정렬
-  const sortByStatus = useCallback(() => {
-    setIsStatusAscending(!isStatusAscending);
-    setIsStateOrderBy(1);
-    setIsStateOrderBy((prevIsStateOrderBy) => !prevIsStateOrderBy);
-    // listData.sort((a, b) => {
-    //   const compareResult = a.status.localeCompare(b.status);
-    //   return isStatusAscending ? compareResult : -compareResult;
-    // });
-  }, [isStatusAscending, isStateOrderBy]);
+
+  console.log("isNameOrderBy",isNameOrderBy)
+  console.log("isStateOrderBy",isStateOrderBy)
 
   // // 엑셀 다운로드 버튼
   // const handleExcelClick = useCallback(() => {
@@ -701,13 +703,13 @@ function FarmList() {
             );
           })
         )}
-        {/* {listData?.length !== 0 && (
+        {farmhouseList?.farm_houses.length !== 0 && (
           <S.ButtonWrap>
             <S.MoreButton onClick={listMoreView}>
               <p>더보기</p>
             </S.MoreButton>
           </S.ButtonWrap>
-        )} */}
+        )}
       </S.ContentList>
 
       {/* 농가추가 모달 */}
