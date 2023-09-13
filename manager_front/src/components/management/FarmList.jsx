@@ -348,6 +348,12 @@ function FarmList() {
   const [isNameOrderBy, setIsNameOrderBy] = useState(0);
   const [isStateOrderBy, setIsStateOrderBy] = useState(0);
 
+  // 페이지네이션
+  const [page, setPage] = useState(1);
+
+  //농가목록 데이터
+  const [farmList,setFarmList] = useState([]);
+
     // 농가명 정렬
     const sortByFarmName = useCallback(() => {
       if(isNameOrderBy === 0){
@@ -371,15 +377,22 @@ function FarmList() {
   const { data: farmhouseList } = useFarmAllList({
     nameOrder: isNameOrderBy,
     statusOrder: isStateOrderBy,
-    page: 1,
+    page: page,
     size: 15,
-    successFn: () => {},
+    successFn: (res) => {
+      if(isAddDataClick){
+        setFarmList((prev)=>[...prev, ...res.farm_houses]);
+      }else{
+        setFarmList(res.farm_houses);
+        setIsAddDataClick(false);
+      }
+    },
     errorFn: (err) => {
       console.log("!!err", err);
     },
   });
 
-  console.log("farmhouseList", farmhouseList);
+  console.log("farmList", farmList);
 
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
@@ -393,7 +406,6 @@ function FarmList() {
   const [addressDetailData, setAddressDetailData] = useState("");
   const [addressCode, setAddressCode] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [nameOrder,setNameOrder] = useState(0)
 
   // ...클릭시 나오는 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
@@ -475,20 +487,10 @@ function FarmList() {
   const [isFarmNameAscending, setIsFarmNameAscending] = useState(true);
   const [isStatusAscending, setIsStatusAscending] = useState(true);
 
-
-
-  console.log("isNameOrderBy",isNameOrderBy)
-  console.log("isStateOrderBy",isStateOrderBy)
-
   // // 엑셀 다운로드 버튼
   // const handleExcelClick = useCallback(() => {
   //   alert("엑셀 다운로드 클릭");
   // }, []);
-
-  // 농가목록 더보기
-  const listMoreView = useCallback(() => {
-    alert("더보기 버튼 구현중");
-  }, []);
 
   const [selectAll, setSelectAll] = useState(false);
   // const [isChecked, setIsChecked] = useState([]);
@@ -618,7 +620,7 @@ function FarmList() {
             <p>등록된 농가가 없습니다.</p>
           </S.EmptyData>
         ) : (
-          farmhouseList?.farm_houses.map((data, index, item) => {
+          farmList.map((data, index, item) => {
             return (
               // <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
               <S.ListBlock key={`map${index}`} className={`table-row}`}>
@@ -703,9 +705,12 @@ function FarmList() {
             );
           })
         )}
-        {farmhouseList?.farm_houses.length !== 0 && (
+        {farmhouseList?.total !== 0 && farmList.length !== farmhouseList?.total && (
           <S.ButtonWrap>
-            <S.MoreButton onClick={listMoreView}>
+            <S.MoreButton onClick={() => {
+                setIsAddDataClick(true);
+                setPage(page + 1);
+              }}>
               <p>더보기</p>
             </S.MoreButton>
           </S.ButtonWrap>
