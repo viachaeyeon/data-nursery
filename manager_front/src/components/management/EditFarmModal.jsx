@@ -176,7 +176,6 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   }, []);
 
   const FarmInfoSave = useCallback(() => {
-
     updateFarmhouseMutate({
       data: {
         id: editModalOpen.data.data.id,
@@ -188,7 +187,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
     });
 
     closeModal();
-  }, [editModalOpen,editName, editFarmName,editAddressCode,editAddress,editAddressData]);
+  }, [editModalOpen, editName, editFarmName, editAddressCode, editAddress, editAddressData]);
 
   const open = useDaumPostcodePopup("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js");
 
@@ -284,11 +283,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
           <p className="title-info">주소</p>
           <div className="address-wrap">
             <div className="input-wrap">
-              <input
-                placeholder="주소를 입력하세요."
-                value={"(" + editAddressCode + ") " + editAddress}
-                disabled
-              />
+              <input placeholder="주소를 입력하세요." value={"(" + editAddressCode + ") " + editAddress} disabled />
               <div className="search" onClick={handleClick}>
                 <SearchIcon width={40} height={40} />
               </div>

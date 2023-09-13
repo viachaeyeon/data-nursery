@@ -146,7 +146,6 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
 
   const qrImage = "http://localhost:8000" + qrDownloadModalOpen?.data?.data?.planter?.qrcode;
 
-
   const qrCodeDownloadClick = useCallback(() => {
     let url = qrImage;
     saveAs(url, qrDownloadModalOpen?.data?.data?.planter?.serial_number + "-qrcode");

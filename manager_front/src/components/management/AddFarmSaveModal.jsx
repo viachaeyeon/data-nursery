@@ -237,7 +237,7 @@ function AddFarmSaveModal({
 
       return new File([u8arr], fileName, { type: mime });
     };
-    
+
     var file = dataURLtoFile(qrCodeUrl, addFarmSerialNumber + ".png");
 
     createFarmhouseMutate({
@@ -252,7 +252,6 @@ function AddFarmSaveModal({
         qrcode: file,
       },
     });
-
   }, [
     addFarmSerialNumber,
     nurseryRegNumber,

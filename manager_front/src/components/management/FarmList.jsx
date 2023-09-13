@@ -352,25 +352,25 @@ function FarmList() {
   const [page, setPage] = useState(1);
 
   //농가목록 데이터
-  const [farmList,setFarmList] = useState([]);
+  const [farmList, setFarmList] = useState([]);
 
-    // 농가명 정렬
-    const sortByFarmName = useCallback(() => {
-      if(isNameOrderBy === 0){
-        setIsNameOrderBy(1);
-      }else{
-        setIsNameOrderBy(0);
-      }
-    }, [isNameOrderBy]);
-  
-    // 상태 정렬
-    const sortByStatus = useCallback(() => {
-      if(isStateOrderBy === 0){
-        setIsStateOrderBy(1);
-      }else{
-        setIsStateOrderBy(0);
-      }
-    }, [isStateOrderBy]);
+  // 농가명 정렬
+  const sortByFarmName = useCallback(() => {
+    if (isNameOrderBy === 0) {
+      setIsNameOrderBy(1);
+    } else {
+      setIsNameOrderBy(0);
+    }
+  }, [isNameOrderBy]);
+
+  // 상태 정렬
+  const sortByStatus = useCallback(() => {
+    if (isStateOrderBy === 0) {
+      setIsStateOrderBy(1);
+    } else {
+      setIsStateOrderBy(0);
+    }
+  }, [isStateOrderBy]);
 
   const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
 
@@ -380,9 +380,9 @@ function FarmList() {
     page: page,
     size: 15,
     successFn: (res) => {
-      if(isAddDataClick){
-        setFarmList((prev)=>[...prev, ...res.farm_houses]);
-      }else{
+      if (isAddDataClick) {
+        setFarmList((prev) => [...prev, ...res.farm_houses]);
+      } else {
         setFarmList(res.farm_houses);
         setIsAddDataClick(false);
       }
@@ -650,7 +650,7 @@ function FarmList() {
                 <p className="table-text name">{data?.producer_name}</p>
                 <p className="table-text farm_number">{data?.nursery_number}</p>
                 <p className="table-text address" id={`address${index}`}>
-                  {data?.address.split("||")[1] +" "+ data?.address.split("||")[2]}
+                  {data?.address.split("||")[1] + " " + data?.address.split("||")[2]}
                 </p>
                 <p className="table-text phone">{data?.phone}</p>
                 {data?.status === "ON" ? (
@@ -696,7 +696,12 @@ function FarmList() {
                     <div className="text-wrap">
                       <p>
                         {/* ({data?.address_code}) */}
-                        {"(" + data?.address.split("||")[0] + ") " + data?.address.split("||")[1] + " " + data?.address.split("||")[2]}
+                        {"(" +
+                          data?.address.split("||")[0] +
+                          ") " +
+                          data?.address.split("||")[1] +
+                          " " +
+                          data?.address.split("||")[2]}
                       </p>
                     </div>
                   }
@@ -707,7 +712,8 @@ function FarmList() {
         )}
         {farmhouseList?.total !== 0 && farmList.length !== farmhouseList?.total && (
           <S.ButtonWrap>
-            <S.MoreButton onClick={() => {
+            <S.MoreButton
+              onClick={() => {
                 setIsAddDataClick(true);
                 setPage(page + 1);
               }}>

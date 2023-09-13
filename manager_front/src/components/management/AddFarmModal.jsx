@@ -230,7 +230,6 @@ function AddFarmModal({
     alert("큐알코드 리셋 버튼 구현중");
   }, []);
 
-
   return (
     <S.Wrap>
       <S.WrapInner>
