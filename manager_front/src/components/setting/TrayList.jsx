@@ -1,18 +1,22 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
+import useTrayList from "@src/hooks/queries/planter/useTrayList";
+import useDeleteMultipleTray from "@src/hooks/queries/planter/useDeleteMultipleTray";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+
 import AddTrayModal from "./AddTrayModal";
+import OptionModal from "./TrayOptionModal";
+import EditTrayModal from "./EditTrayModal";
+import TrayDeleteModal from "./TrayDeleteModal";
 
 import AddIcon from "@images/management/add-icon.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
 import CheckBoxOn from "@images/common/check-icon-on.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import TrayIcon from "@images/setting/tray-no-data.svg";
-import OptionModal from "./TrayOptionModal";
-import EditTrayModal from "./EditTrayModal";
-import TrayDeleteModal from "./TrayDeleteModal";
-
 import DeleteIcon from "@images/setting/icon-delete.svg";
+import { trayListKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
@@ -88,6 +92,10 @@ const S = {
         ${({ theme }) => theme.textStyle.h7Reguler}
       }
 
+      svg {
+        cursor: pointer;
+      }
+
       .btn-wrap {
         width: 100%;
       }
@@ -123,6 +131,10 @@ const S = {
     p {
       color: ${({ theme }) => theme.basic.gray50};
       ${({ theme }) => theme.textStyle.h7Bold}
+    }
+
+    svg {
+      cursor: pointer;
     }
 
     .option-dot {
@@ -170,17 +182,14 @@ const S = {
 };
 
 function TrayList() {
+  const invalidateQueries = useInvalidateQueries();
+
   // 옵션 모달
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
     index: undefined,
     data: undefined,
   });
-
-  //트레이 가로 숫자
-  const [trayWidthNum, setTrayWidthNum] = useState("");
-  const [trayHeighthNum, setTrayHeighthNum] = useState("");
-  const [trayNum, setTrayNum] = useState("");
 
   //트레이 추가 모달 오픈
   const [addTrayModalOpen, setAddTrayModalOpen] = useState(false);
@@ -194,8 +203,30 @@ function TrayList() {
   //트레이 삭제 모달 오픈
   const [deleteTrayModalOpen, setDeleteTrayModalOpen] = useState({
     open: false,
-    data: undefined,
+    deleteId: undefined,
   });
+
+  const [checkArray, setCheckArray] = useState([]);
+
+  // 트레이 목록 API
+  const { data: trayList } = useTrayList({
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 트레이 다중 삭제 API
+  const { mutate: deleteMultipleTrayMutate } = useDeleteMultipleTray(
+    () => {
+      // 트레이목록 정보 다시 불러오기 위해 쿼리키 삭제
+      invalidateQueries([trayListKey]);
+      setCheckArray([]);
+    },
+    (error) => {
+      alert(error);
+    },
+  );
 
   // 트레이 목록 : 눌렀을때 나오는 모달
   const handleCropsOptionModalClick = useCallback(
@@ -209,89 +240,37 @@ function TrayList() {
     [optionModalOpen],
   );
 
-  // 트레이 추가 모달
-  const handleAddTrayModalClick = useCallback(() => {
-    setAddTrayModalOpen(true);
-  }, [addTrayModalOpen]);
+  // 체크박스 전제 선택 및 전체 해제
+  const toggleAll = useCallback(
+    (isAllCheck) => {
+      if (isAllCheck) {
+        // 전부 체크되어 있는 경우
+        setCheckArray([]);
+      } else {
+        // 전부 체크 안되어 있는 경우
+        const allCheckArray = [];
 
-  // 선택삭제 클릭
-  const handelSelectDeleteClick = useCallback(() => {
-    alert("선택삭제");
-  }, []);
-
-  const [listData, setListData] = useState([
-    {
-      number: 1,
-      tray_number: "32",
-      width_count: "8",
-      height_count: "4",
+        trayList?.planter_trays.map((tray) => {
+          allCheckArray.push(tray.id);
+        });
+        setCheckArray(allCheckArray);
+      }
     },
-    {
-      number: 2,
-      tray_number: "32",
-      width_count: "8",
-      height_count: "4",
+    [trayList],
+  );
+
+  const toggleItem = useCallback(
+    (isCheck, id) => {
+      if (isCheck) {
+        // 체크된 항목 클릭 시
+        setCheckArray(checkArray.filter((checkId) => checkId !== id));
+      } else {
+        // 미체크된 항목 클릭 시
+        setCheckArray((prev) => [...prev, id]);
+      }
     },
-    {
-      number: 3,
-      tray_number: "32",
-      width_count: "8",
-      height_count: "4",
-    },
-    {
-      number: 4,
-      tray_number: "32",
-      width_count: "8",
-      height_count: "4",
-    },
-    {
-      number: 5,
-      tray_number: "32",
-      width_count: "8",
-      height_count: "4",
-    },
-  ]);
-
-  const [selectAll, setSelectAll] = useState(false);
-  const [isChecked, setIsChecked] = useState(listData.map(() => false));
-  const [checkArray, setCheckArray] = useState([]);
-
-  const toggleItem = (index) => {
-    const updatedIsCheckedArray = [...isChecked];
-    updatedIsCheckedArray[index] = !updatedIsCheckedArray[index];
-    setIsChecked(updatedIsCheckedArray);
-
-    // 모든 항목이 체크되었는지 확인
-    const allChecked = updatedIsCheckedArray.every((checked) => checked);
-
-    // 모든 항목이 체크되었다면 전체 선택 체크박스를 true로 설정
-    // 그렇지 않다면 전체 선택 체크박스를 false로 설정
-    setSelectAll(allChecked);
-
-    const selectedItemId = listData[index].number;
-    if (updatedIsCheckedArray[index]) {
-      setCheckArray((prevArray) => [...prevArray, selectedItemId]);
-    } else {
-      setCheckArray((prevArray) => prevArray.filter((number) => number !== selectedItemId));
-    }
-  };
-
-  const toggleAll = () => {
-    const allChecked = !selectAll;
-
-    // 모든 항목을 전부 선택 또는 해제
-    const updatedIsCheckedArray = isChecked.map(() => allChecked);
-
-    setIsChecked(updatedIsCheckedArray);
-    setSelectAll(allChecked);
-
-    const selectedIds = listData.map((item) => item.number);
-    if (allChecked) {
-      setCheckArray(selectedIds);
-    } else {
-      setCheckArray([]);
-    }
-  };
+    [checkArray],
+  );
 
   return (
     <S.Wrap>
@@ -300,13 +279,16 @@ function TrayList() {
           <p className="title">트레이목록</p>
           <p className="sub-title">트레이목록 추가, 변경</p>
         </S.Title>
-        <S.AddButton onClick={handleAddTrayModalClick}>
+        <S.AddButton
+          onClick={() => {
+            setAddTrayModalOpen(true);
+          }}>
           <AddIcon width={24} height={24} />
           <p>트레이 추가</p>
         </S.AddButton>
       </S.TitleWrap>
       <S.ContentList>
-        {listData.length === 0 ? (
+        {trayList?.planter_trays.length === 0 ? (
           <S.EmptyData>
             <TrayIcon width={56} height={56} />
             <p>등록된 트레이가 없습니다.</p>
@@ -315,12 +297,23 @@ function TrayList() {
           <>
             <div className="table-header">
               <div>
-                <label>
-                  <input type="checkbox" checked={selectAll} onChange={toggleAll} style={{ display: "none" }} />
-                  <div>
-                    {selectAll ? <CheckBoxOn width={24} height={24} /> : <CheckBoxOff width={24} height={24} />}
-                  </div>
-                </label>
+                {checkArray.length !== 0 && checkArray.length === trayList?.planter_trays.length ? (
+                  <CheckBoxOn
+                    width={24}
+                    height={24}
+                    onClick={() => {
+                      toggleAll(true);
+                    }}
+                  />
+                ) : (
+                  <CheckBoxOff
+                    width={24}
+                    height={24}
+                    onClick={() => {
+                      toggleAll(false);
+                    }}
+                  />
+                )}
               </div>
               {checkArray.length === 0 ? (
                 <>
@@ -333,7 +326,14 @@ function TrayList() {
               ) : (
                 <>
                   <div className="btn-wrap">
-                    <S.SelectDeleteBtn onClick={handelSelectDeleteClick}>
+                    <S.SelectDeleteBtn
+                      onClick={() => {
+                        deleteMultipleTrayMutate({
+                          data: {
+                            deleteTray: checkArray.join("||"),
+                          },
+                        });
+                      }}>
                       <DeleteIcon width={12} height={12} />
                       <p>선택삭제</p>
                     </S.SelectDeleteBtn>
@@ -343,38 +343,28 @@ function TrayList() {
             </div>
             <S.ListBlockWrap>
               <div className="list-inner">
-                {listData.map((data, index, item) => {
+                {trayList?.planter_trays.map((tray, index) => {
                   return (
-                    <S.ListBlock key={`map${index}`} className={`table-row ${isChecked[index] ? "selected" : ""}`}>
-                      <label key={item.id} className="table-row">
-                        <input
-                          type="checkbox"
-                          checked={isChecked[index]}
-                          onChange={() => toggleItem(index)}
-                          style={{ display: "none" }}
-                        />
-                        <div>
-                          {isChecked[index] ? (
-                            <CheckBoxOn width={24} height={24} />
-                          ) : (
-                            <CheckBoxOff width={24} height={24} />
-                          )}
-                        </div>
-                        <div>{item.name}</div>
-                      </label>
-                      <p>{data.number}</p>
+                    <S.ListBlock
+                      key={`tray${tray.id}`}
+                      className={`table-row ${checkArray.includes(tray.id) ? "selected" : ""}`}>
+                      {checkArray.includes(tray.id) ? (
+                        <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, tray.id)} />
+                      ) : (
+                        <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, tray.id)} />
+                      )}
+                      <p>{index + 1}</p>
                       <div className="icon-wrap">
                         <TrayIcon width={24} height={24} />
-                        <p>{data.tray_number}</p>
+                        <p>{tray.total}</p>
                       </div>
-                      <p>{data.width_count}</p>
-                      <p>{data.height_count}</p>
+                      <p>{tray.width}</p>
+                      <p>{tray.height}</p>
                       <div className="option-modal-wrap">
                         <div
                           className="option-dot"
                           onClick={() => {
-                            handleCropsOptionModalClick(index, data);
-                            setDeleteTrayModalOpen({ open: false, data: data });
+                            handleCropsOptionModalClick(index, tray);
                           }}>
                           <OptionDot width={32} height={32} />
                         </div>
@@ -383,7 +373,6 @@ function TrayList() {
                             optionModalOpen={optionModalOpen}
                             setOptionModalOpen={setOptionModalOpen}
                             setEditTrayModalOpen={setEditTrayModalOpen}
-                            deleteTrayModalOpen={deleteTrayModalOpen}
                             setDeleteTrayModalOpen={setDeleteTrayModalOpen}
                           />
                         )}
@@ -400,15 +389,7 @@ function TrayList() {
       {/* 트레이추가 모달 */}
       {addTrayModalOpen && (
         <div className="modal-wrap">
-          <AddTrayModal
-            setAddTrayModalOpen={setAddTrayModalOpen}
-            trayWidthNum={trayWidthNum}
-            setTrayWidthNum={setTrayWidthNum}
-            trayHeighthNum={trayHeighthNum}
-            setTrayHeighthNum={setTrayHeighthNum}
-            trayNum={trayNum}
-            setTrayNum={setTrayNum}
-          />
+          <AddTrayModal setAddTrayModalOpen={setAddTrayModalOpen} />
         </div>
       )}
 
@@ -422,7 +403,7 @@ function TrayList() {
       {/* 트레이 삭제 모달 */}
       {deleteTrayModalOpen.open && (
         <div className="modal-wrap">
-          <TrayDeleteModal setDeleteTrayModalOpen={setDeleteTrayModalOpen} />
+          <TrayDeleteModal deleteId={deleteTrayModalOpen.deleteId} setDeleteTrayModalOpen={setDeleteTrayModalOpen} />
         </div>
       )}
     </S.Wrap>

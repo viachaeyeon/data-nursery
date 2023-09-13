@@ -42,6 +42,7 @@ async def update_crop_info(
     name: str = Form(None),
     color: str = Form(None),
     image: UploadFile = File(None),
+    image_del: bool = File(None),
     is_del: bool = Form(None),
     db: Session = Depends(get_db),
 ):
@@ -61,6 +62,11 @@ async def update_crop_info(
         if not saved_file["is_success"]:
             return JSONResponse(status_code=400, content=dict(msg="FAIL_SAVE_DATA"))
         crop.image = saved_file["url"]
+
+    if image_del:
+        if crop.image:
+          await delete_file(crop.image)
+          crop.image = None
 
     if is_del is not None:
         crop.is_del = is_del
