@@ -90,6 +90,9 @@ const S = {
       p {
         color: ${({ theme }) => theme.basic.gray60};
         ${({ theme }) => theme.textStyle.h7Reguler}
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       svg {
@@ -99,6 +102,16 @@ const S = {
       .btn-wrap {
         width: 100%;
       }
+    }
+
+    .table-header-first{
+      width: 120px;
+    }
+    .table-header-sec{
+      width: 172px;
+    }
+    .table-header-third{
+      width: 46px;
     }
   `,
   ListBlockWrap: styled.div`
@@ -131,6 +144,9 @@ const S = {
     p {
       color: ${({ theme }) => theme.basic.gray50};
       ${({ theme }) => theme.textStyle.h7Bold}
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     svg {
@@ -146,6 +162,18 @@ const S = {
       height: 32px;
       border-radius: 30px;
     }
+.table-text-first{
+  width: 100px;
+  
+}
+.table-text-fin{
+  width: 40px;
+}
+.crop_name{
+  display: block !important;
+
+}
+
   `,
   EmptyData: styled.div`
     height: 420px;
@@ -318,10 +346,10 @@ function CropsList() {
               </div>
               {checkArray.length === 0 ? (
                 <>
-                  <p>NO</p>
-                  <p>작물명</p>
-                  <p></p>
-                  <p></p>
+                  <p className="table-header-first">NO</p>
+                  <p className="table-header-sec">작물명</p>
+                  <p className="table-header-third"></p>
+                  <p className="table-header-third"></p>
                 </>
               ) : (
                 <>
@@ -353,11 +381,11 @@ function CropsList() {
                       ) : (
                         <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, crop.id)} />
                       )}
-                      <p>{index + 1}</p>
+                      <p className="table-text-first">{index + 1}</p>
                       <div className="crops_color" style={{ backgroundColor: crop.color }} />
-                      <p>{crop.name}</p>
+                      <p className="table-text-first crop_name">{crop.name}</p>
 
-                      <div className="option-modal-wrap">
+                      <div className="table-text-fin option-modal-wrap">
                         <div
                           className="option-dot"
                           onClick={() => {
