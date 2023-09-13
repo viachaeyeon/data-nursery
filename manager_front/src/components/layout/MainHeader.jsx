@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
+import useUserInfo from "@src/hooks/queries/auth/useUserInfo";
+
 import ProfileIcon from "../../../public/images/common/icon-profile.svg";
 
 const S = {
@@ -33,14 +35,18 @@ const S = {
 };
 
 function MainHeader({ currentDateTime }) {
-  const userName = "박희진";
+  const {data:userInfo} = useUserInfo({
+    successFn:()=>{},
+    errorFn:() => {
+    }
+  })
 
   return (
     <S.Wrap>
       <S.DateWrap>{/* <p>{currentDateTime}</p> */}</S.DateWrap>
       <S.profileWrap>
         <ProfileIcon width={21} height={22} />
-        <p>안녕하세요, {userName}님</p>
+        <p>안녕하세요, {userInfo.user.name}님</p>
       </S.profileWrap>
     </S.Wrap>
   );
