@@ -140,6 +140,9 @@ const S = {
     p {
       ${({ theme }) => theme.textStyle.h7Reguler};
       color: ${({ theme }) => theme.basic.gray60};
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .arrow-wrap {
@@ -161,6 +164,38 @@ const S = {
 
     .btn-wrap {
       width: 100%;
+    }
+
+    .header-table{
+      width: 120px;
+    }
+    .header-table-second{
+      width: 140px;
+    }
+    .header-table-third{
+      width:200px;
+    }
+    .header-table-fourth{
+      width: 130px;
+    }
+    .header-table-eighth{
+      width: 160px;
+    }
+
+    .table-first{
+      width: 100px;
+    }
+    .table-second{
+      width: 150px;
+    }
+    .table-third{
+      width:200px;
+    }
+    .table-text{
+      width: 120px;
+    }
+    .table-eighth{
+      width: 90px;
     }
   `,
 
@@ -193,7 +228,7 @@ const S = {
       justify-content: center;
     }
 
-    .farm-name-frist {
+    .farm-name-first {
       /* background-color: #79cec8; */
       border-radius: 30px;
       padding: 8px;
@@ -211,7 +246,7 @@ const S = {
       white-space: nowrap;
     }
     .address {
-      width: 132px;
+      width: 110px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -540,19 +575,19 @@ function FarmList() {
           </div>
           {checkArray.length === 0 ? (
             <>
-              <p>파종기 S/N</p>
-              <p>농가 ID</p>
-              <div className="arrow-wrap">
+              <p className="header-table">파종기 S/N</p>
+              <p className="header-table-second">농가 ID</p>
+              <div className="header-table-third arrow-wrap">
                 <p>농가명</p>
                 <div className="icon-wrap" onClick={sortByFarmName}>
                   {isNameOrderBy ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
                 </div>
               </div>
-              <p>생산자명</p>
-              <p>육묘업등록번호</p>
-              <p>주소</p>
-              <p>연락처</p>
-              <div className="arrow-wrap">
+              <p className="header-table-fourth">생산자명</p>
+              <p className="header-table">육묘업등록번호</p>
+              <p className="header-table">주소</p>
+              <p className="header-table">연락처</p>
+              <div className="header-table-eighth arrow-wrap">
                 <p>상태</p>
                 <div className="icon-wrap" onClick={sortByStatus}>
                   {isStateOrderBy ? <UpArrow width={24} height={24} /> : <DownArrow width={24} height={24} />}
@@ -592,22 +627,22 @@ function FarmList() {
                   </div>
                   <div>{item.name}</div>
                 </label>
-                <p className="serial_number">{data?.serial_number}</p>
-                <p className="farm_id">{data?.farm_id}</p>
-                <div className="farm_name_wrap">
-                  <div className="farm-name-frist" style={{backgroundColor:colorArray[index%listData.length]}}>{data?.farm_name?.slice(0, 1)}</div>
+                <p className="table-first serial_number">{data?.serial_number}</p>
+                <p className="table-second farm_id">{data?.farm_id}</p>
+                <div className="table-third farm_name_wrap">
+                  <div className="farm-name-first" style={{backgroundColor:colorArray[index%listData.length]}}>{data?.farm_name?.slice(0, 1)}</div>
                   <p className="farm_name">{data?.farm_name}</p>
                 </div>
-                <p className="name">{data?.name}</p>
-                <p className="farm_number">{data?.farm_number}</p>
-                <p className="address" id={`address${index}`}>
+                <p className="table-text name">{data?.name}</p>
+                <p className="table-text farm_number">{data?.farm_number}</p>
+                <p className="table-text address" id={`address${index}`}>
                   {data?.address}
                 </p>
-                <p className="phone">{data?.phone}</p>
+                <p className="table-text phone">{data?.phone}</p>
                 {data?.status === "ON" ? (
-                  <p className="status-on">{data?.status}</p>
+                  <p className="table-eighth status-on">{data?.status}</p>
                 ) : (
-                  <p className="status-off">{data?.status}</p>
+                  <p className="table-eighth status-off">{data?.status}</p>
                 )}
 
                 <div className="option-modal-wrap">
