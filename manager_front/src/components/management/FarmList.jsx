@@ -640,9 +640,7 @@ function FarmList() {
                 <p className="table-first serial_number">{data.planter.serial_number}</p>
                 <p className="table-second farm_id">{data.farm_house_id}</p>
                 <div className="table-third farm_name_wrap">
-                  <div
-                    className="farm-name-first"
-                    style={{ backgroundColor: colorArray[index % farmList.length] }}>
+                  <div className="farm-name-first" style={{ backgroundColor: colorArray[index % farmList.length] }}>
                     {data?.name?.slice(0, 1)}
                   </div>
                   <p className="farm_name">{data?.name}</p>
@@ -710,7 +708,7 @@ function FarmList() {
             );
           })
         )}
-        {farmhouseList?.total !== 0 && farmList.length !== farmhouseList?.total && farmList?.length !== 0 &&(
+        {farmhouseList?.total !== 0 && farmList.length !== farmhouseList?.total && farmList?.length !== 0 && (
           <S.ButtonWrap>
             <S.MoreButton
               onClick={() => {

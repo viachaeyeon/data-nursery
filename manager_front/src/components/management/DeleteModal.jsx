@@ -112,7 +112,6 @@ function AddFarmModal({ deleteModalOpen, setDeleteModalOpen, checkArray }) {
         okClick: null,
       });
       invalidateQueries([useFarmAllListKey]);
-
     },
     (error) => {
       setIsDefaultAlertShowState({

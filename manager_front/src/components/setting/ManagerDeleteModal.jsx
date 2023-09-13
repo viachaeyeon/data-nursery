@@ -7,8 +7,6 @@ import useDeleteManager from "@src/hooks/queries/auth/useDeleteManager";
 import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
-
-
 const S = {
   Wrap: styled.div`
     width: 100%;
@@ -85,7 +83,7 @@ const S = {
   `,
 };
 
-function ManagerDeleteModal({ deleteManagerModalOpen,setDeleteManagerModalOpen }) {
+function ManagerDeleteModal({ deleteManagerModalOpen, setDeleteManagerModalOpen }) {
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const invalidateQueries = useInvalidateQueries();
 
@@ -93,7 +91,7 @@ function ManagerDeleteModal({ deleteManagerModalOpen,setDeleteManagerModalOpen }
     setDeleteManagerModalOpen({ open: false, data: undefined });
   }, []);
 
-  const {mutate:deleteManagerMutate} = useDeleteManager(
+  const { mutate: deleteManagerMutate } = useDeleteManager(
     () => {
       closeModal();
       setIsDefaultAlertShowState({
@@ -103,7 +101,6 @@ function ManagerDeleteModal({ deleteManagerModalOpen,setDeleteManagerModalOpen }
         okClick: null,
       });
       invalidateQueries([settingManagerListKey]);
-
     },
     (error) => {
       setIsDefaultAlertShowState({
@@ -117,10 +114,10 @@ function ManagerDeleteModal({ deleteManagerModalOpen,setDeleteManagerModalOpen }
 
   const handleDeleteOkClick = useCallback(() => {
     deleteManagerMutate({
-      data:{
-        userIds:deleteManagerModalOpen.data.data.user.id
-      }
-    })
+      data: {
+        userIds: deleteManagerModalOpen.data.data.user.id,
+      },
+    });
     closeModal();
   }, [deleteManagerModalOpen]);
 

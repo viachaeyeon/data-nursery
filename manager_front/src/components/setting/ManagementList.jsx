@@ -98,16 +98,15 @@ const S = {
       }
     }
 
-    .header-table-first{
+    .header-table-first {
       width: 250px;
     }
-    .header-table{
+    .header-table {
       width: 160px;
     }
-    .header-table-fin{
+    .header-table-fin {
       width: 100px;
     }
-
   `,
   ListBlockWrap: styled.div`
     max-height: 444px;
@@ -127,20 +126,19 @@ const S = {
     .option-modal-wrap {
       position: relative;
     }
-    .table-first{
+    .table-first {
       width: 155px;
       margin-left: 50px;
     }
-    .table-text{
+    .table-text {
       width: 130px;
     }
-    .table-thir{
+    .table-thir {
       width: 50px;
     }
-    .table-sec{
+    .table-sec {
       width: 110px;
     }
-
   `,
   ListBlock: styled.div`
     align-items: center;
@@ -183,18 +181,16 @@ const S = {
 };
 
 function ManagementList() {
-
-  const { data: managerList }= useManagerList({
-    page:1,
-    size:8,
-    successFn: () => {
-    },
+  const { data: managerList } = useManagerList({
+    page: 1,
+    size: 8,
+    successFn: () => {},
     errorFn: (err) => {
       console.log("!!err", err);
     },
-  })
+  });
 
-  console.log("managerList",managerList?.data)
+  console.log("managerList", managerList?.data);
 
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
@@ -465,7 +461,7 @@ function ManagementList() {
                   {data.admin_user_info.is_top_admin === true ? (
                     <TopManager width={107} height={28} className="table-first" />
                   ) : (
-                    <CommonManager width={107} height={28} className="table-first"/>
+                    <CommonManager width={107} height={28} className="table-first" />
                   )}
                   <p className="table-sec">{data.user.login_id}</p>
                   <p className="table-text">{data.admin_user_info.company}</p>
@@ -547,7 +543,10 @@ function ManagementList() {
       {/* 관리자 삭제모달 */}
       {deleteManagerModalOpen.open && (
         <div className="modal-wrap">
-          <ManagerDeleteModal deleteManagerModalOpen={deleteManagerModalOpen} setDeleteManagerModalOpen={setDeleteManagerModalOpen} />
+          <ManagerDeleteModal
+            deleteManagerModalOpen={deleteManagerModalOpen}
+            setDeleteManagerModalOpen={setDeleteManagerModalOpen}
+          />
         </div>
       )}
     </S.Wrap>

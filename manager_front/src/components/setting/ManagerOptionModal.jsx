@@ -84,7 +84,7 @@ function ManagerOptionModal({
     setDeleteManagerModalOpen({ open: true, data: deleteManagerModalOpen });
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
   });
-  
+
   return (
     <S.Wrap>
       <div className="wrap-inner">

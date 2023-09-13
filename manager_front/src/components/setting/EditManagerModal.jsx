@@ -174,8 +174,12 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const [editManagerId, setEditManagerId] = useState(editManagerModalOpen.data.data.user.login_id);
   const [editManagerCompany, setEditManagerCompany] = useState(editManagerModalOpen.data.data.admin_user_info.company);
-  const [editManagerDepartment, setEditManagerDepartment] = useState(editManagerModalOpen.data.data.admin_user_info.department);
-  const [editManagerPosition, setEditManagerPosition] = useState(editManagerModalOpen.data.data.admin_user_info.position);
+  const [editManagerDepartment, setEditManagerDepartment] = useState(
+    editManagerModalOpen.data.data.admin_user_info.department,
+  );
+  const [editManagerPosition, setEditManagerPosition] = useState(
+    editManagerModalOpen.data.data.admin_user_info.position,
+  );
   const [editManagerName, setEditManagerName] = useState(editManagerModalOpen.data.data.user.name);
   const [editManagerPhone, setEditManagerPhone] = useState(editManagerModalOpen.data.data.admin_user_info.phone);
   const closeModal = useCallback(() => {
@@ -189,38 +193,38 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
 
   const handleTraySaveClick = useCallback(() => {
     updateManagerList({
-      data:{
-        userId:editManagerModalOpen.data.data.user.id,
+      data: {
+        userId: editManagerModalOpen.data.data.user.id,
         user_data: {
           name: editManagerName,
-          is_del: false
+          is_del: false,
         },
         admin_user_info_data: {
           company: editManagerCompany,
           department: editManagerDepartment,
           position: editManagerPosition,
           phone: editManagerPhone,
-          is_del: false
-        }
-      }
-    })
+          is_del: false,
+        },
+      },
+    });
 
-    console.log("회사",editManagerCompany)
-    console.log("부서",editManagerDepartment)
-    console.log("직책",editManagerPosition)
-    console.log("이름",editManagerName)
-    console.log("전화번호",editManagerPhone)
+    console.log("회사", editManagerCompany);
+    console.log("부서", editManagerDepartment);
+    console.log("직책", editManagerPosition);
+    console.log("이름", editManagerName);
+    console.log("전화번호", editManagerPhone);
 
     closeModal();
-  }, [editManagerCompany,editManagerDepartment,editManagerPosition,editManagerName,editManagerPhone]);
-  
-  console.log("editManagerModalOpen",editManagerModalOpen)
+  }, [editManagerCompany, editManagerDepartment, editManagerPosition, editManagerName, editManagerPhone]);
+
+  console.log("editManagerModalOpen", editManagerModalOpen);
 
   const handlePasswordChangeClick = useCallback(() => {
     setEditManagerPWChangeModalOpen({ open: true, data: editManagerModalOpen });
   });
 
-  const {mutate:updateManagerList} = useUpdateManager(
+  const { mutate: updateManagerList } = useUpdateManager(
     () => {
       // invalidateQueries([useFarmAllListKey]);
       // closeModal();
@@ -240,7 +244,7 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
         okClick: null,
       });
     },
-  )
+  );
 
   return (
     <S.Wrap>

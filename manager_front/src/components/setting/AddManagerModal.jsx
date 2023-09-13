@@ -7,7 +7,6 @@ import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 import { settingManagerListKey } from "@src/utils/query-keys/AuthQueryKeys";
 
-
 import XIcon from "@images/common/icon-x.svg";
 
 const S = {
@@ -154,36 +153,27 @@ function AddManagerModal({
 
   const handleTraySaveClick = useCallback(() => {
     createAdminMutate({
-      data:{
+      data: {
         user_data: {
           login_id: managerId,
           password: managerPassword,
           name: managerName,
-          code: "99"
+          code: "99",
         },
         admin_user_info_data: {
           company: managerCompany,
           department: managerDepartment,
           position: managerPosition,
-          phone: managerPhone
-        }
-      }
+          phone: managerPhone,
+        },
+      },
     });
 
     closeModal();
+  }, [managerId, managerCompany, managerDepartment, managerPosition, managerName, managerPhone, managerPassword]);
 
-    console.log("아이디",managerId);
-    console.log("회사",managerCompany);
-    console.log("부서",managerDepartment);
-    console.log("직책",managerPosition);
-    console.log("담당자",managerName);
-    console.log("전화번호",managerPhone);
-    console.log("비밀번호",managerPassword);
-  }, [managerId,managerCompany,managerDepartment,managerPosition,managerName,managerPhone,managerPassword]);
-
-  const { mutate:createAdminMutate } = useCreateManager(
-    ()=>{
-      // invalidateQueries([useFarmAllListKey]);
+  const { mutate: createAdminMutate } = useCreateManager(
+    () => {
       closeModal();
       setIsDefaultAlertShowState({
         isShow: true,
@@ -202,8 +192,7 @@ function AddManagerModal({
         okClick: null,
       });
     },
-    
-  )
+  );
 
   return (
     <S.Wrap>
@@ -279,7 +268,11 @@ function AddManagerModal({
             <input
               placeholder="숫자만 입력하세요"
               value={managerPhone}
-              onChange={(e) => setManagerPhone(e.target.value.replace(/[^0-9]/g, "").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`))}
+              onChange={(e) =>
+                setManagerPhone(
+                  e.target.value.replace(/[^0-9]/g, "").replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`),
+                )
+              }
             />
           </div>
 
