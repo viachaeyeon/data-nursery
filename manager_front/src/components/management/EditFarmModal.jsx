@@ -169,7 +169,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   const [editPhone, setEditPhone] = useState(editModalOpen.data.data.phone);
   const [editAddressCode, setEditAddressCode] = useState(editModalOpen.data.data.address_code);
   const [editAddress, setEditAddress] = useState(editModalOpen.data.data.address);
-  const [editAddressData, setEditAddressData] = useState("");
+  const [editAddressData, setEditAddressData] = useState(editModalOpen.data.data.address_detail);
   // const [editDetailAddress,setEditDetailAddress] = useState(editModalOpen.data.data.)
 
   const closeModal = useCallback(() => {
@@ -179,7 +179,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   console.log("editModalOpen", editModalOpen);
 
   const FarmInfoSave = useCallback(() => {
-    let editAddressAll = editAddressCode + "||" + editAddress + editAddressData;
+    let editAddressAll = editAddressCode + "||" + editAddress +"||"+ editAddressData;
 
     updateFarmhouseMutate({
       data: {

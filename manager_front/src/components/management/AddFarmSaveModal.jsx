@@ -248,7 +248,7 @@ function AddFarmSaveModal({
         name: farmName,
         producer_name: producerName,
         phone: phoneNumber,
-        address: addressCode + "||" + addressData.split(") ")[1] + addressDetailData,
+        address: addressCode + "||" + addressData.split(") ")[1] +"||"+ addressDetailData,
         qrcode: file,
       },
     });
@@ -423,7 +423,8 @@ function AddFarmSaveModal({
             <input
               placeholder="연락처를 입력하세요."
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, '').replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`))}
+              maxLength="13"
             />
           </div>
           <p className="title-info">주소</p>

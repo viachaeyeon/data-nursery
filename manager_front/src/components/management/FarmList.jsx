@@ -348,7 +348,7 @@ function FarmList() {
     nameOrder: isNameOrderBy,
     statusOrder: isStateOrderBy,
     page: 1,
-    size: 8,
+    size: 15,
     successFn: () => {},
     errorFn: (err) => {
       console.log("!!err", err);
@@ -435,8 +435,9 @@ function FarmList() {
         farm_name: data?.name,
         name: data?.producer_name,
         farm_number: data?.nursery_number,
-        address: data?.address.split("||")[1],
         address_code: data?.address.split("||")[0],
+        address: data?.address.split("||")[1],
+        address_detail: data?.address.split("||")[2],
         phone: data?.phone,
         status: data?.last_planter_status?.status,
         qr_image: data?.planter?.qrcode,
