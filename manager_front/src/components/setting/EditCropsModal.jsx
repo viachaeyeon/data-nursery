@@ -8,6 +8,7 @@ import useUpdateCrop from "@src/hooks/queries/crop/useUpdateCrop";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import CropsImgDeleteModal from "./CropsImgDeleteModal";
+import { cropColorArray } from "@components/common/ListColor";
 
 import XIcon from "@images/common/icon-x.svg";
 import CropsNoIcon from "@images/setting/crops-no-img.svg";
@@ -242,22 +243,6 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
     fileInputRef.current.click();
   }, []);
 
-  //고정된 색상
-  const colors = [
-    "#EF7E7E",
-    "#F7AD77",
-    "#F9E37A",
-    "#C6E37C",
-    "#71B598",
-    "#79CEC8",
-    "#89B9F5",
-    "#A0A3F6",
-    "#B289ED",
-    "#E994EA",
-    "#E783AD",
-    "#929FA6",
-  ];
-
   //선택한 색상
   const [selectedColor, setSelectedColor] = useState(editCropsModalOpen.data.color);
 
@@ -290,7 +275,7 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
     });
   }, []);
 
-  const isColorInArray = colors.includes(selectedColor);
+  const isColorInArray = cropColorArray.includes(selectedColor);
 
   // 작물정보 수정 API
   const { mutate: updateCropMutate } = useUpdateCrop(
@@ -387,7 +372,7 @@ function EditCropsModal({ editCropsModalOpen, setEditCropsModalOpen }) {
                   width: "100%",
                   justifyContent: "space-between",
                 }}>
-                {colors.map((color) => (
+                {cropColorArray.map((color) => (
                   <div
                     key={color}
                     onClick={() => handleColorClick(color)}

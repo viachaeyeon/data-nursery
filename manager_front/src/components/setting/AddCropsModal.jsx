@@ -6,6 +6,8 @@ import { useRecoilState } from "recoil";
 import useCreateCrop from "@src/hooks/queries/crop/useCreateCrop";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
+import { cropColorArray } from "@components/common/ListColor";
+
 import XIcon from "@images/common/icon-x.svg";
 import CropsNoIcon from "@images/setting/crops-no-img.svg";
 import RainbowIcon from "@images/setting/rainbow-color.svg";
@@ -191,21 +193,6 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
-  const colors = [
-    "#EF7E7E",
-    "#F7AD77",
-    "#F9E37A",
-    "#C6E37C",
-    "#71B598",
-    "#79CEC8",
-    "#89B9F5",
-    "#A0A3F6",
-    "#B289ED",
-    "#E994EA",
-    "#E783AD",
-    "#929FA6",
-  ];
-
   //작물 추가 정보
   const [cropsName, setCropsName] = useState("");
 
@@ -258,7 +245,7 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
   );
 
   // 선택한 색상이 기본색상인지 판단
-  const isColorInArray = colors.includes(selectedColor);
+  const isColorInArray = cropColorArray.includes(selectedColor);
 
   // 작물 등록 API
   const { mutate: createCropMutate } = useCreateCrop(
@@ -337,7 +324,7 @@ function AddCropsModal({ addCropsModalOpen, setAddCropsModalOpen }) {
                 width: "100%",
                 justifyContent: "space-between",
               }}>
-              {colors.map((color, index) => (
+              {cropColorArray.map((color, index) => (
                 <div
                   key={`map${index}`}
                   onClick={() => handleColorClick(color)}
