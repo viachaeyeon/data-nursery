@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getWaitWorkListListAPI } from "@apis/planterAPIs";
+import { getWaitWorkListAPI } from "@apis/planterAPIs";
 
 import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 
 export default function useWaitWorkList({ serialNumber, page, errorFn, successFn }) {
-  return useQuery([waitWorkListKey, page], () => getWaitWorkListListAPI(serialNumber, page), {
+  return useQuery([waitWorkListKey, page], () => getWaitWorkListAPI(serialNumber, page), {
     staleTime: 10 * (60 * 1000), // 10 mins
     cacheTime: 15 * (60 * 1000), // 15 mins
     retry: 0,

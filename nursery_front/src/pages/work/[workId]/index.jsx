@@ -1,12 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useWorkingWorkInfo from "@hooks/queries/planter/useWorkingWorkInfo";
 import useWorkInfo from "@hooks/queries/planter/useWorkInfo";
 import useUpdateWorkStatus from "@hooks/queries/planter/useWorkStatusUpdate";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultInput from "@components/common/input/DefaultInput";
@@ -14,10 +16,9 @@ import DefaultInput from "@components/common/input/DefaultInput";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import { defaultButtonColor } from "@utils/ButtonColor";
 import { DateFormatting } from "@utils/Formatting";
-import PauseIcon from "@images/dashboard/icon-pause.svg";
 import CheckIcon from "@images/work/icon-check.svg";
-import theme from "@src/styles/theme";
 import { waitWorkListKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -59,10 +60,11 @@ const S = {
 
 function WorkInfoPage({ workId }) {
   const router = useRouter();
+  const clearQueries = useAllCacheClear();
   const invalidateQueries = useInvalidateQueries();
 
   // BottomButton 정보
-  const buttonSetting = {
+  const [buttonSetting, setButtonSetting] = useState({
     color: defaultButtonColor,
     text: "시작",
     onClickEvent: () => {
@@ -73,13 +75,13 @@ function WorkInfoPage({ workId }) {
         },
       });
     },
-  };
+  });
 
   // 유저 정보 API
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 
@@ -95,7 +97,35 @@ function WorkInfoPage({ workId }) {
   // 작업 정보 API
   const { data: workInfo } = useWorkInfo({
     workId: workId,
-    successFn: () => {},
+    successFn: (res) => {
+      if (res.planter_work_status.status === "WAIT") {
+        setButtonSetting({
+          color: defaultButtonColor,
+          text: "시작",
+          onClickEvent: () => {
+            updateWorkStatusMutate({
+              data: {
+                planter_work_id: workId,
+                status: "WORKING",
+              },
+            });
+          },
+        });
+      } else if (res.planter_work_status.status === "WORKING") {
+        setButtonSetting({
+          color: defaultButtonColor,
+          text: "작업완료",
+          onClickEvent: () => {
+            updateWorkStatusMutate({
+              data: {
+                planter_work_id: workId,
+                status: "DONE",
+              },
+            });
+          },
+        });
+      }
+    },
     errorFn: (err) => {
       alert(err);
     },
@@ -121,18 +151,24 @@ function WorkInfoPage({ workId }) {
       backIconClickFn={() => {
         router.push("/");
       }}
-      isMoreIcon={true}
-      // 작업중이 아닌 경우에만 버튼 노출
-      buttonSetting={!!workingWorkInfo && workingWorkInfo?.planter_status === "WORKING" ? null : buttonSetting}>
+      isMoreIcon={workInfo?.planter_work_status.status === "WAIT"}
+      // 대기중 및 작업중일 경우에만 버튼 노출
+      buttonSetting={
+        !!workInfo &&
+        (workInfo?.planter_work_status.status === "DONE" ||
+          (workInfo?.planter_work_status.status === "WAIT" && !!workingWorkInfo && workingWorkInfo?.id !== workId))
+          ? null
+          : buttonSetting
+      }>
       <S.Wrap>
         <S.InputWrap>
           <p className="category-text">작업상태</p>
           <S.WorkStatusWrap>
             {workInfo?.planter_work_status.status === "WAIT" && <p className="status-text">대기중인 작업</p>}
-            {workInfo?.planter_work_status.status === "PAUSE" && (
+            {workInfo?.planter_work_status.status === "WORKING" && (
               <>
-                <PauseIcon fill={theme.basic.grey50} />
-                <p className="status-text">일시정지된 작업</p>
+                <Image src={"/images/dashboard/working-ani.gif"} width={31} height={16} alt="working gif" />
+                <p className="status-text">진행중인 작업</p>
               </>
             )}
             {workInfo?.planter_work_status.status === "DONE" && (

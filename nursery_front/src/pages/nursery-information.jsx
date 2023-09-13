@@ -4,12 +4,14 @@ import { useRouter } from "next/router";
 import { Button } from "react-bootstrap";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultModal from "@components/common/modal/DefaultModal";
 import DefaultInput from "@components/common/input/DefaultInput";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -87,6 +89,7 @@ const S = {
 
 function NurseryInformationPage() {
   const router = useRouter();
+  const clearQueries = useAllCacheClear();
 
   const [modalOpen, setModalOpen] = useState({
     open: false,
@@ -101,7 +104,7 @@ function NurseryInformationPage() {
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 
@@ -150,7 +153,7 @@ function NurseryInformationPage() {
                   title: "로그아웃을\n진행하시겠습니까?",
                   btnType: "two",
                   afterFn: () => {
-                    alert("준비중입니다.");
+                    userLogout(router, clearQueries);
                   },
                 });
               }}>

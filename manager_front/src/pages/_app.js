@@ -8,6 +8,7 @@ import { ThemeProvider } from "styled-components";
 import theme from "@src/styles/theme";
 
 export default function App({ Component, pageProps }) {
+  // 사용자별 요청 데이터 공유 안되게
   const [queryClient] = useState(() => new QueryClient(), {
     defaultOptions: {
       queries: {
@@ -23,17 +24,19 @@ export default function App({ Component, pageProps }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SSRProvider>
-        <RecoilRoot>
-          <ThemeProvider theme={theme}>
-            <GlobalStyle />
-            <Head>
-              <title>Data Nursery</title>
-            </Head>
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </RecoilRoot>
-      </SSRProvider>
+      <Hydrate state={pageProps.dehydratedState}>
+        <SSRProvider>
+          <RecoilRoot>
+            <ThemeProvider theme={theme}>
+              <GlobalStyle />
+              <Head>
+                <title>Data Nursery</title>
+              </Head>
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </RecoilRoot>
+        </SSRProvider>
+      </Hydrate>
     </QueryClientProvider>
   );
 }

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, case, extract, desc, asc, cast, String
 from starlette.responses import JSONResponse
 from datetime import date, datetime, timedelta
+from pytz import timezone, utc
 from collections import defaultdict
 
 
@@ -111,7 +112,7 @@ def get_admin_dashboard_realtime_planter(
                 planterModels.PlanterOutput.planter_work_id
                 == planterModels.PlanterWork.id
             )
-            & (planterModels.PlanterOutput.created_at >= date.today()),
+            & (planterModels.PlanterOutput.updated_at >= date.today()),
         )
         .filter(
             planterModels.Planter.is_del == False,
@@ -214,6 +215,7 @@ def get_crop_total_output(
         houly_crop_sums = (
             db.query(
                 cropModels.Crop.name,
+                cropModels.Crop.color,
                 extract("day", planterModels.PlanterOutput.updated_at).label("day"),
                 func.sum(planterModels.PlanterOutput.output).label("total_output"),
             )
@@ -230,19 +232,20 @@ def get_crop_total_output(
                 extract("month", planterModels.PlanterOutput.updated_at).label("month")
                 == datetime.utcnow().month
             )
-            .group_by(cropModels.Crop.name, "day")
+            .group_by(cropModels.Crop.name, cropModels.Crop.color, "day")
             .all()
         )
 
-        for crop_name, hour, total_output in houly_crop_sums:
+        for crop_name, color, day, total_output in houly_crop_sums:
             crop_name = crop_name.lower()
             grouped_data[crop_name].append(
-                {"day": int(hour), "output": int(total_output)}
+                {"day": int(day), "color": color, "output": int(total_output)}
             )
     elif query_type == "month":
         monthly_crop_sums = (
             db.query(
                 cropModels.Crop.name,
+                cropModels.Crop.color,
                 extract("month", planterModels.PlanterOutput.updated_at).label("month"),
                 func.sum(planterModels.PlanterOutput.output).label("total_output"),
             )
@@ -259,14 +262,14 @@ def get_crop_total_output(
                 extract("year", planterModels.PlanterOutput.updated_at).label("year")
                 == datetime.utcnow().year
             )
-            .group_by(cropModels.Crop.name, "month")
+            .group_by(cropModels.Crop.name, cropModels.Crop.color, "month")
             .all()
         )
 
-        for crop_name, month, total_output in monthly_crop_sums:
+        for crop_name, color, month, total_output in monthly_crop_sums:
             crop_name = crop_name.lower()
             grouped_data[crop_name].append(
-                {"month": int(month), "output": int(total_output)}
+                {"month": int(month), "color": color, "output": int(total_output)}
             )
     else:
         return JSONResponse(status_code=433, content=dict(msg="UNPROCESSABLE_ENTITY"))
@@ -505,15 +508,15 @@ def get_planter_work_statics(
     request: Request,
     year: int = None,
     month: int = None,
-    day: int = None,
+    date_range: str = None,
     farm_house_id: str = None,
     farmhouse_name: str = None,
     crop_name: str = None,
-    crop_kind_order_type: int = 0,  # 0: 내림차순, 1: 올림차순
+    crop_kind_order_type: int = None,  # 0: 내림차순, 1: 올림차순
     tray_total: str = None,
-    seed_quantity_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
-    planter_output_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
-    sowing_date_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
+    order_quantity_order_type: int = None,  # 0: 내림차순, 1: 올림차순
+    planter_output_order_type: int = None,  # 0: 내림차순, 1: 올림차순
+    sowing_date_order_type: int = None,  # 0: 내림차순, 1: 올림차순
     is_shipment_completed_order_type: int = 1,  # 0: 내림차순, 1: 올림차순
     page: int = 1,
     size: int = 10,
@@ -561,24 +564,44 @@ def get_planter_work_statics(
 
     delimiter = "||"
 
-    if day:
-        base_query = base_query.filter(
-            extract(
-                "year",
-                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+    if date_range:
+        target_timezone = timezone("Asia/Seoul")
+        start_date, end_date = date_range.split(delimiter)
+        start_year, start_month, start_day = start_date.split("-")
+        end_year, end_month, end_day = end_date.split("-")
+
+        target_start_date = datetime(
+            int(start_year), int(start_month), int(start_day), tzinfo=target_timezone
+        ).date()
+        target_end_date = datetime(
+            int(end_year), int(end_month), int(end_day), tzinfo=target_timezone
+        ).date()
+        if target_start_date == target_end_date:
+            base_query = base_query.filter(
+                extract(
+                    "year",
+                    func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+                )
+                == end_year,
+                extract(
+                    "month",
+                    func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+                )
+                == end_month,
+                extract(
+                    "day",
+                    func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+                )
+                == end_day,
             )
-            == year,
-            extract(
-                "month",
-                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
+        else:
+            base_query = base_query.filter(
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at)
+                >= target_start_date,
+                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at)
+                <= target_end_date,
             )
-            == month,
-            extract(
-                "day",
-                func.timezone("Asia/Seoul", planterModels.PlanterWork.updated_at),
-            )
-            == day,
-        )
+        # return None
     elif month:
         base_query = base_query.filter(
             extract(
@@ -629,28 +652,28 @@ def get_planter_work_statics(
     order_conditions = []
     if crop_kind_order_type == 0:
         order_conditions.append(desc(planterModels.PlanterWork.crop_kind))
-    else:
+    elif crop_kind_order_type == 1:
         order_conditions.append(asc(planterModels.PlanterWork.crop_kind))
-    if seed_quantity_order_type == 0:
-        order_conditions.append(desc(planterModels.PlanterWork.seed_quantity))
-    else:
-        order_conditions.append(asc(planterModels.PlanterWork.seed_quantity))
+    if order_quantity_order_type == 0:
+        order_conditions.append(desc(planterModels.PlanterWork.order_quantity))
+    elif order_quantity_order_type == 1:
+        order_conditions.append(asc(planterModels.PlanterWork.order_quantity))
     if planter_output_order_type == 0:
         order_conditions.append(desc(planterModels.PlanterOutput.output))
-    else:
+    elif planter_output_order_type == 1:
         order_conditions.append(asc(planterModels.PlanterOutput.output))
     if sowing_date_order_type == 0:
         order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
-    else:
+    elif sowing_date_order_type == 1:
         order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
-    if sowing_date_order_type == 0:
-        order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
-    else:
-        order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
+    # if sowing_date_order_type == 0:
+    #     order_conditions.append(desc(planterModels.PlanterWork.sowing_date))
+    # else:
+    #     order_conditions.append(asc(planterModels.PlanterWork.sowing_date))
     if is_shipment_completed_order_type == 0:
-        order_conditions.append(asc(planterModels.PlanterWork.is_shipment_completed))
-    else:
         order_conditions.append(desc(planterModels.PlanterWork.is_shipment_completed))
+    elif is_shipment_completed_order_type == 1:
+        order_conditions.append(asc(planterModels.PlanterWork.is_shipment_completed))
 
     base_query = base_query.order_by(*order_conditions)
 

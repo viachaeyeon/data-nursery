@@ -117,12 +117,12 @@ function BottomBar() {
       <S.BottomBarContent
         className="right-top-radius"
         onClick={() => {
-          alert("이력조회 클릭");
+          router.push("/work/history");
         }}>
         <div
           className="bottom-box"
           onClick={(e) => {
-            alert("이력조회 클릭");
+            router.push("/work/history");
             e.stopPropagation();
           }}
         />

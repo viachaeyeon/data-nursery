@@ -40,3 +40,50 @@ export function YYYYMMDDSlash(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString(undefined, options).replace(/. /g, "/").slice(0, 10);
 }
+
+//날짜 0000-00-00 형식으로
+export function YYYYMMDDDash(dateString) {
+  const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, options).replace(/. /g, "-").slice(0, 10);
+}
+
+// 통계현황 연도목록
+export function GetYearList() {
+  const result = [];
+  const lastYear = new Date().getFullYear();
+
+  if (2023 === lastYear) {
+    result.push(2023);
+  } else {
+    for (let i = lastYear; 2023 <= i; i--) {
+      result.push(i);
+    }
+  }
+
+  return result.reverse();
+}
+
+// 통계현황 월목록
+export function GetMonthList(selectYear) {
+  const result = [];
+
+  const lastYear = new Date().getFullYear();
+  const lastMonth = new Date().getMonth() + 1;
+
+  if (2023 === selectYear) {
+    for (let i = 9; i <= lastMonth; i++) {
+      result.push(i);
+    }
+  } else if (2023 < selectYear && selectYear < lastYear) {
+    for (let i = 1; i <= 12; i++) {
+      result.push(i);
+    }
+  } else {
+    for (let i = 1; i <= lastMonth; i++) {
+      result.push(i);
+    }
+  }
+
+  return result;
+}

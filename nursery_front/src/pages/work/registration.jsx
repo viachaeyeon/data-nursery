@@ -8,6 +8,7 @@ import useCropList from "@hooks/queries/crop/useCropList";
 import useTrayList from "@hooks/queries/planter/useTrayList";
 import useRegisterWork from "@hooks/queries/planter/useRegisterWork";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultInput from "@components/common/input/DefaultInput";
@@ -15,6 +16,7 @@ import DefaultCalendar from "@components/common/calendar/DefaultCalendar";
 import SuffixInput from "@components/common/input/SuffixInput";
 import DefaultSelect from "@components/common/select/DefaultSelect";
 import DefaultSelectList from "@components/common/select/DefaultSelectList";
+import CalendarButton from "@components/common/button/CalendarButton";
 
 import { isDefaultAlertShowState } from "@states/isDefaultAlertShowState";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
@@ -23,8 +25,8 @@ import OnRadioBtnIcon from "@images/common/on-radio-btn.svg";
 import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 import PointIcon from "@images/work/ico-point.svg";
 import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
-import CalendarButton from "@components/common/button/CalendarButton";
 import { DateFormatting } from "@utils/Formatting";
+import userLogout from "@utils/userLogout";
 
 const S = {
   Wrap: styled.div`
@@ -61,6 +63,7 @@ const S = {
 
 function WorkRegistrationPage() {
   const router = useRouter();
+  const clearQueries = useAllCacheClear();
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
@@ -151,7 +154,7 @@ function WorkRegistrationPage() {
   const { data: userInfo } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
-      // userLogout(router, clearQueries);
+      userLogout(router, clearQueries);
     },
   });
 

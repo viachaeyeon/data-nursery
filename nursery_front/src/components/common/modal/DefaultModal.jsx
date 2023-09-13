@@ -67,11 +67,6 @@ const S = {
     .modal-content-text {
       ${({ theme }) => theme.textStyle.h6Regular}
       color: ${({ theme }) => theme.basic.grey40};
-
-      span {
-        ${({ theme }) => theme.textStyle.h6Bold}
-        color: ${({ theme }) => theme.basic.warning};
-      }
     }
 
     .button-wrap {
