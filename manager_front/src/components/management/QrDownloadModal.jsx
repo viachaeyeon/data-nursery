@@ -169,14 +169,6 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
               <input value={qrDownloadModalOpen.data.data.name} />
             </div>
           </div>
-          <div className="input-inner">
-            <p className="title-info">
-              파종기 시리얼번호를 입력하여 <b>QR 코드를 생성하세요</b>
-            </p>
-            <div className="input-wrap">
-              <input value={qrDownloadModalOpen.data.data.serial_number} />
-            </div>
-          </div>
         </S.InputWrap>
         <S.QrCodWrap>
           <div className="qrcode-inner">
