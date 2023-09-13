@@ -614,7 +614,7 @@ function FarmList() {
             </>
           )}
         </div>
-        {farmhouseList?.farm_houses.length === 0 ? (
+        {farmList?.length === 0 ? (
           <S.EmptyData>
             <FarmIcon width={56} height={56} />
             <p>등록된 농가가 없습니다.</p>
@@ -653,7 +653,7 @@ function FarmList() {
                   {data?.address.split("||")[1] + " " + data?.address.split("||")[2]}
                 </p>
                 <p className="table-text phone">{data?.phone}</p>
-                {data?.status === "ON" ? (
+                {data?.last_planter_status?.status === "ON" ? (
                   <p className="table-eighth status-on">{data?.last_planter_status.status}</p>
                 ) : (
                   <p className="table-eighth status-off">{data?.last_planter_status.status}</p>
@@ -710,7 +710,7 @@ function FarmList() {
             );
           })
         )}
-        {farmhouseList?.total !== 0 && farmList.length !== farmhouseList?.total && (
+        {farmhouseList?.total !== 0 && farmList.length !== farmhouseList?.total && farmList?.length !== 0 &&(
           <S.ButtonWrap>
             <S.MoreButton
               onClick={() => {
