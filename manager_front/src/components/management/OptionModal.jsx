@@ -78,12 +78,8 @@ function OptionModal({
 
   // QR 다운로드 모달
   const handleQrDownloadModalClick = useCallback(() => {
-    // if (qrDownloadModalOpen.open === true) {
-    //   setQrDownloadModalOpen({ open: false, data: undefined });
-    // } else if (qrDownloadModalOpen.open === false) {
     setQrDownloadModalOpen({ open: true, data: qrDownloadModalOpen });
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
-    // }
   }, [qrDownloadModalOpen]);
 
   // 농가수정

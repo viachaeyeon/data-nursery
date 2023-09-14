@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
 
 import useFarmAllList from "@src/hooks/queries/auth/useFarmAllList";
+import { useFarmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import colorArray from "@components/common/ListColor";
 
@@ -346,6 +348,7 @@ const S = {
 };
 
 function FarmList() {
+  const invalidateQueries = useInvalidateQueries();
   const [isNameOrderBy, setIsNameOrderBy] = useState(0);
   const [isStateOrderBy, setIsStateOrderBy] = useState(0);
 
@@ -359,10 +362,12 @@ function FarmList() {
   const sortByFarmName = useCallback(() => {
     if (isNameOrderBy === 0) {
       setIsNameOrderBy(1);
+      invalidateQueries([useFarmAllListKey]);
     } else {
       setIsNameOrderBy(0);
+      invalidateQueries([useFarmAllListKey]);
     }
-  }, [isNameOrderBy]);
+  }, [isNameOrderBy, useFarmAllListKey]);
 
   // 상태 정렬
   const sortByStatus = useCallback(() => {
@@ -372,6 +377,9 @@ function FarmList() {
       setIsStateOrderBy(0);
     }
   }, [isStateOrderBy]);
+
+  console.log("isNameOrderBy", isNameOrderBy);
+  console.log("isStateOrderBy", isStateOrderBy);
 
   const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
 
