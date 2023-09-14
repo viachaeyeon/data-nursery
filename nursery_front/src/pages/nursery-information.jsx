@@ -161,7 +161,8 @@ function NurseryInformationPage() {
             <p className="title-text">주소</p>
             <S.AddressBox>
               <p className="address-text">
-                ({userInfo?.farm_house.address.split("||")[0]}) {userInfo?.farm_house.address.split("||")[1]},
+                ({userInfo?.farm_house.address.split("||")[0]}) {userInfo?.farm_house.address.split("||")[1]}
+                {!!userInfo?.farm_house.address.split("||")[2] && ", "}
                 {userInfo?.farm_house.address.split("||")[2]}
               </p>
             </S.AddressBox>
