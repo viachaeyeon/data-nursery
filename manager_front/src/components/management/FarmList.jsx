@@ -382,14 +382,13 @@ function FarmList() {
   const sortByStatus = useCallback(() => {
     if (isStateOrderBy === 0) {
       setIsStateOrderBy(1);
+      invalidateQueries([useFarmAllListKey]);
     } else {
       setIsStateOrderBy(0);
+      invalidateQueries([useFarmAllListKey]);
     }
   }, [isStateOrderBy]);
-
-  console.log("isNameOrderBy", isNameOrderBy);
-  console.log("isStateOrderBy", isStateOrderBy);
-
+  
   const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
 
   const { data: farmhouseList } = useFarmAllList({
