@@ -144,8 +144,6 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
     setQrDownloadModalOpen({ open: false, data: undefined });
   }, []);
 
-  console.log("qrDownloadModalOpen", qrDownloadModalOpen);
-
   const qrImage = process.env.NEXT_PUBLIC_END_POINT + qrDownloadModalOpen?.data?.planter?.qrcode;
   // const qrImage = "https://b.datanursery.kr" + qrDownloadModalOpen?.data?.planter?.qrcode;
 

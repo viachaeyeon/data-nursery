@@ -63,8 +63,6 @@ function GraphCropProductionMonth() {
       color: planterCrops[key][0].color,
     }));
 
-  console.log("!!!!!", nameColorArray);
-
   const graphRef = useRef(null);
   let graphInstance = null;
 

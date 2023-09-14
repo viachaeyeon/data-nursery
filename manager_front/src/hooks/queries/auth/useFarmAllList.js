@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { getAllFarmListAPI } from "@apis/authAPIs";
-import { farmAllListKey } from "@src/utils/query-keys/PlanterQueryKeys";
+import { farmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
 
 export default function useFarmAllList({ nameOrder, statusOrder, page, size, successFn, errorFn }) {
   return useQuery(
