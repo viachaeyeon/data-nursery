@@ -18,7 +18,7 @@ function GraphTotalProduction() {
     queryType: "month",
     successFn: () => {},
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 

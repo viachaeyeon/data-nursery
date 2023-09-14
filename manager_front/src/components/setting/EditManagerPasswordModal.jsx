@@ -168,7 +168,6 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
     setNewPw("");
     setNewPwCheck("");
   }, []);
-  console.log("editManagerModalOpen", editManagerModalOpen);
 
   const handleSaveClick = useCallback(() => {
     // setManagerPassword(newPw);

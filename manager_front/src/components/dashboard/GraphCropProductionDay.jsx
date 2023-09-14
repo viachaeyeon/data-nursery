@@ -51,7 +51,7 @@ function GraphCropProductionDay() {
     queryType: "day",
     successFn: () => {},
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 

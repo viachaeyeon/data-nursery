@@ -51,11 +51,9 @@ function GraphCropProductionMonth() {
     queryType: "month",
     successFn: () => {},
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
-
-  console.log("planterCrops", planterCrops);
 
   //범례에서 사용할 배열
   const nameColorArray =

@@ -139,7 +139,7 @@ function OutlineBlock() {
   const { data: planterStatus } = usePlanterStatus({
     successFn: () => {},
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 

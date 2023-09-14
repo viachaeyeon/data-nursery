@@ -25,12 +25,9 @@ function GraphFarmHouseProductionMonth() {
     queryType: "month",
     successFn: () => {},
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
-
-  console.log("planterFarm", planterFarm);
-  // const dataArray = planterTotal?.map((item) => item.output);
 
   //육묘장 이름
   const nameArray = planterFarm?.map((item) => item.farmhouse_name);
@@ -95,24 +92,9 @@ function GraphFarmHouseProductionMonth() {
         type: "bar",
         data: {
           labels: nameArray,
-          // [
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          //   "보천육묘장",
-          // ],
           datasets: [
             {
               data: dataArray,
-              // data: [12, 20, 3, 10, 2, 3, 9, 1, 3, 3, 9, 10],
               backgroundColor: "#FFB78E",
               hoverBackgroundColor: "#FFB78E",
               borderRadius: 4,

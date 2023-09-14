@@ -191,11 +191,9 @@ function OperationStatus({ currentDate }) {
       setOperationList((prev) => [...prev, ...res.planter]);
     },
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
-
-  console.log("planterOperationStatus", planterOperationStatus);
 
   useEffect(() => {
     if (!planterOperationStatus) {

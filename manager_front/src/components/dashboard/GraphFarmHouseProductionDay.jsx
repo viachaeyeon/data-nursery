@@ -25,7 +25,7 @@ function GraphFarmHouseProductionDay() {
     queryType: "day",
     successFn: () => {},
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 
@@ -34,8 +34,6 @@ function GraphFarmHouseProductionDay() {
 
   //육묘장 데이터
   const dataArray = planterFarm?.map((item) => item.total_output);
-
-  console.log("!!!! planterFarm", planterFarm);
 
   const graphRef = useRef(null);
   const graphUnitRef = useRef(null);

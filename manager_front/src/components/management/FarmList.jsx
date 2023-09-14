@@ -389,7 +389,7 @@ function FarmList() {
       }
     },
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 

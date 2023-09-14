@@ -186,7 +186,7 @@ function ManagementList() {
     size: 8,
     successFn: () => {},
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 
