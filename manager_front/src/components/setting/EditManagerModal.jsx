@@ -209,12 +209,6 @@ function EditManagerModal({ editManagerModalOpen, setEditManagerModalOpen, setEd
       },
     });
 
-    console.log("회사", editManagerCompany);
-    console.log("부서", editManagerDepartment);
-    console.log("직책", editManagerPosition);
-    console.log("이름", editManagerName);
-    console.log("전화번호", editManagerPhone);
-
     closeModal();
   }, [editManagerCompany, editManagerDepartment, editManagerPosition, editManagerName, editManagerPhone]);
 

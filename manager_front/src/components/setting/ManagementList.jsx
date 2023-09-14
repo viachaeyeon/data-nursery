@@ -190,8 +190,6 @@ function ManagementList() {
     },
   });
 
-  console.log("managerList", managerList?.data);
-
   const [optionModalOpen, setOptionModalOpen] = useState({
     open: false,
     index: undefined,
@@ -387,8 +385,6 @@ function ManagementList() {
       setCheckArray([]);
     }
   };
-
-  console.log("checkArray", checkArray);
 
   return (
     <S.Wrap>
