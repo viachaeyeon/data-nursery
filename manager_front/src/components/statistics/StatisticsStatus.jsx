@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 
-// import DatePickerMain from "./DatePickerMain";
-// import { YYYYMMDDSlash } from "@src/utils/Formatting";
+import colorArray from "@components/common/ListColor";
 import useStatics from "@src/hooks/queries/auth/useStatics";
 import useFarmHouseIdList from "@src/hooks/queries/auth/useFarmHouseIdList";
 import useFarmHouseNameList from "@src/hooks/queries/auth/useFarmHouseNameList";
@@ -264,9 +263,9 @@ const S = {
         ${({ theme }) => theme.textStyle.h7Bold};
       }
 
-      .farm-name-first {
+      /* .farm-name-first {
         background-color: #c6c6c6;
-      }
+      } */
     }
   `,
   ListBlock: styled.div`
@@ -353,7 +352,7 @@ const S = {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #79cec8;
+      /* background-color: #79cec8; */
       border-radius: 30px;
       padding: 8px;
       color: #fff;
@@ -1129,7 +1128,9 @@ function StatisticsStatus() {
                 <p className="list_id">{index + 1}</p>
                 <p className="farm_id">{data.farmhouse.farm_house_id}</p>
                 <div className="farm_name_wrap">
-                  <div className="farm-name-first">{data.farmhouse.name.slice(0, 1)}</div>
+                  <div className="farm-name-first" style={{ backgroundColor: colorArray[data.id % 20] }}>
+                    {data.farmhouse.name.slice(0, 1)}
+                  </div>
                   <p className="farm_name">{data.farmhouse.name}</p>
                 </div>
                 <p className="farm_plant">{data.crop.name}</p>
