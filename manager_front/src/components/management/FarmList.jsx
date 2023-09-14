@@ -641,7 +641,6 @@ function FarmList() {
                     <OptionModal
                       optionModalOpen={optionModalOpen}
                       setOptionModalOpen={setOptionModalOpen}
-                      qrDownloadModalOpen={qrDownloadModalOpen}
                       setQrDownloadModalOpen={setQrDownloadModalOpen}
                       setDeleteModalOpen={setDeleteModalOpen}
                       setEditModalOpen={setEditModalOpen}

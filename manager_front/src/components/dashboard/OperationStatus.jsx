@@ -181,7 +181,7 @@ function OperationStatus({ currentDate }) {
       alert(err);
     },
   });
-  
+
   useEffect(() => {
     if (!planterOperationStatus) {
       return;
@@ -199,8 +199,6 @@ function OperationStatus({ currentDate }) {
       pageChange();
     }
   }, [inView]);
-
-
 
   // 페이지 변경
   const pageChange = useCallback(() => {
