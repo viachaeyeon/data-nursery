@@ -5,7 +5,6 @@ import { useDaumPostcodePopup } from "react-daum-postcode";
 
 import useUpdateFarmhouse from "@src/hooks/queries/auth/useUpdateFarmhouse";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
-
 import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 import { farmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
 import XIcon from "@images/common/icon-x.svg";
@@ -159,7 +158,7 @@ const S = {
   `,
 };
 
-function EditFarmModal({ editModalOpen, setEditModalOpen }) {
+function EditFarmModal({ editModalOpen, setEditModalOpen, setPage, farmList, setFarmList }) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
@@ -184,9 +183,10 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
         address: editAddressCode + "||" + editAddress + "||" + editAddressData,
       },
     });
-
+    setFarmList([]);
+    setPage(1);
     closeModal();
-  }, [editModalOpen, editName, editFarmName, editAddressCode, editAddress, editAddressData]);
+  }, [editModalOpen, editName, editFarmName, editAddressCode, editAddress, editAddressData, farmList]);
 
   const open = useDaumPostcodePopup("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js");
 
@@ -216,7 +216,6 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
 
   const { mutate: updateFarmhouseMutate } = useUpdateFarmhouse(
     () => {
-      invalidateQueries([farmAllListKey]);
       setIsDefaultAlertShowState({
         isShow: true,
         type: "success",
@@ -224,6 +223,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
         okClick: null,
       });
       closeModal();
+      invalidateQueries([farmAllListKey]);
     },
     (error) => {
       setIsDefaultAlertShowState({
@@ -253,7 +253,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
           </div>
           <p className="title-info">육묘업 등록번호</p>
           <div className="input-wrap-off">
-            <input value={editModalOpen.data.nursery_number} />
+            <input value={editModalOpen.data.nursery_number} disabled />
           </div>
           <p className="title-info">농가ID</p>
           <div className="input-wrap-off">

@@ -171,6 +171,17 @@ function OperationStatus({ currentDate }) {
     threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
   });
 
+  const { data: planterOperationStatus } = usePlanterRealTime({
+    page: operationListPage,
+    size: 20,
+    successFn: (res) => {
+      setOperationList((prev) => [...prev, ...res.planter]);
+    },
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
   useEffect(() => {
     if (!planterOperationStatus) {
       return;
@@ -188,17 +199,6 @@ function OperationStatus({ currentDate }) {
       pageChange();
     }
   }, [inView]);
-
-  const { data: planterOperationStatus } = usePlanterRealTime({
-    page: operationListPage,
-    size: 20,
-    successFn: (res) => {
-      setOperationList((prev) => [...prev, ...res.planter]);
-    },
-    errorFn: (err) => {
-      console.log("!!err", err);
-    },
-  });
 
   // 페이지 변경
   const pageChange = useCallback(() => {

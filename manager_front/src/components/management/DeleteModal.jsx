@@ -83,7 +83,7 @@ const S = {
   `,
 };
 
-function AddFarmModal({ deleteModalOpen, setDeleteModalOpen }) {
+function AddFarmModal({ deleteModalOpen, setDeleteModalOpen, setPage, farmList, setFarmList }) {
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
   const invalidateQueries = useInvalidateQueries();
 
@@ -100,7 +100,9 @@ function AddFarmModal({ deleteModalOpen, setDeleteModalOpen }) {
         farmhouseIds: deleteModalOpen.deleteId,
       },
     });
-  }, [deleteModalOpen]);
+    setPage(1);
+    setFarmList([]);
+  }, [deleteModalOpen, farmList]);
 
   const { mutate: deleteFarmhouseMutate } = useDeleteFarmhouse(
     () => {

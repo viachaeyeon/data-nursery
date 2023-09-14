@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Tooltip } from "react-tooltip";
 
 import useFarmAllList from "@src/hooks/queries/auth/useFarmAllList";
+import { farmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import colorArray from "@components/common/ListColor";
 
-// import DaumPostcode from "react-daum-postcode";
 import OptionModal from "./OptionModal";
 import AddFarmModal from "./AddFarmModal";
 import AddFarmSaveModal from "./AddFarmSaveModal";
@@ -355,6 +356,7 @@ const S = {
 };
 
 function FarmList() {
+  const invalidateQueries = useInvalidateQueries();
   const [isNameOrderBy, setIsNameOrderBy] = useState(0);
   const [isStateOrderBy, setIsStateOrderBy] = useState(0);
 
@@ -371,7 +373,10 @@ function FarmList() {
     } else {
       setIsNameOrderBy(0);
     }
-  }, [isNameOrderBy]);
+    setFarmList([]);
+    setPage(1);
+    invalidateQueries([farmAllListKey]);
+  }, [isNameOrderBy, farmAllListKey]);
 
   // 상태 정렬
   const sortByStatus = useCallback(() => {
@@ -380,6 +385,9 @@ function FarmList() {
     } else {
       setIsStateOrderBy(0);
     }
+    setFarmList([]);
+    setPage(1);
+    invalidateQueries([farmAllListKey]);
   }, [isStateOrderBy]);
 
   const [isAddDataClick, setIsAddDataClick] = useState(false); // 더보기 클릭 여부
@@ -398,7 +406,7 @@ function FarmList() {
       }
     },
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 
@@ -633,7 +641,6 @@ function FarmList() {
                     <OptionModal
                       optionModalOpen={optionModalOpen}
                       setOptionModalOpen={setOptionModalOpen}
-                      qrDownloadModalOpen={qrDownloadModalOpen}
                       setQrDownloadModalOpen={setQrDownloadModalOpen}
                       setDeleteModalOpen={setDeleteModalOpen}
                       setEditModalOpen={setEditModalOpen}
@@ -735,6 +742,9 @@ function FarmList() {
             setDeleteModalOpen={setDeleteModalOpen}
             deleteModalOpen={deleteModalOpen}
             checkArray={checkArray}
+            setPage={setPage}
+            farmList={farmList}
+            setFarmList={setFarmList}
           />
         </div>
       )}
@@ -742,7 +752,13 @@ function FarmList() {
       {/* 수정모달 */}
       {editModalOpen.open && (
         <div className="modal-wrap">
-          <EditFarmModal editModalOpen={editModalOpen} setEditModalOpen={setEditModalOpen} />
+          <EditFarmModal
+            editModalOpen={editModalOpen}
+            setEditModalOpen={setEditModalOpen}
+            setPage={setPage}
+            farmList={farmList}
+            setFarmList={setFarmList}
+          />
         </div>
       )}
     </S.Wrap>

@@ -112,6 +112,10 @@ const S = {
     .header-table-fin {
       width: 100px;
     }
+    .check-img {
+      width: 24px;
+      height: 24px;
+    }
   `,
   ListBlockWrap: styled.div`
     max-height: 444px;
@@ -144,6 +148,10 @@ const S = {
     .table-sec {
       width: 110px;
     }
+    .check-img {
+      width: 24px;
+      height: 24px;
+    }
   `,
   ListBlock: styled.div`
     align-items: center;
@@ -153,6 +161,7 @@ const S = {
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
     background-color: ${({ theme }) => theme.blackWhite.white};
     border-radius: 8px;
+    height: 64px;
 
     p {
       color: ${({ theme }) => theme.basic.gray50};
@@ -189,7 +198,7 @@ const S = {
   `,
 };
 
-function ManagementList() {
+function ManagementList({ userInfo }) {
   // inView : 요소가 뷰포트에 진입했는지 여부
   const { ref, inView, entry } = useInView({
     threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
@@ -207,7 +216,7 @@ function ManagementList() {
       setManagerList((prev) => [...prev, ...res.data]);
     },
     errorFn: (err) => {
-      console.log("!!err", err);
+      alert(err);
     },
   });
 
@@ -313,10 +322,12 @@ function ManagementList() {
           <p className="title">관리자목록</p>
           <p className="sub-title">관리자 추가 및 변경</p>
         </S.Title>
-        <S.AddButton onClick={handelAddManagerModalClick}>
-          <AddIcon width={24} height={24} />
-          <p>관리자 추가</p>
-        </S.AddButton>
+        {userInfo?.admin_user_info?.is_top_admin === true && (
+          <S.AddButton onClick={handelAddManagerModalClick}>
+            <AddIcon width={24} height={24} />
+            <p>관리자 추가</p>
+          </S.AddButton>
+        )}
       </S.TitleWrap>
       <S.ContentList>
         <div className="table-header">
@@ -324,21 +335,29 @@ function ManagementList() {
             {checkArray.length !== 0 &&
             checkArray.length ===
               managerList.filter((manager) => manager.admin_user_info.is_top_admin === false).length ? (
-              <CheckBoxOn
-                width={24}
-                height={24}
-                onClick={() => {
-                  toggleAll(true);
-                }}
-              />
+              <div className="check-img">
+                {userInfo?.admin_user_info?.is_top_admin === true && (
+                  <CheckBoxOn
+                    width={24}
+                    height={24}
+                    onClick={() => {
+                      toggleAll(true);
+                    }}
+                  />
+                )}
+              </div>
             ) : (
-              <CheckBoxOff
-                width={24}
-                height={24}
-                onClick={() => {
-                  toggleAll(false);
-                }}
-              />
+              <div className="check-img">
+                {userInfo?.admin_user_info?.is_top_admin === true && (
+                  <CheckBoxOff
+                    width={24}
+                    height={24}
+                    onClick={() => {
+                      toggleAll(false);
+                    }}
+                  />
+                )}
+              </div>
             )}
           </div>
           {checkArray.length === 0 ? (
@@ -371,13 +390,25 @@ function ManagementList() {
                   key={data.user.id}
                   className={`table-row ${checkArray.includes(data.user.id) ? "selected" : ""}`}>
                   {data.admin_user_info.is_top_admin === true ? (
-                    <CheckBoxNone width={24} height={24} style={{ cursor: "auto" }} />
+                    <div className="check-img">
+                      {userInfo?.admin_user_info?.is_top_admin === true && (
+                        <CheckBoxNone width={24} height={24} style={{ cursor: "auto" }} />
+                      )}
+                    </div>
                   ) : (
                     <>
                       {checkArray.includes(data.user.id) ? (
-                        <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, data.user.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, data.user.id)} />
+                          )}
+                        </div>
                       ) : (
-                        <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, data.user.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, data.user.id)} />
+                          )}
+                        </div>
                       )}
                     </>
                   )}
@@ -394,13 +425,16 @@ function ManagementList() {
                   <p className="table-text">{data.user.name}</p>
                   <p className="table-text">{data.admin_user_info.phone}</p>
                   <div className="option-modal-wrap table-thir">
-                    <div
-                      className="option-dot"
-                      onClick={() => {
-                        handleOptionModalClick(index, data);
-                      }}>
-                      <OptionDot width={32} height={32} />
-                    </div>
+                    {userInfo?.admin_user_info?.is_top_admin === true && (
+                      <div
+                        className="option-dot"
+                        onClick={() => {
+                          handleOptionModalClick(index, data);
+                        }}>
+                        <OptionDot width={32} height={32} />
+                      </div>
+                    )}
+
                     {index === optionModalOpen.index && (
                       <OptionModal
                         optionModalOpen={optionModalOpen}
