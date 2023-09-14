@@ -144,7 +144,7 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
     setQrDownloadModalOpen({ open: false, data: undefined });
   }, []);
 
-  const qrImage = "http://localhost:8000" + qrDownloadModalOpen?.data?.data?.planter?.qrcode;
+  const qrImage = process.env.NEXT_PUBLIC_END_POINT + qrDownloadModalOpen?.data?.data?.planter?.qrcode;
 
   const qrCodeDownloadClick = useCallback(() => {
     let url = qrImage;
