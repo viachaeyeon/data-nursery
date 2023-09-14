@@ -171,19 +171,6 @@ function OperationStatus({ currentDate }) {
     threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
   });
 
-  // 페이지 변경
-  const pageChange = useCallback(() => {
-    if (planterOperationStatus?.total > operationList.length) {
-      setOperationListPage(operationListPage + 1);
-    }
-  }, [operationListPage, operationList]);
-
-  useEffect(() => {
-    if (inView) {
-      pageChange();
-    }
-  }, [inView]);
-
   const { data: planterOperationStatus } = usePlanterRealTime({
     page: operationListPage,
     size: 20,
@@ -194,7 +181,7 @@ function OperationStatus({ currentDate }) {
       alert(err);
     },
   });
-
+  
   useEffect(() => {
     if (!planterOperationStatus) {
       return;
@@ -206,6 +193,21 @@ function OperationStatus({ currentDate }) {
 
     return () => clearInterval(intervalId);
   }, [planterOperationStatus, PlanterRealTimeKey]);
+
+  useEffect(() => {
+    if (inView) {
+      pageChange();
+    }
+  }, [inView]);
+
+
+
+  // 페이지 변경
+  const pageChange = useCallback(() => {
+    if (operationList.length !== 0 && planterOperationStatus?.total > operationList.length) {
+      setOperationListPage(operationListPage + 1);
+    }
+  }, [planterOperationStatus, operationListPage, operationList]);
 
   return (
     <S.Wrap>

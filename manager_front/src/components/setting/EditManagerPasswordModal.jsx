@@ -143,12 +143,14 @@ const S = {
   `,
 };
 
-function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChangeModalOpen, setManagerPassword }) {
+function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChangeModalOpen }) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
+  const [managerPassword, setManagerPassword] = useState("");
+
   //기존 비밀번호
-  const [originPw, setOriginPw] = useState(editManagerModalOpen.data.data.password);
+  const [originPw, setOriginPw] = useState(editManagerModalOpen.data.password);
   //현재 입력하는 비밀번호
   const [inputPw, setInputPw] = useState("");
   //새 비밀번호
@@ -174,7 +176,7 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
     // closeModal();
     updateManagerPassword({
       data: {
-        userId: editManagerModalOpen.data.data.user.id,
+        userId: editManagerModalOpen.data.user.id,
         user_data: {
           password: newPw,
           name: null,

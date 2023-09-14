@@ -1,14 +1,13 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
-
-import useUpdateFarmhouse from "@src/hooks/queries/auth/useUpdateFarmhouse";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 
-import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+import useUpdateFarmhouse from "@src/hooks/queries/auth/useUpdateFarmhouse";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
-import { useFarmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
 
+import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+import { farmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
 import XIcon from "@images/common/icon-x.svg";
 import SearchIcon from "@images/management/search-btn.svg";
 
@@ -164,12 +163,12 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
-  const [editFarmName, setEditFarmName] = useState(editModalOpen.data.data.name);
-  const [editName, setEditName] = useState(editModalOpen.data.data.producer_name);
-  const [editPhone, setEditPhone] = useState(editModalOpen.data.data.phone);
-  const [editAddressCode, setEditAddressCode] = useState(editModalOpen.data.data.address.split("||")[0]);
-  const [editAddress, setEditAddress] = useState(editModalOpen.data.data.address.split("||")[1]);
-  const [editAddressData, setEditAddressData] = useState(editModalOpen.data.data.address.split("||")[2]);
+  const [editFarmName, setEditFarmName] = useState(editModalOpen.data.name);
+  const [editName, setEditName] = useState(editModalOpen.data.producer_name);
+  const [editPhone, setEditPhone] = useState(editModalOpen.data.phone);
+  const [editAddressCode, setEditAddressCode] = useState(editModalOpen.data.address.split("||")[0]);
+  const [editAddress, setEditAddress] = useState(editModalOpen.data.address.split("||")[1]);
+  const [editAddressData, setEditAddressData] = useState(editModalOpen.data.address.split("||")[2]);
 
   const closeModal = useCallback(() => {
     setEditModalOpen({ open: false, data: undefined });
@@ -178,7 +177,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
   const FarmInfoSave = useCallback(() => {
     updateFarmhouseMutate({
       data: {
-        id: editModalOpen.data.data.id,
+        id: editModalOpen.data.id,
         name: editFarmName,
         producer_name: editName,
         phone: editPhone,
@@ -217,15 +216,14 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
 
   const { mutate: updateFarmhouseMutate } = useUpdateFarmhouse(
     () => {
-      invalidateQueries([useFarmAllListKey]);
-      closeModal();
+      invalidateQueries([farmAllListKey]);
       setIsDefaultAlertShowState({
         isShow: true,
         type: "success",
         text: "정상적으로 저장되었습니다.",
         okClick: null,
       });
-      invalidateQueries([useFarmAllListKey]);
+      closeModal();
     },
     (error) => {
       setIsDefaultAlertShowState({
@@ -251,15 +249,15 @@ function EditFarmModal({ editModalOpen, setEditModalOpen }) {
         <S.InputWrap>
           <p className="title-info">파종기 시러얼번호</p>
           <div className="input-wrap-off">
-            <input value={editModalOpen.data.data.planter.serial_number} disabled />
+            <input value={editModalOpen.data.planter.serial_number} disabled />
           </div>
           <p className="title-info">육묘업 등록번호</p>
           <div className="input-wrap-off">
-            <input value={editModalOpen.data.data.nursery_number} />
+            <input value={editModalOpen.data.nursery_number} />
           </div>
           <p className="title-info">농가ID</p>
           <div className="input-wrap-off">
-            <input value={editModalOpen.data.data.farm_house_id} />
+            <input value={editModalOpen.data.farm_house_id} />
           </div>
           <p className="title-info">농가명</p>
           <div className="input-wrap">
