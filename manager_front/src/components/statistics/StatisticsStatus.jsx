@@ -14,7 +14,7 @@ import SearchDropdown from "./SearchDropdown";
 
 import { NumberCommaFormatting } from "@src/utils/Formatting";
 import { GetMonthList, GetYearList, YYYYMMDDDash, YYYYMMDDSlash } from "@src/utils/Formatting";
-import ExcelIcon from "@images/management/excel-icon.svg";
+// import ExcelIcon from "@images/management/excel-icon.svg";
 import UpArrow from "@images/common/order-by-up-icon.svg";
 import DownArrow from "@images/common/order-by-down-icon.svg";
 import FinCheckIcon from "@images/statistics/fin-check-icon.svg";
@@ -87,36 +87,36 @@ const S = {
       color:${({ theme }) => theme.basic.gray50}
     }
 
-    .button-wrap {
+    /* .button-wrap {
       display: flex;
       gap: 16px;
-    }
+    } */
   `,
-  ExcelButton: styled.div`
-    cursor: pointer;
-    gap: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 16px 24px;
-    border: 1px solid #5899fb;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+  // ExcelButton: styled.div`
+  //   cursor: pointer;
+  //   gap: 16px;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   padding: 16px 24px;
+  //   border: 1px solid #5899fb;
+  //   background-color: #fff;
+  //   border-radius: 8px;
+  //   box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
 
-    p {
-      color: #5899fb;
-      ${({ theme }) => theme.textStyle.h6Bold}
-    }
+  //   p {
+  //     color: #5899fb;
+  //     ${({ theme }) => theme.textStyle.h6Bold}
+  //   }
 
-    &:hover {
-      border: 1px solid ${({ theme }) => theme.basic.btnAction};
-    }
-    &:active {
-      border: 1px solid ${({ theme }) => theme.basic.btnAction};
-      background-color: ${({ theme }) => theme.basic.lightSky};
-    }
-  `,
+  //   &:hover {
+  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
+  //   }
+  //   &:active {
+  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
+  //     background-color: ${({ theme }) => theme.basic.lightSky};
+  //   }
+  // `,
   DateChooseWrap: styled.div`
     display: flex;
     gap: 8px;
@@ -869,14 +869,14 @@ function StatisticsStatus() {
           </div>
         </div>
         <div>
-          {staticsList.length !== 0 && (
+          {/* {staticsList.length !== 0 && (
             <div className="button-wrap">
               <S.ExcelButton>
                 <ExcelIcon width={20} height={25} />
                 <p>엑셀 내려받기</p>
               </S.ExcelButton>
             </div>
-          )}
+          )} */}
         </div>
       </S.InfoBlock>
       <S.ContentList>
