@@ -112,6 +112,10 @@ const S = {
     .header-table-fin {
       width: 100px;
     }
+    .check-img {
+      width: 24px;
+      height: 24px;
+    }
   `,
   ListBlockWrap: styled.div`
     max-height: 444px;
@@ -143,6 +147,10 @@ const S = {
     }
     .table-sec {
       width: 110px;
+    }
+    .check-img {
+      width: 24px;
+      height: 24px;
     }
   `,
   ListBlock: styled.div`
@@ -314,7 +322,7 @@ function ManagementList({ userInfo }) {
           <p className="title">관리자목록</p>
           <p className="sub-title">관리자 추가 및 변경</p>
         </S.Title>
-        {userInfo.admin_user_info.is_top_admin === true && (
+        {userInfo?.admin_user_info?.is_top_admin === true && (
           <S.AddButton onClick={handelAddManagerModalClick}>
             <AddIcon width={24} height={24} />
             <p>관리자 추가</p>
@@ -327,21 +335,29 @@ function ManagementList({ userInfo }) {
             {checkArray.length !== 0 &&
             checkArray.length ===
               managerList.filter((manager) => manager.admin_user_info.is_top_admin === false).length ? (
-              <CheckBoxOn
-                width={24}
-                height={24}
-                onClick={() => {
-                  toggleAll(true);
-                }}
-              />
+              <div className="check-img">
+                {userInfo?.admin_user_info?.is_top_admin === true && (
+                  <CheckBoxOn
+                    width={24}
+                    height={24}
+                    onClick={() => {
+                      toggleAll(true);
+                    }}
+                  />
+                )}
+              </div>
             ) : (
-              <CheckBoxOff
-                width={24}
-                height={24}
-                onClick={() => {
-                  toggleAll(false);
-                }}
-              />
+              <div className="check-img">
+                {userInfo?.admin_user_info?.is_top_admin === true && (
+                  <CheckBoxOff
+                    width={24}
+                    height={24}
+                    onClick={() => {
+                      toggleAll(false);
+                    }}
+                  />
+                )}
+              </div>
             )}
           </div>
           {checkArray.length === 0 ? (
@@ -374,13 +390,25 @@ function ManagementList({ userInfo }) {
                   key={data.user.id}
                   className={`table-row ${checkArray.includes(data.user.id) ? "selected" : ""}`}>
                   {data.admin_user_info.is_top_admin === true ? (
-                    <CheckBoxNone width={24} height={24} style={{ cursor: "auto" }} />
+                    <div className="check-img">
+                      {userInfo?.admin_user_info?.is_top_admin === true && (
+                        <CheckBoxNone width={24} height={24} style={{ cursor: "auto" }} />
+                      )}
+                    </div>
                   ) : (
                     <>
                       {checkArray.includes(data.user.id) ? (
-                        <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, data.user.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, data.user.id)} />
+                          )}
+                        </div>
                       ) : (
-                        <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, data.user.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, data.user.id)} />
+                          )}
+                        </div>
                       )}
                     </>
                   )}
@@ -397,7 +425,7 @@ function ManagementList({ userInfo }) {
                   <p className="table-text">{data.user.name}</p>
                   <p className="table-text">{data.admin_user_info.phone}</p>
                   <div className="option-modal-wrap table-thir">
-                    {userInfo.admin_user_info.is_top_admin === true && (
+                    {userInfo?.admin_user_info?.is_top_admin === true && (
                       <div
                         className="option-dot"
                         onClick={() => {

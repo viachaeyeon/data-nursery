@@ -32,15 +32,15 @@ function GraphFarmHouseProductionDay() {
   //육묘장 이름
   const nameArray = planterFarm?.map((item) => item.farmhouse_name);
 
-  if (nameArray?.length < 5) {
-    nameArray.push(" ");
-    nameArray.push(" ");
-    nameArray.push(" ");
-    nameArray.push(" ");
-    nameArray.push(" ");
-    nameArray.push(" ");
-    nameArray.push(" ");
-  }
+  // if (nameArray?.length < 5) {
+  //   nameArray.push(" ");
+  //   nameArray.push(" ");
+  //   nameArray.push(" ");
+  //   nameArray.push(" ");
+  //   nameArray.push(" ");
+  //   nameArray.push(" ");
+  //   nameArray.push(" ");
+  // }
 
   //육묘장 데이터
   const dataArray = planterFarm?.map((item) => item.total_output);

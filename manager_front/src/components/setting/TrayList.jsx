@@ -119,6 +119,11 @@ const S = {
     .table-header-five {
       width: 104px;
     }
+
+    .check-img {
+      width: 24px;
+      height: 24px;
+    }
   `,
   ListBlockWrap: styled.div`
     height: 368px;
@@ -321,7 +326,7 @@ function TrayList({ userInfo }) {
           <p className="title">트레이목록</p>
           <p className="sub-title">트레이목록 추가, 변경</p>
         </S.Title>
-        {userInfo.admin_user_info.is_top_admin === true && (
+        {userInfo?.admin_user_info?.is_top_admin === true && (
           <S.AddButton
             onClick={() => {
               setAddTrayModalOpen(true);
@@ -342,21 +347,29 @@ function TrayList({ userInfo }) {
             <div className="table-header">
               <div>
                 {checkArray.length !== 0 && checkArray.length === trayList?.planter_trays.length ? (
-                  <CheckBoxOn
-                    width={24}
-                    height={24}
-                    onClick={() => {
-                      toggleAll(true);
-                    }}
-                  />
+                  <div className="check-img">
+                    {userInfo?.admin_user_info?.is_top_admin === true && (
+                      <CheckBoxOn
+                        width={24}
+                        height={24}
+                        onClick={() => {
+                          toggleAll(true);
+                        }}
+                      />
+                    )}
+                  </div>
                 ) : (
-                  <CheckBoxOff
-                    width={24}
-                    height={24}
-                    onClick={() => {
-                      toggleAll(false);
-                    }}
-                  />
+                  <div className="check-img">
+                    {userInfo?.admin_user_info?.is_top_admin === true && (
+                      <CheckBoxOff
+                        width={24}
+                        height={24}
+                        onClick={() => {
+                          toggleAll(false);
+                        }}
+                      />
+                    )}
+                  </div>
                 )}
               </div>
               {checkArray.length === 0 ? (
@@ -393,9 +406,17 @@ function TrayList({ userInfo }) {
                       key={`tray${tray.id}`}
                       className={`table-row ${checkArray.includes(tray.id) ? "selected" : ""}`}>
                       {checkArray.includes(tray.id) ? (
-                        <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, tray.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, tray.id)} />
+                          )}
+                        </div>
                       ) : (
-                        <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, tray.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, tray.id)} />
+                          )}
+                        </div>
                       )}
                       <p className="table-text-fir">{index + 1}</p>
                       <div className="table-text-sec icon-wrap">
@@ -405,7 +426,7 @@ function TrayList({ userInfo }) {
                       <p className="table-text-thir">{tray.width}</p>
                       <p className="table-text-four">{tray.height}</p>
                       <div className="table-text-fiv option-modal-wrap">
-                        {userInfo.admin_user_info.is_top_admin === true && (
+                        {userInfo?.admin_user_info?.is_top_admin === true && (
                           <div
                             className="option-dot"
                             onClick={() => {

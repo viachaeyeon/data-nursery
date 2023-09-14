@@ -105,13 +105,17 @@ const S = {
     }
 
     .table-header-first {
-      width: 120px;
+      width: 168px;
     }
     .table-header-sec {
       width: 172px;
     }
     .table-header-third {
       width: 46px;
+    }
+    .check-img {
+      width: 24px;
+      height: 24px;
     }
   `,
   ListBlockWrap: styled.div`
@@ -306,7 +310,7 @@ function CropsList({ userInfo }) {
           <p className="title">작물목록</p>
           <p className="sub-title">작물목록 추가, 변경</p>
         </S.Title>
-        {userInfo.admin_user_info.is_top_admin === true && (
+        {userInfo?.admin_user_info?.is_top_admin === true && (
           <S.AddButton
             onClick={() => {
               setAddCropsModalOpen(true);
@@ -327,21 +331,29 @@ function CropsList({ userInfo }) {
             <div className="table-header">
               <div>
                 {checkArray.length !== 0 && checkArray.length === cropList?.crops.length ? (
-                  <CheckBoxOn
-                    width={24}
-                    height={24}
-                    onClick={() => {
-                      toggleAll(true);
-                    }}
-                  />
+                  <div className="check-img">
+                    {userInfo?.admin_user_info?.is_top_admin === true && (
+                      <CheckBoxOn
+                        width={24}
+                        height={24}
+                        onClick={() => {
+                          toggleAll(true);
+                        }}
+                      />
+                    )}
+                  </div>
                 ) : (
-                  <CheckBoxOff
-                    width={24}
-                    height={24}
-                    onClick={() => {
-                      toggleAll(false);
-                    }}
-                  />
+                  <div className="check-img">
+                    {userInfo?.admin_user_info?.is_top_admin === true && (
+                      <CheckBoxOff
+                        width={24}
+                        height={24}
+                        onClick={() => {
+                          toggleAll(false);
+                        }}
+                      />
+                    )}
+                  </div>
                 )}
               </div>
               {checkArray.length === 0 ? (
@@ -377,16 +389,24 @@ function CropsList({ userInfo }) {
                       key={`crop${crop.id}`}
                       className={`table-row ${checkArray.includes(crop.id) ? "selected" : ""}`}>
                       {checkArray.includes(crop.id) ? (
-                        <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, crop.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, crop.id)} />
+                          )}
+                        </div>
                       ) : (
-                        <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, crop.id)} />
+                        <div className="check-img">
+                          {userInfo?.admin_user_info?.is_top_admin === true && (
+                            <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, crop.id)} />
+                          )}
+                        </div>
                       )}
                       <p className="table-text-first">{index + 1}</p>
                       <div className="crops_color" style={{ backgroundColor: crop.color }} />
                       <p className="table-text-first crop_name">{crop.name}</p>
 
                       <div className="table-text-fin option-modal-wrap">
-                        {userInfo.admin_user_info.is_top_admin === true && (
+                        {userInfo?.admin_user_info?.is_top_admin === true && (
                           <div
                             className="option-dot"
                             onClick={() => {
