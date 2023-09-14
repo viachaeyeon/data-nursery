@@ -243,10 +243,10 @@ function ManagementList() {
 
   // 페이지 변경
   const pageChange = useCallback(() => {
-    if (managerListInfo?.total > managerList.length) {
+    if (managerList.length !== 0 && managerListInfo?.total > managerList.length) {
       setManagerListPage(managerListPage + 1);
     }
-  }, [managerListPage, managerList]);
+  }, [managerListInfo, managerListPage, managerList]);
 
   //관리자 추가 모달
   const handelAddManagerModalClick = useCallback(() => {
