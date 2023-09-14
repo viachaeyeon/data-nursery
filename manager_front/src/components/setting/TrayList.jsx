@@ -167,6 +167,7 @@ const S = {
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
     background-color: ${({ theme }) => theme.blackWhite.white};
     border-radius: 8px;
+    height: 64px;
 
     p {
       color: ${({ theme }) => theme.basic.gray50};
@@ -222,7 +223,7 @@ const S = {
   `,
 };
 
-function TrayList() {
+function TrayList({ userInfo }) {
   const invalidateQueries = useInvalidateQueries();
 
   // 옵션 모달
@@ -320,13 +321,15 @@ function TrayList() {
           <p className="title">트레이목록</p>
           <p className="sub-title">트레이목록 추가, 변경</p>
         </S.Title>
-        <S.AddButton
-          onClick={() => {
-            setAddTrayModalOpen(true);
-          }}>
-          <AddIcon width={24} height={24} />
-          <p>트레이 추가</p>
-        </S.AddButton>
+        {userInfo.admin_user_info.is_top_admin === true && (
+          <S.AddButton
+            onClick={() => {
+              setAddTrayModalOpen(true);
+            }}>
+            <AddIcon width={24} height={24} />
+            <p>트레이 추가</p>
+          </S.AddButton>
+        )}
       </S.TitleWrap>
       <S.ContentList>
         {trayList?.planter_trays.length === 0 ? (
@@ -402,13 +405,16 @@ function TrayList() {
                       <p className="table-text-thir">{tray.width}</p>
                       <p className="table-text-four">{tray.height}</p>
                       <div className="table-text-fiv option-modal-wrap">
-                        <div
-                          className="option-dot"
-                          onClick={() => {
-                            handleCropsOptionModalClick(index, tray);
-                          }}>
-                          <OptionDot width={32} height={32} />
-                        </div>
+                        {userInfo.admin_user_info.is_top_admin === true && (
+                          <div
+                            className="option-dot"
+                            onClick={() => {
+                              handleCropsOptionModalClick(index, tray);
+                            }}>
+                            <OptionDot width={32} height={32} />
+                          </div>
+                        )}
+
                         {index === optionModalOpen.index && (
                           <OptionModal
                             optionModalOpen={optionModalOpen}

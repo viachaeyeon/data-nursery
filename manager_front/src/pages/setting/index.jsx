@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
+import useUserInfo from "@src/hooks/queries/auth/useUserInfo";
+
 import MainLayout from "../../components/layout/MainLayout";
 import MainHeader from "@components/layout/MainHeader";
 import ManagementList from "@components/setting/ManagementList";
@@ -26,14 +28,19 @@ const S = {
 };
 
 function Setting() {
+  const { data: userInfo } = useUserInfo({
+    successFn: () => {},
+    errorFn: () => {},
+  });
+
   return (
     <MainLayout>
       <MainHeader />
       <S.Wrap>
-        <ManagementList />
+        <ManagementList userInfo={userInfo} />
         <S.BottomWrap>
-          <CropsList />
-          <TrayList />
+          <CropsList userInfo={userInfo} />
+          <TrayList userInfo={userInfo} />
         </S.BottomWrap>
       </S.Wrap>
     </MainLayout>

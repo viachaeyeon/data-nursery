@@ -153,6 +153,7 @@ const S = {
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
     background-color: ${({ theme }) => theme.blackWhite.white};
     border-radius: 8px;
+    height: 64px;
 
     p {
       color: ${({ theme }) => theme.basic.gray50};
@@ -189,7 +190,7 @@ const S = {
   `,
 };
 
-function ManagementList() {
+function ManagementList({ userInfo }) {
   // inView : 요소가 뷰포트에 진입했는지 여부
   const { ref, inView, entry } = useInView({
     threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
@@ -313,10 +314,12 @@ function ManagementList() {
           <p className="title">관리자목록</p>
           <p className="sub-title">관리자 추가 및 변경</p>
         </S.Title>
-        <S.AddButton onClick={handelAddManagerModalClick}>
-          <AddIcon width={24} height={24} />
-          <p>관리자 추가</p>
-        </S.AddButton>
+        {userInfo.admin_user_info.is_top_admin === true && (
+          <S.AddButton onClick={handelAddManagerModalClick}>
+            <AddIcon width={24} height={24} />
+            <p>관리자 추가</p>
+          </S.AddButton>
+        )}
       </S.TitleWrap>
       <S.ContentList>
         <div className="table-header">
@@ -394,13 +397,16 @@ function ManagementList() {
                   <p className="table-text">{data.user.name}</p>
                   <p className="table-text">{data.admin_user_info.phone}</p>
                   <div className="option-modal-wrap table-thir">
-                    <div
-                      className="option-dot"
-                      onClick={() => {
-                        handleOptionModalClick(index, data);
-                      }}>
-                      <OptionDot width={32} height={32} />
-                    </div>
+                    {userInfo.admin_user_info.is_top_admin === true && (
+                      <div
+                        className="option-dot"
+                        onClick={() => {
+                          handleOptionModalClick(index, data);
+                        }}>
+                        <OptionDot width={32} height={32} />
+                      </div>
+                    )}
+
                     {index === optionModalOpen.index && (
                       <OptionModal
                         optionModalOpen={optionModalOpen}

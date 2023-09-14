@@ -31,23 +31,19 @@ function GraphFarmHouseProductionMonth() {
 
   //육묘장 이름
   const nameArray = planterFarm?.map((item) => item.farmhouse_name);
-  // nameArray.push(' ')
-  // nameArray.push(' ')
-  // nameArray.push(' ')
-  // nameArray.push(' ')
-  // nameArray.push(' ')
-  // nameArray.push(' ')
-  // nameArray.push(' ')
+
+  if (nameArray?.length < 5) {
+    nameArray.push(" ");
+    nameArray.push(" ");
+    nameArray.push(" ");
+    nameArray.push(" ");
+    nameArray.push(" ");
+    nameArray.push(" ");
+    nameArray.push(" ");
+  }
 
   //육묘장 데이터
   const dataArray = planterFarm?.map((item) => item.total_output);
-  // dataArray.push('null')
-  // dataArray.push('null')
-  // dataArray.push('null')
-  // dataArray.push('null')
-  // dataArray.push('null')
-  // dataArray.push('null')
-  // dataArray.push('null')
 
   const graphRef = useRef(null);
   const graphUnitRef = useRef(null);
@@ -99,6 +95,8 @@ function GraphFarmHouseProductionMonth() {
               hoverBackgroundColor: "#FFB78E",
               borderRadius: 4,
               borderWidth: 1,
+              // barPercentage: 0.5,
+              // categoryPercentage: 0.8,
               barPercentage: 0.9,
               categoryPercentage: 0.8,
             },
@@ -121,6 +119,7 @@ function GraphFarmHouseProductionMonth() {
               },
               ticks: {
                 display: false,
+                // color:"#fff"
               },
               display: false,
             },
@@ -135,7 +134,27 @@ function GraphFarmHouseProductionMonth() {
               display: false,
             },
             tooltip: {
-              enabled: false,
+              backgroundColor: "#4F5B6C",
+              borderRadius: 8,
+              padding: 16,
+              xAlign: "center",
+              yAlign: "bottom",
+              displayColors: false,
+              titleAlign: "center",
+              bodyAlign: "center",
+              titleColor: "#C2D6E1",
+              bodyColor: "#fff",
+              callbacks: {
+                title: function (context) {
+                  return "";
+                },
+                beforeBody: function (context) {
+                  return context[0].formattedValue;
+                },
+                label: function (context) {
+                  return "";
+                },
+              },
             },
           },
         },

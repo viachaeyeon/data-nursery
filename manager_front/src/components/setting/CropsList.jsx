@@ -140,6 +140,7 @@ const S = {
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
     background-color: ${({ theme }) => theme.blackWhite.white};
     border-radius: 8px;
+    height: 64px;
 
     p {
       color: ${({ theme }) => theme.basic.gray50};
@@ -206,7 +207,7 @@ const S = {
   `,
 };
 
-function CropsList() {
+function CropsList({ userInfo }) {
   const invalidateQueries = useInvalidateQueries();
 
   const [optionModalOpen, setOptionModalOpen] = useState({
@@ -305,13 +306,15 @@ function CropsList() {
           <p className="title">작물목록</p>
           <p className="sub-title">작물목록 추가, 변경</p>
         </S.Title>
-        <S.AddButton
-          onClick={() => {
-            setAddCropsModalOpen(true);
-          }}>
-          <AddIcon width={24} height={24} />
-          <p>작물 추가</p>
-        </S.AddButton>
+        {userInfo.admin_user_info.is_top_admin === true && (
+          <S.AddButton
+            onClick={() => {
+              setAddCropsModalOpen(true);
+            }}>
+            <AddIcon width={24} height={24} />
+            <p>작물 추가</p>
+          </S.AddButton>
+        )}
       </S.TitleWrap>
       <S.ContentList>
         {cropList?.crops.length === 0 ? (
@@ -383,13 +386,16 @@ function CropsList() {
                       <p className="table-text-first crop_name">{crop.name}</p>
 
                       <div className="table-text-fin option-modal-wrap">
-                        <div
-                          className="option-dot"
-                          onClick={() => {
-                            handleCropsOptionModalClick(index, crop);
-                          }}>
-                          <OptionDot width={32} height={32} />
-                        </div>
+                        {userInfo.admin_user_info.is_top_admin === true && (
+                          <div
+                            className="option-dot"
+                            onClick={() => {
+                              handleCropsOptionModalClick(index, crop);
+                            }}>
+                            <OptionDot width={32} height={32} />
+                          </div>
+                        )}
+
                         {index === optionModalOpen.index && (
                           <CropsOptionModal
                             optionModalOpen={optionModalOpen}
