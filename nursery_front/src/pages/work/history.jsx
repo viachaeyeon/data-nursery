@@ -5,9 +5,11 @@ import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
+import LottieView from "@components/common/LottiePlayer";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useWorkHistoryList from "@hooks/queries/planter/useWorkHistoryList";
+import userLogout from "@utils/userLogout";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultYearMonthSelect from "@components/common/calendar/DefaultYearMonthSelect";
@@ -20,7 +22,7 @@ import { DateDotFormatting, DateKoreanFormatting, ImagePathCheck, NumberFormatti
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import { workHistoryKey } from "@utils/query-keys/PlanterQueryKeys";
-import userLogout from "@utils/userLogout";
+import LottieLoading from "@images/common/loading.json";
 
 const S = {
   Wrap: styled.div`
@@ -63,6 +65,7 @@ const S = {
       margin: 20px 0px 10px 0px;
       ${({ theme }) => theme.textStyle.h5Regular}
       color: ${({ theme }) => theme.basic.deepBlue};
+      flex-shrink: 0;
     }
 
     .no-work-history {
@@ -318,7 +321,7 @@ function WorkHistoryPage() {
   });
 
   // 작업이력 목록 API
-  const { data: workHistoryListData } = useWorkHistoryList({
+  const { data: workHistoryListData, isLoading: workingHistoryListLoading } = useWorkHistoryList({
     serialNumber: userInfo?.planter.serial_number,
     year: date.year,
     month: date.month,
@@ -384,81 +387,96 @@ function WorkHistoryPage() {
           <DefaultHorizontalCalendar date={date} handleDateChange={handleDateChange} />
         </S.DateSelectWrap>
         <S.ContentWrap>
-          <S.SelectedDateWrap>
-            {/* <p>{DateKoreanFormatting(new Date(date.year, date.month - 1, date.day))}</p> */}
-            <p>{DateKoreanFormatting(koreanDate)}</p>
-          </S.SelectedDateWrap>
-          <p className="total-seed-quantity-text">총파종량</p>
-          <S.TotalSeedQuantityValueWrap>
-            <div className="row-layout">
-              <p className="seed-quantity-value">{NumberFormatting(workHistoryListData?.total_seed_quantity)}</p>
-              <p className="suffix-text">개</p>
+          {workingHistoryListLoading ? (
+            <div className="loading-wrap">
+              <LottieView
+                options={{
+                  animationData: LottieLoading,
+                }}
+                style={{
+                  width: "80%",
+                }}
+              />
             </div>
-            {!!workHistoryListData && workHistoryListData?.total !== 0 && <div className="border-bottom" />}
-          </S.TotalSeedQuantityValueWrap>
-          {!!workHistoryListData && workHistoryListData?.total !== 0 ? (
-            <>
-              <S.WorkHistoryTextWrap>
-                <p className="work-history-text">작업내역</p>
-                <div className="work-history-count-wrap">
-                  <p className="work-history-suffix-text">작업수 : 총</p>
-                  <p className="work-history-text">{NumberFormatting(workHistoryListData?.total)}</p>
-                  <p className="work-history-suffix-text">건</p>
-                </div>
-              </S.WorkHistoryTextWrap>
-              <S.WorkHistoryListWrap>
-                {workHistoryList.map((work) => {
-                  return (
-                    <S.WorkHistoryContent
-                      key={`work${work.id}`}
-                      onClick={() => {
-                        router.push(`/work/${work.id}`);
-                      }}>
-                      <S.WorkInfo>
-                        <S.CropImage isCropImage={!!work.crop_image}>
-                          {!!work.crop_image ? (
-                            <Image src={ImagePathCheck(work.crop_image)} layout="fill" alt="crop image" />
-                          ) : (
-                            <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
-                          )}
-                        </S.CropImage>
-                        <div className="text-wrap">
-                          <p className="crop-text">
-                            {work.crop_name} #{work.crop_kind}
-                          </p>
-                          <div className="count-text-wrap">
-                            <p className="count-text">{NumberFormatting(work.seed_quantity)}</p>
-                            <p className="suffix-text">개</p>
-                          </div>
-                          <div className="count-text-wrap seed-quantity-wrap">
-                            <BoxIcon />
-                            <p className="suffix-text seed-quantity-text">{NumberFormatting(work.tray_total)} 공</p>
-                          </div>
-                        </div>
-                      </S.WorkInfo>
-                      <div className="divider" />
-                      <S.DateWrap>
-                        <div className="date-row-layout">
-                          <div className="category-box">
-                            <p>파종일</p>
-                          </div>
-                          <p className="date-text">{DateDotFormatting(work.sowing_date)}</p>
-                        </div>
-                        <div className="date-row-layout">
-                          <div className="category-box">
-                            <p>출하일</p>
-                          </div>
-                          <p className="date-text">{DateDotFormatting(work.deadline)}</p>
-                        </div>
-                      </S.DateWrap>
-                    </S.WorkHistoryContent>
-                  );
-                })}
-                <div ref={ref} />
-              </S.WorkHistoryListWrap>
-            </>
           ) : (
-            <p className="no-work-history">완료된 작업이 없습니다</p>
+            <>
+              <S.SelectedDateWrap>
+                {/* <p>{DateKoreanFormatting(new Date(date.year, date.month - 1, date.day))}</p> */}
+                <p>{DateKoreanFormatting(koreanDate)}</p>
+              </S.SelectedDateWrap>
+              <p className="total-seed-quantity-text">총파종량</p>
+              <S.TotalSeedQuantityValueWrap>
+                <div className="row-layout">
+                  <p className="seed-quantity-value">{NumberFormatting(workHistoryListData?.total_seed_quantity)}</p>
+                  <p className="suffix-text">개</p>
+                </div>
+                {!!workHistoryListData && workHistoryListData?.total !== 0 && <div className="border-bottom" />}
+              </S.TotalSeedQuantityValueWrap>
+              {!!workHistoryListData && workHistoryListData?.total !== 0 ? (
+                <>
+                  <S.WorkHistoryTextWrap>
+                    <p className="work-history-text">작업내역</p>
+                    <div className="work-history-count-wrap">
+                      <p className="work-history-suffix-text">작업수 : 총</p>
+                      <p className="work-history-text">{NumberFormatting(workHistoryListData?.total)}</p>
+                      <p className="work-history-suffix-text">건</p>
+                    </div>
+                  </S.WorkHistoryTextWrap>
+                  <S.WorkHistoryListWrap>
+                    {workHistoryList.map((work) => {
+                      return (
+                        <S.WorkHistoryContent
+                          key={`work${work.id}`}
+                          onClick={() => {
+                            router.push(`/work/${work.id}`);
+                          }}>
+                          <S.WorkInfo>
+                            <S.CropImage isCropImage={!!work.crop_image}>
+                              {!!work.crop_image ? (
+                                <Image src={ImagePathCheck(work.crop_image)} layout="fill" alt="crop image" />
+                              ) : (
+                                <NoneIcon width={25} height={25} fill={"#BCBCD9"} />
+                              )}
+                            </S.CropImage>
+                            <div className="text-wrap">
+                              <p className="crop-text">
+                                {work.crop_name} #{work.crop_kind}
+                              </p>
+                              <div className="count-text-wrap">
+                                <p className="count-text">{NumberFormatting(work.seed_quantity)}</p>
+                                <p className="suffix-text">개</p>
+                              </div>
+                              <div className="count-text-wrap seed-quantity-wrap">
+                                <BoxIcon />
+                                <p className="suffix-text seed-quantity-text">{NumberFormatting(work.tray_total)} 공</p>
+                              </div>
+                            </div>
+                          </S.WorkInfo>
+                          <div className="divider" />
+                          <S.DateWrap>
+                            <div className="date-row-layout">
+                              <div className="category-box">
+                                <p>파종일</p>
+                              </div>
+                              <p className="date-text">{DateDotFormatting(work.sowing_date)}</p>
+                            </div>
+                            <div className="date-row-layout">
+                              <div className="category-box">
+                                <p>출하일</p>
+                              </div>
+                              <p className="date-text">{DateDotFormatting(work.deadline)}</p>
+                            </div>
+                          </S.DateWrap>
+                        </S.WorkHistoryContent>
+                      );
+                    })}
+                    <div ref={ref} />
+                  </S.WorkHistoryListWrap>
+                </>
+              ) : (
+                <p className="no-work-history">완료된 작업이 없습니다</p>
+              )}
+            </>
           )}
         </S.ContentWrap>
         <DefaultYearMonthList

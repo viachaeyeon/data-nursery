@@ -151,7 +151,7 @@ function WorkRegistrationPage() {
   }, [inputData]);
 
   // 유저 정보 API
-  const { data: userInfo } = useUserInfo({
+  const { data: userInfo, isLoading: userInfoLoading } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
       userLogout(router, clearQueries);
@@ -159,7 +159,7 @@ function WorkRegistrationPage() {
   });
 
   // 작물 목록 API
-  const { data: cropList } = useCropList({
+  const { data: cropList, isLoading: cropListLoading } = useCropList({
     successFn: () => {},
     errorFn: (err) => {
       alert(err);
@@ -167,7 +167,7 @@ function WorkRegistrationPage() {
   });
 
   // 트레이 목록 API
-  const { data: trayList } = useTrayList({
+  const { data: trayList, isLoading: trayListLoading } = useTrayList({
     successFn: () => {},
     errorFn: (err) => {
       alert(err);
@@ -200,6 +200,7 @@ function WorkRegistrationPage() {
   return (
     <MainLayout
       pageName={"작업 등록"}
+      isLoading={userInfoLoading || cropListLoading || trayListLoading}
       backIconClickFn={() => {
         router.push("/");
       }}

@@ -78,7 +78,7 @@ function WorkInfoPage({ workId }) {
   });
 
   // 유저 정보 API
-  const { data: userInfo } = useUserInfo({
+  const { data: userInfo, isLoading: userInfoLoading } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
       userLogout(router, clearQueries);
@@ -86,7 +86,7 @@ function WorkInfoPage({ workId }) {
   });
 
   // 진행중인 주문 목록 API
-  const { data: workingWorkInfo } = useWorkingWorkInfo({
+  const { data: workingWorkInfo, isLoading: workingWorkInfoLoading } = useWorkingWorkInfo({
     serialNumber: userInfo?.planter.serial_number,
     successFn: () => {},
     errorFn: (err) => {
@@ -95,7 +95,7 @@ function WorkInfoPage({ workId }) {
   });
 
   // 작업 정보 API
-  const { data: workInfo } = useWorkInfo({
+  const { data: workInfo, isLoading: workInfoLoading } = useWorkInfo({
     workId: workId,
     successFn: (res) => {
       if (res.planter_work_status.status === "WAIT") {
@@ -148,6 +148,7 @@ function WorkInfoPage({ workId }) {
   return (
     <MainLayout
       pageName={"작업 정보"}
+      isLoading={userInfoLoading || workingWorkInfoLoading || workInfoLoading}
       backIconClickFn={() => {
         router.push("/");
       }}
