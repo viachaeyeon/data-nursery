@@ -156,7 +156,7 @@ function WorkEditPage({ workId }) {
   }, [inputData]);
 
   // 작업 정보 API
-  const { data: workInfo } = useWorkInfo({
+  const { data: workInfo, isLoading: workInfoLoading } = useWorkInfo({
     workId: workId,
     successFn: (res) => {
       setInputData({
@@ -175,7 +175,7 @@ function WorkEditPage({ workId }) {
   });
 
   // 작물 목록 API
-  const { data: cropList } = useCropList({
+  const { data: cropList, isLoading: cropListLoading } = useCropList({
     successFn: () => {},
     errorFn: (err) => {
       alert(err);
@@ -183,7 +183,7 @@ function WorkEditPage({ workId }) {
   });
 
   // 트레이 목록 API
-  const { data: trayList } = useTrayList({
+  const { data: trayList, isLoading: trayListLoading } = useTrayList({
     successFn: () => {},
     errorFn: (err) => {
       alert(err);
@@ -218,6 +218,7 @@ function WorkEditPage({ workId }) {
   return (
     <MainLayout
       pageName={"작업정보수정"}
+      isLoading={workInfoLoading || cropListLoading || trayListLoading}
       backIconClickFn={() => {
         router.push(`/work/${workId}`);
       }}

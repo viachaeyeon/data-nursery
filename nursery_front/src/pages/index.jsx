@@ -153,8 +153,10 @@ const S = {
 };
 
 function MainPage() {
+  const [loading, setLoading] = useState(false);
+
   // 대시보드 API (오늘의 생산량, BEST품종, 사용시간)
-  const { data: dashBoardInfo } = useDashBoard({
+  const { data: dashBoardInfo, isLoading: dashBoardLoading } = useDashBoard({
     successFn: () => {},
     errorFn: (err) => {
       alert(err);
@@ -162,7 +164,7 @@ function MainPage() {
   });
 
   return (
-    <MainLayout pageName={"main"}>
+    <MainLayout pageName={"main"} isLoading={dashBoardLoading || loading}>
       <S.Wrap>
         <S.ScrollWrap>
           <ScrollContainer className="scroll-container" horizontal={true}>
@@ -230,7 +232,7 @@ function MainPage() {
           </ScrollContainer>
         </S.ScrollWrap>
         <S.WorkWrap>
-          <WorkTab />
+          <WorkTab setLoading={setLoading} />
         </S.WorkWrap>
       </S.Wrap>
     </MainLayout>

@@ -92,7 +92,7 @@ function PlanterRegistrationPage() {
   }, [serialNumber]);
 
   // 유저 정보 API
-  const { data: userInfo } = useUserInfo({
+  const { data: userInfo, isLoading: userInfoLoading } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
       userLogout(router, clearQueries);
@@ -121,6 +121,7 @@ function PlanterRegistrationPage() {
   return (
     <MainLayout
       pageName={"파종기 등록"}
+      isLoading={userInfoLoading}
       backIconClickFn={() => {
         router.push(
           {

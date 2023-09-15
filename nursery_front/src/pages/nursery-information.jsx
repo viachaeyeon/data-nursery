@@ -126,7 +126,7 @@ function NurseryInformationPage() {
   });
 
   // 유저 정보 API
-  const { data: userInfo } = useUserInfo({
+  const { data: userInfo, isLoading: userInfoLoading } = useUserInfo({
     successFn: () => {},
     errorFn: () => {
       userLogout(router, clearQueries);
@@ -136,6 +136,7 @@ function NurseryInformationPage() {
   return (
     <MainLayout
       pageName={"농가정보"}
+      isLoading={userInfoLoading}
       backIconClickFn={() => {
         router.push("/");
       }}
