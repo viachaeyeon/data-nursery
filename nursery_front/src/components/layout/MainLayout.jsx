@@ -25,7 +25,7 @@ const S = {
     justify-content: center;
     height: 100vh;
 
-    background-image: url("/images/common/pc-background-image.svg");
+    background-image: url("/images/common/pc-background-image.png");
     background-repeat: no-repeat;
     background-size: cover;
 
