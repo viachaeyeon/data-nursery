@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import styled, { css } from "styled-components";
-import LottieView from "@components/common/LottiePlayer";
 
 import BottomBar from "@components/layout/BottomBar";
 import DefaultAlert from "@components/common/alert/DefaultAlert";
 import DefaultButton from "@components/common/button/DefaultButton";
 import DefaultDropdown from "@components/common/dropdown/DefaultDropdown";
+import LottieView from "@components/common/LottiePlayer";
 
 import theme from "@src/styles/theme";
 import { defaultButtonColor } from "@utils/ButtonColor";

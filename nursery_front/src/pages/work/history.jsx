@@ -3,18 +3,20 @@ import styled, { css } from "styled-components";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
-import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
-import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
-import LottieView from "@components/common/LottiePlayer";
+import axios from "axios";
 
 import useUserInfo from "@hooks/queries/auth/useUserInfo";
 import useWorkHistoryList from "@hooks/queries/planter/useWorkHistoryList";
 import userLogout from "@utils/userLogout";
+import { getUserInfoUrl } from "@apis/authAPIs";
+import useAllCacheClear from "@hooks/queries/common/useAllCacheClear";
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
 import MainLayout from "@components/layout/MainLayout";
 import DefaultYearMonthSelect from "@components/common/calendar/DefaultYearMonthSelect";
 import DefaultYearMonthList from "@components/common/calendar/DefaultYearMonthList";
 import DefaultHorizontalCalendar from "@components/common/calendar/DefaultHorizontalCalendar";
+import LottieView from "@components/common/LottiePlayer";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import theme from "@src/styles/theme";
@@ -491,8 +493,22 @@ function WorkHistoryPage() {
 }
 
 // 로그인 안되어 있을 경우 로그인 페이지로 이동
-export const getServerSideProps = requireAuthentication((context) => {
-  return { props: {} };
+export const getServerSideProps = requireAuthentication(async (context) => {
+  const userInfoRes = await axios.get(getUserInfoUrl(true), {
+    headers: { Cookie: context.req.headers.cookie },
+  });
+
+  // 파종기 미등록 시 파종기 등록페이지로 이동
+  if (!userInfoRes.data.planter.is_register) {
+    return {
+      redirect: {
+        destination: "/QR-scanner",
+        statusCode: 302,
+      },
+    };
+  } else {
+    return { props: {} };
+  }
 });
 
 export default WorkHistoryPage;
