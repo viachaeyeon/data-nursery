@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import useUserInfo from "@src/hooks/queries/auth/useUserInfo";
@@ -11,6 +11,8 @@ const S = {
     justify-content: space-between;
   `,
   DateWrap: styled.div`
+  display: flex;
+  align-items: center;
     p {
       color: ${({ theme }) => theme.basic.darkBlue};
       ${({ theme }) => theme.textStyle.h5Bold};
@@ -29,6 +31,18 @@ const S = {
       letter-spacing: -0.32px;
       color: #405f8d;
     }
+  `,
+  LogoutButton: styled.div`
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid ${({theme})=>theme.basic.recOutline};
+  background-color: ${({theme})=>theme.blackWhite.white};
+  cursor: pointer;
+
+  p{
+    font-size: 16px;
+    ${({theme})=>theme.textStyle.h6Bold};
+  }
   `,
 };
 
@@ -57,6 +71,11 @@ function MainHeader() {
     };
   }, [dateTime]);
 
+  const handleLogoutClick = useCallback(()=>{
+    alert("로그아웃 클릭");
+
+  },[]);
+
   return (
     <S.Wrap>
       <S.DateWrap>
@@ -65,6 +84,9 @@ function MainHeader() {
       <S.profileWrap>
         <ProfileIcon width={21} height={22} />
         <p>안녕하세요, {userInfo?.user?.name}님</p>
+        <S.LogoutButton onClick={handleLogoutClick}>
+          <p>로그아웃</p>
+        </S.LogoutButton>
       </S.profileWrap>
     </S.Wrap>
   );
