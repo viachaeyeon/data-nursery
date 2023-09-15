@@ -36,11 +36,6 @@ const S = {
       ${({ theme }) => theme.textStyle.h5Bold};
       margin-top: 20px;
     }
-
-    .sub-title {
-      color: ${({ theme }) => theme.basic.gray40};
-      ${({ theme }) => theme.textStyle.h6Reguler};
-    }
   `,
   ButtonWrap: styled.div`
     margin-top: 32px;
