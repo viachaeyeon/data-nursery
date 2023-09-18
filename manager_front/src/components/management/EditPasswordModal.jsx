@@ -143,14 +143,14 @@ const S = {
   `,
 };
 
-function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChangeModalOpen }) {
+function EditPasswordModal({ setEditModalOpen, setEditPWChangeModalOpen }) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
   const [managerPassword, setManagerPassword] = useState("");
 
   // //기존 비밀번호
-  // const [originPw, setOriginPw] = useState(editManagerModalOpen.data.password);
+  // const [originPw, setOriginPw] = useState(setEditModalOpen.data.password);
   //현재 입력하는 비밀번호
   const [inputPw, setInputPw] = useState("");
   //새 비밀번호
@@ -158,14 +158,14 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
   //새 비밀번호 확인
   const [newPwCheck, setNewPwCheck] = useState("");
 
-  //기준비밀번호와 입력비밀번호가 동일한지 체크
-  const [originInputPwCheck, setOriginInputPwCheck] = useState(false);
+  // //기준비밀번호와 입력비밀번호가 동일한지 체크
+  // const [originInputPwCheck, setOriginInputPwCheck] = useState(false);
 
   //새 비밀번호와 확인비밀번호가 동일한지 체크
   const [newPwSameCheck, setNewPwSameCheck] = useState(false);
 
   const closeModal = useCallback(() => {
-    setEditManagerPWChangeModalOpen({ open: false, data: undefined });
+    setEditPWChangeModalOpen({ open: false, data: undefined });
     setInputPw("");
     setNewPw("");
     setNewPwCheck("");
@@ -176,7 +176,7 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
     // closeModal();
     updateManagerPassword({
       data: {
-        userId: editManagerModalOpen.data.user.id,
+        userId: setEditModalOpen.data.user.id,
         user_data: {
           password: newPw,
           name: null,
@@ -193,14 +193,14 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
     });
   }, [newPw]);
 
-  //기존 비밀번호와 입력 비밀번호 동일한지 체크
-  useEffect(() => {
-    if (originPw === inputPw) {
-      setOriginInputPwCheck(true);
-    } else {
-      setOriginInputPwCheck(false);
-    }
-  }, [originPw, inputPw]);
+  // //기존 비밀번호와 입력 비밀번호 동일한지 체크
+  // useEffect(() => {
+  //   if (originPw === inputPw) {
+  //     setOriginInputPwCheck(true);
+  //   } else {
+  //     setOriginInputPwCheck(false);
+  //   }
+  // }, [originPw, inputPw]);
 
   //새 비밀번호와 확인이 동일한지 체크
   useEffect(() => {
@@ -323,4 +323,4 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
   );
 }
 
-export default EditManagerPasswordModal;
+export default EditPasswordModal;
