@@ -15,8 +15,8 @@ import SearchDropdown from "./SearchDropdown";
 import { NumberCommaFormatting } from "@src/utils/Formatting";
 import { GetMonthList, GetYearList, YYYYMMDDDash, YYYYMMDDSlash } from "@src/utils/Formatting";
 // import ExcelIcon from "@images/management/excel-icon.svg";
-import UpArrow from "@images/common/order-by-up-icon.svg";
-import DownArrow from "@images/common/order-by-down-icon.svg";
+import DownArrow from "@images/common/order-by-up-icon.svg";
+import UpArrow from "@images/common/order-by-down-icon.svg";
 import FinCheckIcon from "@images/statistics/fin-check-icon.svg";
 import WaitingIcon from "@images/statistics/waiting-icon.svg";
 import GrayFinCheckIcon from "@images/statistics/gray-fin-check-icon.svg";
@@ -481,8 +481,8 @@ function StatisticsStatus() {
     trayTotal: "",
     orderQuantityOrderType: 2,
     planterOutputOrderType: 2,
-    sowingDateOrderType: 2,
-    isShipmentCompletedOrderType: 1,
+    sowingDateOrderType: 1,
+    isShipmentCompletedOrderType: 2,
   });
 
   // Dropdown 검색어
@@ -1119,7 +1119,7 @@ function StatisticsStatus() {
                   width={24}
                   height={24}
                   onClick={() => {
-                    handleSelectChange(undefined, "sowingDateOrderType", 1);
+                    handleSelectChange(undefined, "sowingDateOrderType", 2);
                   }}
                 />
               )}
@@ -1128,7 +1128,7 @@ function StatisticsStatus() {
                   width={24}
                   height={24}
                   onClick={() => {
-                    handleSelectChange(undefined, "sowingDateOrderType", 2);
+                    handleSelectChange(undefined, "sowingDateOrderType", 1);
                   }}
                 />
               )}
@@ -1199,13 +1199,13 @@ function StatisticsStatus() {
                 <p className="order_count">{NumberCommaFormatting(data.order_quantity)}</p>
                 <p className="sowing_count">{NumberCommaFormatting(data.planter_output.output)}</p>
                 <p className="sowing_date">{YYYYMMDDSlash(data.sowing_date)}</p>
-                {!data.is_shipment_completed && !data.farmhouse.is_del ? (
+                {!!data.is_shipment_completed && !data.farmhouse.is_del ? (
                   <FinCheckIcon width={98} height={40} />
                 ) : !data.is_shipment_completed && !data.farmhouse.is_del ? (
                   <WaitingIcon width={98} height={40} />
-                ) : data.is_shipment_completed && data.farmhouse.is_del ? (
+                ) : !!data.is_shipment_completed && !!data.farmhouse.is_del ? (
                   <GrayFinCheckIcon width={98} height={40} />
-                ) : data.is_shipment_completed && data.farmhouse.is_del ? (
+                ) : !data.is_shipment_completed && !!data.farmhouse.is_del ? (
                   <GrayWaitingIcon width={98} height={40} />
                 ) : (
                   <></>
