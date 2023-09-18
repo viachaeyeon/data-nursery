@@ -181,7 +181,6 @@ function AddFarmSaveModal({
   setCreateQrcode,
   setAddFarmSerialNumber,
   qrCodeUrl,
-  setQrCodeUrl,
   addressCode,
   setAddressCode,
 }) {

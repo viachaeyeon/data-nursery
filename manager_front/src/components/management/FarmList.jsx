@@ -461,7 +461,6 @@ function FarmList() {
   //비밀번호 변경 모달
   const [editPwChangeModalOpen, setEditPWChangeModalOpen] = useState({ open: false, data: undefined });
 
-
   // : 눌렀을때 나오는 모달
   const handleOptionModalClick = useCallback(
     (index, data) => {
@@ -660,7 +659,6 @@ function FarmList() {
                   content={
                     <div className="text-wrap">
                       <p>
-                        {/* ({data?.address_code}) */}
                         {"(" +
                           data?.address.split("||")[0] +
                           ") " +
@@ -727,7 +725,6 @@ function FarmList() {
             setCreateQrcode={setCreateQrcode}
             setAddFarmSerialNumber={setAddFarmSerialNumber}
             qrCodeUrl={qrCodeUrl}
-            setQrCodeUrl={setQrCodeUrl}
             addressCode={addressCode}
             setAddressCode={setAddressCode}
           />
@@ -770,10 +767,7 @@ function FarmList() {
 
       {editPwChangeModalOpen.open && (
         <div className="modal-wrap">
-          <EditPasswordModal 
-            editModalOpen={editModalOpen}
-            setEditPWChangeModalOpen={setEditPWChangeModalOpen}
-          />
+          <EditPasswordModal editModalOpen={editModalOpen} setEditPWChangeModalOpen={setEditPWChangeModalOpen} />
         </div>
       )}
     </S.Wrap>

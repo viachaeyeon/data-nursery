@@ -159,7 +159,7 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
   const [newPwCheck, setNewPwCheck] = useState("");
 
   //기준비밀번호와 입력비밀번호가 동일한지 체크
-  const [originInputPwCheck, setOriginInputPwCheck] = useState(false);
+  // const [originInputPwCheck, setOriginInputPwCheck] = useState(false);
 
   //새 비밀번호와 확인비밀번호가 동일한지 체크
   const [newPwSameCheck, setNewPwSameCheck] = useState(false);
@@ -194,13 +194,13 @@ function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChange
   }, [newPw]);
 
   //기존 비밀번호와 입력 비밀번호 동일한지 체크
-  useEffect(() => {
-    if (originPw === inputPw) {
-      setOriginInputPwCheck(true);
-    } else {
-      setOriginInputPwCheck(false);
-    }
-  }, [originPw, inputPw]);
+  // useEffect(() => {
+  //   if (originPw === inputPw) {
+  //     setOriginInputPwCheck(true);
+  //   } else {
+  //     setOriginInputPwCheck(false);
+  //   }
+  // }, [originPw, inputPw]);
 
   //새 비밀번호와 확인이 동일한지 체크
   useEffect(() => {

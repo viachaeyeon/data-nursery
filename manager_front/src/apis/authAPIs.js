@@ -203,7 +203,8 @@ export const deleteAdminAPI = async (data) => {
 export const updateFarmhousePwAPI = async (data) => {
   try {
     const res = await axios.patch(
-      process.env.NEXT_PUBLIC_END_POINT + `/api/admin/auth/farmhouse/update/password?farmhouse_id=${data.farmhouseId}&new_password=${data.newPassword}`,
+      process.env.NEXT_PUBLIC_END_POINT +
+        `/api/admin/auth/farmhouse/update/password?farmhouse_id=${data.farmhouseId}&new_password=${data.newPassword}`,
       data,
       {
         withCredentials: true,

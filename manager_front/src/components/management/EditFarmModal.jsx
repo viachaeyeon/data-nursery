@@ -161,7 +161,7 @@ const S = {
       ${({ theme }) => theme.textStyle.h5Bold}
     }
   `,
-    PasswordChangeBtn: styled.div`
+  PasswordChangeBtn: styled.div`
     cursor: pointer;
     height: 52px;
     width: 156px;
@@ -189,7 +189,7 @@ const S = {
   `,
 };
 
-function EditFarmModal({ editModalOpen, setEditModalOpen, setPage, farmList, setFarmList,setEditPWChangeModalOpen }) {
+function EditFarmModal({ editModalOpen, setEditModalOpen, setPage, farmList, setFarmList, setEditPWChangeModalOpen }) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
@@ -204,7 +204,7 @@ function EditFarmModal({ editModalOpen, setEditModalOpen, setPage, farmList, set
     setEditModalOpen({ open: false, data: undefined });
   }, []);
 
-  console.log("editModalOpen",editModalOpen);
+  console.log("editModalOpen", editModalOpen);
 
   const FarmInfoSave = useCallback(() => {
     updateFarmhouseMutate({
@@ -269,9 +269,9 @@ function EditFarmModal({ editModalOpen, setEditModalOpen, setPage, farmList, set
   );
 
   //비밀번호 변경버튼 클릭
-  const handlePasswordChangeClick = useCallback(()=>{
-    setEditPWChangeModalOpen({open:true,data:editModalOpen});
-  },[editModalOpen]);
+  const handlePasswordChangeClick = useCallback(() => {
+    setEditPWChangeModalOpen({ open: true, data: editModalOpen });
+  }, [editModalOpen]);
 
   return (
     <S.Wrap>
@@ -345,7 +345,6 @@ function EditFarmModal({ editModalOpen, setEditModalOpen, setPage, farmList, set
               <p>비밀번호 변경</p>
             </S.PasswordChangeBtn>
           </div>
-         
         </S.InputWrap>
 
         {editFarmName?.length === 0 || editName?.length === 0 || editPhone?.length === 0 ? (

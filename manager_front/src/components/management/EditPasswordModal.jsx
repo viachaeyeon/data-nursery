@@ -169,7 +169,7 @@ function EditPasswordModal({ editModalOpen, setEditPWChangeModalOpen }) {
         newPassword: newPw,
       },
     });
-  }, [newPw,editModalOpen]);
+  }, [newPw, editModalOpen]);
 
   //새 비밀번호와 확인이 동일한지 체크
   useEffect(() => {
@@ -213,7 +213,6 @@ function EditPasswordModal({ editModalOpen, setEditPWChangeModalOpen }) {
           </div>
         </S.TitleWrap>
         <S.InputWrap>
-
           <S.TextWrap>
             <p className="input-title">새 비밀번호</p>
           </S.TextWrap>
@@ -253,17 +252,15 @@ function EditPasswordModal({ editModalOpen, setEditPWChangeModalOpen }) {
           )}
         </S.InputWrap>
 
-        {
-          newPw.length === 0 || newPwCheck.length === 0 ? (
-            <S.ButtonWrapOff>
-              <p>저장</p>
-            </S.ButtonWrapOff>
-          ) : (
-            <S.ButtonWrap onClick={handleSaveClick}>
-              <p>저장</p>
-            </S.ButtonWrap>
-          )
-        }
+        {newPw.length === 0 || newPwCheck.length === 0 ? (
+          <S.ButtonWrapOff>
+            <p>저장</p>
+          </S.ButtonWrapOff>
+        ) : (
+          <S.ButtonWrap onClick={handleSaveClick}>
+            <p>저장</p>
+          </S.ButtonWrap>
+        )}
       </S.WrapInner>
     </S.Wrap>
   );
