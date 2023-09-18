@@ -226,7 +226,7 @@ function WorkEditPage({ workId }) {
     <MainLayout
       pageName={"작업정보수정"}
       isLoading={workInfoLoading || cropListLoading || trayListLoading}
-      isScroll={isScroll}
+      // isScroll={isScroll}
       backIconClickFn={() => {
         router.push(`/work/${workId}`);
       }}

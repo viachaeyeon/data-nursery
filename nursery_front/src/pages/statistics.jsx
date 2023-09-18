@@ -305,7 +305,8 @@ function StatisticsPage() {
       }}
       backgroundColor={theme.basic.deepBlue}>
       <S.Wrap>
-        <S.DateSelectWrap isScroll={isScroll}>
+        {/* <S.DateSelectWrap isScroll={isScroll}> */}
+        <S.DateSelectWrap>
           <DefaultYearMonthSelect date={date} yearMonthOpen={yearMonthOpen} handleYearMonthOpen={handleYearMonthOpen} />
         </S.DateSelectWrap>
         <S.ContentWrap ref={layoutRef} id="content-wrap">

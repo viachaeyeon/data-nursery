@@ -171,7 +171,8 @@ function MainPage() {
   });
 
   return (
-    <MainLayout pageName={"main"} isLoading={dashBoardLoading || loading} isScroll={isScroll}>
+    // <MainLayout pageName={"main"} isLoading={dashBoardLoading || loading} isScroll={isScroll}>
+    <MainLayout pageName={"main"} isLoading={dashBoardLoading || loading}>
       <S.Wrap ref={layoutRef} id="content-wrap">
         <S.ScrollWrap>
           <ScrollContainer className="scroll-container" horizontal={true}>

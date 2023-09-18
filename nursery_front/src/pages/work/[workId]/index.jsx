@@ -156,7 +156,7 @@ function WorkInfoPage({ workId }) {
     <MainLayout
       pageName={"작업 정보"}
       isLoading={userInfoLoading || workingWorkInfoLoading || workInfoLoading}
-      isScroll={isScroll}
+      // isScroll={isScroll}
       backIconClickFn={() => {
         router.push("/");
       }}

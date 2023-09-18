@@ -155,7 +155,8 @@ function NurseryInformationPage() {
       }}
       backgroundColor="#5899FB">
       <S.Wrap>
-        <S.FarmHouseNameWrap isScroll={isScroll}>
+        {/* <S.FarmHouseNameWrap isScroll={isScroll}> */}
+        <S.FarmHouseNameWrap>
           <p>{userInfo?.farm_house.name}</p>
         </S.FarmHouseNameWrap>
         <S.InfoWrap ref={layoutRef} id="content-wrap">

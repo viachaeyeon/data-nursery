@@ -208,7 +208,7 @@ function WorkRegistrationPage() {
     <MainLayout
       pageName={"작업 등록"}
       isLoading={userInfoLoading || cropListLoading || trayListLoading}
-      isScroll={isScroll}
+      // isScroll={isScroll}
       backIconClickFn={() => {
         router.push("/");
       }}

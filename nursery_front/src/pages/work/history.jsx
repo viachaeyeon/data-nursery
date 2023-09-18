@@ -389,7 +389,8 @@ function WorkHistoryPage() {
       backgroundColor={theme.basic.deepBlue}
       buttonSetting={null}>
       <S.Wrap>
-        <S.DateSelectWrap isScroll={isScroll}>
+        {/* <S.DateSelectWrap isScroll={isScroll}> */}
+        <S.DateSelectWrap>
           <div className="select-wrap-padding">
             <DefaultYearMonthSelect
               date={date}

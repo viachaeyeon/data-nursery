@@ -129,7 +129,7 @@ function PlanterRegistrationPage() {
     <MainLayout
       pageName={"파종기 등록"}
       isLoading={userInfoLoading}
-      isScroll={isScroll}
+      // isScroll={isScroll}
       backIconClickFn={() => {
         router.push(
           {
