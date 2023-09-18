@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
@@ -29,7 +29,6 @@ import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 import PointIcon from "@images/work/ico-point.svg";
 import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 import { DateFormatting } from "@utils/Formatting";
-import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -71,8 +70,7 @@ function WorkRegistrationPage() {
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
   // 스크롤 유무 판단하기 위함
-  const layoutRef = useRef(null);
-  const isScroll = ContentScrollCheck(layoutRef);
+  const [isScroll, setIsScroll] = useState(false);
 
   // BottomButton 정보
   const [buttonSetting, setButtonSetting] = useState({
@@ -105,6 +103,15 @@ function WorkRegistrationPage() {
 
   // 트레이 선택
   const [isTraySelectOpen, setIsTraySelectOpen] = useState(false);
+
+  // 스크롤 감지
+  const contentScroll = useCallback((e) => {
+    if (e.target.scrollTop > 0) {
+      setIsScroll(true);
+    } else {
+      setIsScroll(false);
+    }
+  }, []);
 
   // 입력값 변경
   const handleInputChange = useCallback(
@@ -208,12 +215,12 @@ function WorkRegistrationPage() {
     <MainLayout
       pageName={"작업 등록"}
       isLoading={userInfoLoading || cropListLoading || trayListLoading}
-      // isScroll={isScroll}
+      isScroll={isScroll}
       backIconClickFn={() => {
         router.push("/");
       }}
       buttonSetting={buttonSetting}>
-      <S.Wrap ref={layoutRef} id="content-wrap">
+      <S.Wrap onScroll={contentScroll}>
         <S.InputWrap>
           <p className="category-text">육묘업 등록번호</p>
           <DefaultInput text={userInfo?.farm_house.nursery_number} readOnly={true} />

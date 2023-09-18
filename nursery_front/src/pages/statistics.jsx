@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled, { css } from "styled-components";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -22,7 +22,6 @@ import PopularCropKindIcon from "@images/common/popular-crop-kind.svg";
 import NoneIcon from "@images/dashboard/none-icon.svg";
 import { statisticsKey } from "@utils/query-keys/PlanterQueryKeys";
 import LottieLoading from "@images/common/loading.json";
-import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -249,8 +248,7 @@ function StatisticsPage() {
   const invalidateQueries = useInvalidateQueries();
 
   // 스크롤 유무 판단하기 위함
-  const layoutRef = useRef(null);
-  const isScroll = ContentScrollCheck(layoutRef);
+  const [isScroll, setIsScroll] = useState(false);
 
   // 선택한 년도, 월
   const [date, setDate] = useState({
@@ -263,6 +261,15 @@ function StatisticsPage() {
     year: false,
     month: false,
   });
+
+  // 스크롤 감지
+  const contentScroll = useCallback((e) => {
+    if (e.target.scrollTop > 0) {
+      setIsScroll(true);
+    } else {
+      setIsScroll(false);
+    }
+  }, []);
 
   // 날짜 변경
   const handleDateChange = useCallback(
@@ -305,11 +312,10 @@ function StatisticsPage() {
       }}
       backgroundColor={theme.basic.deepBlue}>
       <S.Wrap>
-        {/* <S.DateSelectWrap isScroll={isScroll}> */}
-        <S.DateSelectWrap>
+        <S.DateSelectWrap isScroll={isScroll}>
           <DefaultYearMonthSelect date={date} yearMonthOpen={yearMonthOpen} handleYearMonthOpen={handleYearMonthOpen} />
         </S.DateSelectWrap>
-        <S.ContentWrap ref={layoutRef} id="content-wrap">
+        <S.ContentWrap onScroll={contentScroll}>
           {statisticsInfoLoading ? (
             <div className="loading-wrap">
               <LottieView

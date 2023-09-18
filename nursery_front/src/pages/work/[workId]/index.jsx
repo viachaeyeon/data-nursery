@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -21,7 +21,6 @@ import { defaultButtonColor } from "@utils/ButtonColor";
 import { DateFormatting } from "@utils/Formatting";
 import CheckIcon from "@images/work/icon-check.svg";
 import { waitWorkListKey, workingWorkInfoKey } from "@utils/query-keys/PlanterQueryKeys";
-import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -67,8 +66,7 @@ function WorkInfoPage({ workId }) {
   const invalidateQueries = useInvalidateQueries();
 
   // 스크롤 유무 판단하기 위함
-  const layoutRef = useRef(null);
-  const isScroll = ContentScrollCheck(layoutRef);
+  const [isScroll, setIsScroll] = useState(false);
 
   // BottomButton 정보
   const [buttonSetting, setButtonSetting] = useState({
@@ -83,6 +81,15 @@ function WorkInfoPage({ workId }) {
       });
     },
   });
+
+  // 스크롤 감지
+  const contentScroll = useCallback((e) => {
+    if (e.target.scrollTop > 0) {
+      setIsScroll(true);
+    } else {
+      setIsScroll(false);
+    }
+  }, []);
 
   // 유저 정보 API
   const { data: userInfo, isLoading: userInfoLoading } = useUserInfo({
@@ -156,7 +163,7 @@ function WorkInfoPage({ workId }) {
     <MainLayout
       pageName={"작업 정보"}
       isLoading={userInfoLoading || workingWorkInfoLoading || workInfoLoading}
-      // isScroll={isScroll}
+      isScroll={isScroll}
       backIconClickFn={() => {
         router.push("/");
       }}
@@ -169,7 +176,7 @@ function WorkInfoPage({ workId }) {
           ? null
           : buttonSetting
       }>
-      <S.Wrap ref={layoutRef} id="content-wrap">
+      <S.Wrap onScroll={contentScroll}>
         <S.InputWrap>
           <p className="category-text">작업상태</p>
           <S.WorkStatusWrap>

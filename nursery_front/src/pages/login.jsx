@@ -144,8 +144,6 @@ function LogInPage() {
 
   const tempLoginCheck = useCallback(async () => {
     try {
-      console.log(loginInfo);
-
       const res = await loginAPI(loginInfo);
 
       // 아이디 저장 시 실행
