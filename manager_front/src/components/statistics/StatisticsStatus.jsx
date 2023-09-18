@@ -707,7 +707,7 @@ function StatisticsStatus() {
         }
       } else {
         // dropdown으로 선택하는 값
-        const preValue = selectData[name];
+        const preValue = selectData[name].toString();
         let changeValue = "";
 
         if (isSelect) {

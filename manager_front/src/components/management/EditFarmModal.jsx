@@ -204,8 +204,6 @@ function EditFarmModal({ editModalOpen, setEditModalOpen, setPage, farmList, set
     setEditModalOpen({ open: false, data: undefined });
   }, []);
 
-  console.log("editModalOpen", editModalOpen);
-
   const FarmInfoSave = useCallback(() => {
     updateFarmhouseMutate({
       data: {
