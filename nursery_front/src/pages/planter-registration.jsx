@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -15,6 +15,7 @@ import DefaultModal from "@components/common/modal/DefaultModal";
 
 import { defaultButtonColor } from "@utils/ButtonColor";
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
+import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -63,6 +64,10 @@ const S = {
 function PlanterRegistrationPage() {
   const router = useRouter();
   const clearQueries = useAllCacheClear();
+
+  // 스크롤 유무 판단하기 위함
+  const layoutRef = useRef(null);
+  const isScroll = ContentScrollCheck(layoutRef);
 
   const [serialNumber, setSerialNumber] = useState("");
   const [modalOpen, setModalOpen] = useState({
@@ -124,6 +129,7 @@ function PlanterRegistrationPage() {
     <MainLayout
       pageName={"파종기 등록"}
       isLoading={userInfoLoading}
+      isScroll={isScroll}
       backIconClickFn={() => {
         router.push(
           {
@@ -133,7 +139,7 @@ function PlanterRegistrationPage() {
           "/QR-scanner",
         );
       }}>
-      <S.Wrap>
+      <S.Wrap ref={layoutRef} id="content-wrap">
         <p className="description-text">파종기 시리얼 번호를{"\n"}입력해주세요</p>
         <S.InputWrap>
           <S.CustomInput

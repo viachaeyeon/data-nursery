@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useRef, useState } from "react";
+import styled, { css } from "styled-components";
 import { useRouter } from "next/router";
 import { Button } from "react-bootstrap";
 import axios from "axios";
@@ -14,6 +14,7 @@ import DefaultModal from "@components/common/modal/DefaultModal";
 import DefaultInput from "@components/common/input/DefaultInput";
 
 import { requireAuthentication } from "@utils/LoginCheckAuthentication";
+import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -42,6 +43,12 @@ const S = {
       ${({ theme }) => theme.textStyle.h3Bold}
       color: #ffffff;
     }
+
+    ${(props) =>
+      props.isScroll &&
+      css`
+        filter: drop-shadow(0px 4px 10px rgba(165, 166, 168, 0.16));
+      `}
   `,
   InfoWrap: styled.div`
     padding: 38px 24px;
@@ -118,6 +125,10 @@ function NurseryInformationPage() {
   const router = useRouter();
   const clearQueries = useAllCacheClear();
 
+  // 스크롤 유무 판단하기 위함
+  const layoutRef = useRef(null);
+  const isScroll = ContentScrollCheck(layoutRef);
+
   const [modalOpen, setModalOpen] = useState({
     open: false,
     type: "",
@@ -144,10 +155,10 @@ function NurseryInformationPage() {
       }}
       backgroundColor="#5899FB">
       <S.Wrap>
-        <S.FarmHouseNameWrap>
+        <S.FarmHouseNameWrap isScroll={isScroll}>
           <p>{userInfo?.farm_house.name}</p>
         </S.FarmHouseNameWrap>
-        <S.InfoWrap>
+        <S.InfoWrap ref={layoutRef} id="content-wrap">
           <S.InfoContent>
             <p className="title-text">파종기 S/N</p>
             <DefaultInput text={userInfo?.planter.serial_number} readOnly={true} />

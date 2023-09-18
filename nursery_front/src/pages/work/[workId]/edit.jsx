@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
@@ -27,6 +27,7 @@ import OffRadioBtnIcon from "@images/common/off-radio-btn.svg";
 import PointIcon from "@images/work/ico-point.svg";
 import { waitWorkListKey } from "@utils/query-keys/PlanterQueryKeys";
 import { DateFormatting } from "@utils/Formatting";
+import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -65,6 +66,10 @@ function WorkEditPage({ workId }) {
   const router = useRouter();
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
+
+  // 스크롤 유무 판단하기 위함
+  const layoutRef = useRef(null);
+  const isScroll = ContentScrollCheck(layoutRef);
 
   // BottomButton 정보
   const [buttonSetting, setButtonSetting] = useState({
@@ -221,11 +226,12 @@ function WorkEditPage({ workId }) {
     <MainLayout
       pageName={"작업정보수정"}
       isLoading={workInfoLoading || cropListLoading || trayListLoading}
+      isScroll={isScroll}
       backIconClickFn={() => {
         router.push(`/work/${workId}`);
       }}
       buttonSetting={buttonSetting}>
-      <S.Wrap>
+      <S.Wrap ref={layoutRef} id="content-wrap">
         <S.InputWrap>
           <p className="category-text">파종일</p>
           <CalendarButton

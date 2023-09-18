@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -25,6 +25,7 @@ import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import { workHistoryKey } from "@utils/query-keys/PlanterQueryKeys";
 import LottieLoading from "@images/common/loading.json";
+import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -53,6 +54,12 @@ const S = {
     .select-wrap-padding {
       padding: 16px 0px;
     }
+
+    ${(props) =>
+      props.isScroll &&
+      css`
+        filter: drop-shadow(0px 4px 10px rgba(165, 166, 168, 0.16));
+      `}
   `,
   ContentWrap: styled.div`
     padding: 32px 24px;
@@ -282,6 +289,10 @@ function WorkHistoryPage() {
   const clearQueries = useAllCacheClear();
   const invalidateQueries = useInvalidateQueries();
 
+  // 스크롤 유무 판단하기 위함
+  const layoutRef = useRef(null);
+  const isScroll = ContentScrollCheck(layoutRef);
+
   // inView : 요소가 뷰포트에 진입했는지 여부
   const { ref, inView, entry } = useInView({
     threshold: 0, // 요소가 얼마나 노출되었을때 inView를 true로 변경할지 (0~1 사이의 값)
@@ -378,7 +389,7 @@ function WorkHistoryPage() {
       backgroundColor={theme.basic.deepBlue}
       buttonSetting={null}>
       <S.Wrap>
-        <S.DateSelectWrap>
+        <S.DateSelectWrap isScroll={isScroll}>
           <div className="select-wrap-padding">
             <DefaultYearMonthSelect
               date={date}
@@ -388,7 +399,7 @@ function WorkHistoryPage() {
           </div>
           <DefaultHorizontalCalendar date={date} handleDateChange={handleDateChange} />
         </S.DateSelectWrap>
-        <S.ContentWrap>
+        <S.ContentWrap ref={layoutRef} id="content-wrap">
           {workingHistoryListLoading ? (
             <div className="loading-wrap">
               <LottieView
