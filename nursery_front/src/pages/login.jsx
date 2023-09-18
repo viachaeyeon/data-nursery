@@ -204,7 +204,7 @@ function LogInPage() {
             placeholder="아이디를 입력해주세요"
             text={loginInfo.login_id}
             setText={(e) => {
-              handleInputChange("login_id", e.target.value);
+              handleInputChange("login_id", e.target.value.toUpperCase());
             }}
             enterKeyUpFn={() => {
               enterKeyUp();
@@ -213,6 +213,7 @@ function LogInPage() {
           <PrefixInput
             placeholder="비밀번호를 입력해주세요"
             type="password"
+            inputmode="numeric"
             text={loginInfo.password}
             maxLength={20}
             setText={(e) => {
