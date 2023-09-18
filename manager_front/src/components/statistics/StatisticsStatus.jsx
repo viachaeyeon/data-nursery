@@ -262,10 +262,6 @@ const S = {
         color: #c6c6c6;
         ${({ theme }) => theme.textStyle.h7Bold};
       }
-
-      /* .farm-name-first {
-        background-color: #c6c6c6;
-      } */
     }
   `,
   ListBlock: styled.div`
@@ -288,12 +284,10 @@ const S = {
     }
 
     .list_id {
-      /* width: 36px; */
       width: 42px;
       justify-content: center;
     }
     .farm_id {
-      /* width: 168px; */
       width: 128px;
       justify-content: center;
     }
@@ -305,7 +299,6 @@ const S = {
     }
     .farm_plant {
       width: 111px;
-      /* justify-content: start; */
       justify-content: center;
     }
     .plant_name {
@@ -313,7 +306,6 @@ const S = {
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 131px;
-      /* justify-content: start; */
       justify-content: center;
     }
     .tray {
@@ -322,12 +314,10 @@ const S = {
     }
     .order_count {
       width: 74px;
-      /* justify-content: end; */
       justify-content: center;
     }
     .sowing_count {
       width: 102px;
-      /* justify-content: end; */
       justify-content: center;
       color: ${({ theme }) => theme.basic.deepBlue};
       ${({ theme }) => theme.textStyle.h7Bold};
@@ -342,7 +332,6 @@ const S = {
     .farm_name_wrap {
       display: flex;
       gap: 8px;
-      /* width: 224px; */
       width: 209px;
       justify-content: start;
       align-items: center;
@@ -358,7 +347,6 @@ const S = {
       display: flex;
       align-items: center;
       justify-content: center;
-      /* background-color: #79cec8; */
       border-radius: 30px;
       padding: 8px;
       color: #fff;
