@@ -771,7 +771,7 @@ function FarmList() {
       {editPwChangeModalOpen.open && (
         <div className="modal-wrap">
           <EditPasswordModal 
-            setEditModalOpen={setEditModalOpen}
+            editModalOpen={editModalOpen}
             setEditPWChangeModalOpen={setEditPWChangeModalOpen}
           />
         </div>
