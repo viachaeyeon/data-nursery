@@ -300,7 +300,7 @@ function AddFarmSaveModal({
           </div>
         </S.TitleWrap>
         <S.InputWrap>
-          <p className="title-info">파종기 시러얼번호</p>
+          <p className="title-info">파종기 시리얼번호</p>
           <div className="input-wrap-off">
             <input value={addFarmSerialNumber} disabled />
           </div>
