@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -25,7 +25,6 @@ import NoneIcon from "@images/dashboard/none-icon.svg";
 import BoxIcon from "@images/dashboard/icon-box.svg";
 import { workHistoryKey } from "@utils/query-keys/PlanterQueryKeys";
 import LottieLoading from "@images/common/loading.json";
-import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -290,8 +289,7 @@ function WorkHistoryPage() {
   const invalidateQueries = useInvalidateQueries();
 
   // 스크롤 유무 판단하기 위함
-  const layoutRef = useRef(null);
-  const isScroll = ContentScrollCheck(layoutRef);
+  const [isScroll, setIsScroll] = useState(false);
 
   // inView : 요소가 뷰포트에 진입했는지 여부
   const { ref, inView, entry } = useInView({
@@ -348,6 +346,15 @@ function WorkHistoryPage() {
     },
   });
 
+  // 스크롤 감지
+  const contentScroll = useCallback((e) => {
+    if (e.target.scrollTop > 0) {
+      setIsScroll(true);
+    } else {
+      setIsScroll(false);
+    }
+  }, []);
+
   // 페이지 변경
   const pageChange = useCallback(() => {
     if (workHistoryList.length !== 0 && workHistoryListData?.total > workHistoryList.length) {
@@ -389,8 +396,7 @@ function WorkHistoryPage() {
       backgroundColor={theme.basic.deepBlue}
       buttonSetting={null}>
       <S.Wrap>
-        {/* <S.DateSelectWrap isScroll={isScroll}> */}
-        <S.DateSelectWrap>
+        <S.DateSelectWrap isScroll={isScroll}>
           <div className="select-wrap-padding">
             <DefaultYearMonthSelect
               date={date}
@@ -400,7 +406,7 @@ function WorkHistoryPage() {
           </div>
           <DefaultHorizontalCalendar date={date} handleDateChange={handleDateChange} />
         </S.DateSelectWrap>
-        <S.ContentWrap ref={layoutRef} id="content-wrap">
+        <S.ContentWrap onScroll={contentScroll}>
           {workingHistoryListLoading ? (
             <div className="loading-wrap">
               <LottieView
