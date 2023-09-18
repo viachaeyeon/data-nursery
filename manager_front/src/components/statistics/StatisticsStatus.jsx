@@ -293,7 +293,8 @@ const S = {
       justify-content: center;
     }
     .farm_id {
-      width: 168px;
+      /* width: 168px; */
+      width: 128px;
       justify-content: center;
     }
     .farm_name {
@@ -303,32 +304,36 @@ const S = {
       white-space: nowrap;
     }
     .farm_plant {
-      width: 100px;
-      justify-content: start;
+      width: 111px;
+      /* justify-content: start; */
+      justify-content: center;
     }
     .plant_name {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      width: 109px;
-      justify-content: start;
+      width: 131px;
+      /* justify-content: start; */
+      justify-content: center;
     }
     .tray {
-      width: 24px;
+      width: 117px;
       justify-content: center;
     }
     .order_count {
-      width: 115px;
-      justify-content: end;
+      width: 74px;
+      /* justify-content: end; */
+      justify-content: center;
     }
     .sowing_count {
-      width: 126px;
-      justify-content: end;
+      width: 102px;
+      /* justify-content: end; */
+      justify-content: center;
       color: ${({ theme }) => theme.basic.deepBlue};
       ${({ theme }) => theme.textStyle.h7Bold};
     }
     .sowing_date {
-      width: 126px;
+      width: 86px;
       justify-content: center;
       color: ${({ theme }) => theme.basic.gray40};
       ${({ theme }) => theme.textStyle.h7Semibold}
@@ -337,7 +342,8 @@ const S = {
     .farm_name_wrap {
       display: flex;
       gap: 8px;
-      width: 224px;
+      /* width: 224px; */
+      width: 209px;
       justify-content: start;
       align-items: center;
 
@@ -1119,7 +1125,7 @@ function StatisticsStatus() {
                   width={24}
                   height={24}
                   onClick={() => {
-                    handleSelectChange(undefined, "sowingDateOrderType", 2);
+                    handleSelectChange(undefined, "sowingDateOrderType", 1);
                   }}
                 />
               )}
@@ -1128,7 +1134,7 @@ function StatisticsStatus() {
                   width={24}
                   height={24}
                   onClick={() => {
-                    handleSelectChange(undefined, "sowingDateOrderType", 1);
+                    handleSelectChange(undefined, "sowingDateOrderType", 2);
                   }}
                 />
               )}
