@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import ScrollContainer from "react-indiana-drag-scroll";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import { requireAuthentication } from "@utils/LoginCheckAuthentication";
 import TodayOutputIcon from "@images/dashboard/icon-output.svg";
 import UseTimeIcon from "@images/dashboard/icon-time.svg";
 import { NumberFormatting, HourFormatting, MinFormatting } from "@utils/Formatting";
+import ContentScrollCheck from "@utils/ContentScrollCheck";
 
 const S = {
   Wrap: styled.div`
@@ -157,6 +158,10 @@ const S = {
 function MainPage() {
   const [loading, setLoading] = useState(false);
 
+  // 스크롤 유무 판단하기 위함
+  const layoutRef = useRef(null);
+  const isScroll = ContentScrollCheck(layoutRef);
+
   // 대시보드 API (오늘의 생산량, BEST품종, 사용시간)
   const { data: dashBoardInfo, isLoading: dashBoardLoading } = useDashBoard({
     successFn: () => {},
@@ -166,8 +171,9 @@ function MainPage() {
   });
 
   return (
+    // <MainLayout pageName={"main"} isLoading={dashBoardLoading || loading} isScroll={isScroll}>
     <MainLayout pageName={"main"} isLoading={dashBoardLoading || loading}>
-      <S.Wrap>
+      <S.Wrap ref={layoutRef} id="content-wrap">
         <S.ScrollWrap>
           <ScrollContainer className="scroll-container" horizontal={true}>
             <S.CardWrap className="today-output">
