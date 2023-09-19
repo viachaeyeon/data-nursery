@@ -482,6 +482,8 @@ function ManagementList({ userInfo }) {
           <EditManagerPasswordModal
             editManagerModalOpen={editManagerModalOpen}
             setEditManagerPWChangeModalOpen={setEditManagerPWChangeModalOpen}
+            setManagerList={setManagerList}
+            setManagerListPage={setManagerListPage}
           />
         </div>
       )}
