@@ -57,7 +57,7 @@ const S = {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 16px 24px;
+    padding: 16px 0px;
     border-radius: 8px;
     background-color: #5899fb;
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
@@ -105,15 +105,12 @@ const S = {
     }
 
     .table-header-first {
-      /* width: 168px; */
       width: 200px;
     }
     .table-header-sec {
-      /* width: 172px; */
       width: 94px;
     }
     .table-header-third {
-      /* width: 46px; */
       width: 88px;
     }
     .check-img {
@@ -173,7 +170,7 @@ const S = {
     .table-text-first {
       width: 100px;
     }
-    .first-wrap{
+    .first-wrap {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -413,9 +410,8 @@ function CropsList({ userInfo }) {
                       <p className="table-text-first">{index + 1}</p>
                       <div className="first-wrap">
                         <div className="crops_color" style={{ backgroundColor: crop.color }} />
-                      <p className="table-text-first crop_name">{crop.name}</p>
+                        <p className="table-text-first crop_name">{crop.name}</p>
                       </div>
-                      
 
                       <div className="table-text-fin option-modal-wrap">
                         {userInfo?.admin_user_info?.is_top_admin === true && (

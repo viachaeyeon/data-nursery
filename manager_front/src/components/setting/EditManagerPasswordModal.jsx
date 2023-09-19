@@ -143,7 +143,12 @@ const S = {
   `,
 };
 
-function EditManagerPasswordModal({ editManagerModalOpen, setEditManagerPWChangeModalOpen,setManagerList, setManagerListPage  }) {
+function EditManagerPasswordModal({
+  editManagerModalOpen,
+  setEditManagerPWChangeModalOpen,
+  setManagerList,
+  setManagerListPage,
+}) {
   const invalidateQueries = useInvalidateQueries();
   const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 

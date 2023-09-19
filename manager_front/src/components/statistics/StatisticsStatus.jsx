@@ -868,7 +868,7 @@ function StatisticsStatus() {
               <p className="info-title">통계현황</p>
               <div className="sub-wrap">
                 <p className="info-sub">통계보기 및 검색 (</p>
-                <UpArrow width={15} height={15} />
+                <DownArrow width={15} height={15} />
                 <p className="info-sub">정렬기능 )</p>
               </div>
               <S.DateChooseWrap>

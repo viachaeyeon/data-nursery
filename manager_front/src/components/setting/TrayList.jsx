@@ -58,7 +58,6 @@ const S = {
     justify-content: center;
     align-items: center;
     padding: 16px 0px;
-    /* padding: 16px 24px; */
     border-radius: 8px;
     background-color: #5899fb;
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);

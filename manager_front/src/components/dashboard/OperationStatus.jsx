@@ -59,7 +59,6 @@ const S = {
   `,
   StatusBlock: styled.div`
     border-radius: 8px;
-    /* border: 2px solid #fb97a3; */
     padding: 20px 16px 20px 24px;
     width: fit-content;
     display: flex;
