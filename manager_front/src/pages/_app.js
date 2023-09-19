@@ -30,7 +30,7 @@ export default function App({ Component, pageProps }) {
             <ThemeProvider theme={theme}>
               <GlobalStyle />
               <Head>
-                <title>Data Nursery</title>
+                <title>Data Nursery - Admin</title>
               </Head>
               <Component {...pageProps} />
             </ThemeProvider>
