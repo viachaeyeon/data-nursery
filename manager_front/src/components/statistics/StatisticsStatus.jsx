@@ -1208,7 +1208,7 @@ function StatisticsStatus() {
             );
           })
         )}
-        {staticsInfo?.total !== 0 && staticsList.length !== staticsInfo?.total && (
+        {staticsInfo?.total !== 0 && staticsList.length !== staticsInfo?.total && staticsInfo !== undefined && (
           <S.ButtonWrap>
             <S.MoreButton
               onClick={() => {
