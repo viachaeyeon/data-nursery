@@ -29,7 +29,8 @@ const S = {
       align-items: center;
       padding: 10px;
       cursor: pointer;
-      padding: 12px 32px;
+      /* padding: 12px 32px; */
+      padding-left: 32px;
       gap: 24px;
       width: 198px;
       height: 64px;

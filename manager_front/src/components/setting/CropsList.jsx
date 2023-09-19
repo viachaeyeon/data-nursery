@@ -105,13 +105,16 @@ const S = {
     }
 
     .table-header-first {
-      width: 168px;
+      /* width: 168px; */
+      width: 200px;
     }
     .table-header-sec {
-      width: 172px;
+      /* width: 172px; */
+      width: 94px;
     }
     .table-header-third {
-      width: 46px;
+      /* width: 46px; */
+      width: 88px;
     }
     .check-img {
       width: 24px;
@@ -169,6 +172,12 @@ const S = {
     }
     .table-text-first {
       width: 100px;
+    }
+    .first-wrap{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
     }
     .table-text-fin {
       width: 40px;
@@ -402,8 +411,11 @@ function CropsList({ userInfo }) {
                         </div>
                       )}
                       <p className="table-text-first">{index + 1}</p>
-                      <div className="crops_color" style={{ backgroundColor: crop.color }} />
+                      <div className="first-wrap">
+                        <div className="crops_color" style={{ backgroundColor: crop.color }} />
                       <p className="table-text-first crop_name">{crop.name}</p>
+                      </div>
+                      
 
                       <div className="table-text-fin option-modal-wrap">
                         {userInfo?.admin_user_info?.is_top_admin === true && (
