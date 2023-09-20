@@ -435,6 +435,7 @@ function ManagementList({ userInfo }) {
                       </div>
                     )}
 
+                  </div>
                     {index === optionModalOpen.index && (
                       <OptionModal
                         optionModalOpen={optionModalOpen}
@@ -443,7 +444,6 @@ function ManagementList({ userInfo }) {
                         setDeleteManagerModalOpen={setDeleteManagerModalOpen}
                       />
                     )}
-                  </div>
                 </S.ListBlock>
               );
             })}

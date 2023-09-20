@@ -21,6 +21,7 @@ import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
 const S = {
   Wrap: styled.div`
     width: 30%;
+    position: relative;
 
     .modal-wrap {
       position: fixed;
@@ -424,6 +425,7 @@ function CropsList({ userInfo }) {
                           </div>
                         )}
 
+                      </div>
                         {index === optionModalOpen.index && (
                           <CropsOptionModal
                             optionModalOpen={optionModalOpen}
@@ -432,7 +434,6 @@ function CropsList({ userInfo }) {
                             setEditCropsModalOpen={setEditCropsModalOpen}
                           />
                         )}
-                      </div>
                     </S.ListBlock>
                   );
                 })}

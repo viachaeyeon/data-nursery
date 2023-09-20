@@ -436,6 +436,7 @@ function TrayList({ userInfo }) {
                           </div>
                         )}
 
+                      </div>
                         {index === optionModalOpen.index && (
                           <OptionModal
                             optionModalOpen={optionModalOpen}
@@ -444,7 +445,6 @@ function TrayList({ userInfo }) {
                             setDeleteTrayModalOpen={setDeleteTrayModalOpen}
                           />
                         )}
-                      </div>
                     </S.ListBlock>
                   );
                 })}

@@ -9,7 +9,7 @@ const S = {
     display: flex;
     justify-content: end;
     position: absolute;
-    left: 117px;
+    right: -21px;
     z-index: 1;
 
     .wrap-inner {
