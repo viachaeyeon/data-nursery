@@ -435,16 +435,15 @@ function TrayList({ userInfo }) {
                             <OptionDot width={32} height={32} />
                           </div>
                         )}
-
                       </div>
-                        {index === optionModalOpen.index && (
-                          <OptionModal
-                            optionModalOpen={optionModalOpen}
-                            setOptionModalOpen={setOptionModalOpen}
-                            setEditTrayModalOpen={setEditTrayModalOpen}
-                            setDeleteTrayModalOpen={setDeleteTrayModalOpen}
-                          />
-                        )}
+                      {index === optionModalOpen.index && (
+                        <OptionModal
+                          optionModalOpen={optionModalOpen}
+                          setOptionModalOpen={setOptionModalOpen}
+                          setEditTrayModalOpen={setEditTrayModalOpen}
+                          setDeleteTrayModalOpen={setDeleteTrayModalOpen}
+                        />
+                      )}
                     </S.ListBlock>
                   );
                 })}

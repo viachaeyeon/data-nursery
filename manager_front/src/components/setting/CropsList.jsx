@@ -424,16 +424,15 @@ function CropsList({ userInfo }) {
                             <OptionDot width={32} height={32} />
                           </div>
                         )}
-
                       </div>
-                        {index === optionModalOpen.index && (
-                          <CropsOptionModal
-                            optionModalOpen={optionModalOpen}
-                            setOptionModalOpen={setOptionModalOpen}
-                            setDeleteCropsModalOpen={setDeleteCropsModalOpen}
-                            setEditCropsModalOpen={setEditCropsModalOpen}
-                          />
-                        )}
+                      {index === optionModalOpen.index && (
+                        <CropsOptionModal
+                          optionModalOpen={optionModalOpen}
+                          setOptionModalOpen={setOptionModalOpen}
+                          setDeleteCropsModalOpen={setDeleteCropsModalOpen}
+                          setEditCropsModalOpen={setEditCropsModalOpen}
+                        />
+                      )}
                     </S.ListBlock>
                   );
                 })}

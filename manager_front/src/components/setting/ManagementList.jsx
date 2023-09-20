@@ -434,16 +434,15 @@ function ManagementList({ userInfo }) {
                         <OptionDot width={32} height={32} />
                       </div>
                     )}
-
                   </div>
-                    {index === optionModalOpen.index && (
-                      <OptionModal
-                        optionModalOpen={optionModalOpen}
-                        setOptionModalOpen={setOptionModalOpen}
-                        setEditManagerModalOpen={setEditManagerModalOpen}
-                        setDeleteManagerModalOpen={setDeleteManagerModalOpen}
-                      />
-                    )}
+                  {index === optionModalOpen.index && (
+                    <OptionModal
+                      optionModalOpen={optionModalOpen}
+                      setOptionModalOpen={setOptionModalOpen}
+                      setEditManagerModalOpen={setEditManagerModalOpen}
+                      setDeleteManagerModalOpen={setDeleteManagerModalOpen}
+                    />
+                  )}
                 </S.ListBlock>
               );
             })}
