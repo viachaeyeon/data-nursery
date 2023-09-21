@@ -124,6 +124,19 @@ const S = {
     overflow-y: auto;
     padding-right: 24px;
 
+    &::-webkit-scrollbar {
+      display: block !important;
+      width: 8px !important;
+      border-radius: 4px !important;
+      background-color: ${({ theme }) => theme.basic.lightSky} !important;
+      margin-left: 5px !important;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 4px !important;
+      background-color: #bfcad9 !important;
+    }
+
     .selected {
       border: 1px solid ${({ theme }) => theme.primery.primery};
     }
