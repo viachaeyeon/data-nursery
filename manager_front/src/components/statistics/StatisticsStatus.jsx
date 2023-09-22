@@ -475,7 +475,7 @@ function StatisticsStatus() {
     trayTotal: "",
     orderQuantityOrderType: 2,
     planterOutputOrderType: 2,
-    sowingDateOrderType: 1,
+    sowingDateOrderType: 0,
     isShipmentCompletedOrderType: 2,
   });
 
