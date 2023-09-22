@@ -173,19 +173,19 @@ const S = {
     }
 
     .header-table {
-      width: 120px;
+      width: 115px;
     }
     .header-table-second {
-      width: 140px;
+      width: 136px;
     }
     .header-table-third {
-      width: 200px;
+      width: 191px;
     }
     .header-table-fourth {
-      width: 130px;
+      width: 170px;
     }
     .header-table-eighth {
-      width: 160px;
+      width: 125px;
     }
 
     .table-first {
@@ -201,7 +201,7 @@ const S = {
       width: 120px;
     }
     .table-eighth {
-      width: 90px;
+      width: 59px;
     }
 
     .address {
@@ -231,7 +231,7 @@ const S = {
     }
 
     .farm_number {
-      width: 132px;
+      width: 150px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
