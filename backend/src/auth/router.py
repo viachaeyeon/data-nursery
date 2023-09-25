@@ -292,7 +292,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 async def create_farm_house(
     request: Request,
     serial_number: str = Form(...),
-    nursery_number: str = Form(...),
+    nursery_number: str = Form(None),
     farm_house_id: str = Form(...),
     name: str = Form(...),
     producer_name: str = Form(...),
