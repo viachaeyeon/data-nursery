@@ -45,13 +45,12 @@ def update_planter_status_to_off():
             func.max(planterModels.PlanterStatus.status).label("last_status"),
             func.max(planterModels.PlanterStatus.updated_at).label("max_updated_at"),
         )
-        .filter(
-            planterModels.PlanterStatus.is_del == False,
-        )
+        # .filter(
+        #     planterModels.PlanterStatus.is_del == False,
+        # )
         .group_by(
             planterModels.PlanterStatus.planter_id,
-        )
-        .subquery()
+        ).subquery()
     )
     planter_status = (
         db.query(planterModels.PlanterStatus)

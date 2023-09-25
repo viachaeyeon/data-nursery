@@ -536,10 +536,12 @@ def delete_farmhouse(
         # Farmhouse User 삭제
         user = farmhouse.farm_house_user
         user.is_del = True
+        user.login_id = None
 
         # Famhouse Planter 삭제
         planter = farmhouse.farm_house_planter
         planter.is_del = True
+        planter.serial_number = None
 
         # Planter status 삭제
         planter_status_list = planter.planter__planter_status
@@ -567,6 +569,9 @@ def delete_farmhouse(
 
         # Farmhouse 삭제
         farmhouse.is_del = True
+        farmhouse.name = None
+        farmhouse.nursery_number = None
+        farmhouse.farm_house_id = None
 
     db.commit()
 
