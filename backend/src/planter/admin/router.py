@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from sqlalchemy import func, case, extract, desc, asc, cast, String
 from starlette.responses import JSONResponse
 from datetime import date, datetime, timedelta
@@ -162,6 +162,108 @@ def get_admin_dashboard_realtime_planter(
         )
 
     return {"total": total, "planter": planter_responses}
+
+
+@router.get(
+    "/dashboard/real-time/{planter_id}",
+    description="관리자 개요 페이지 실시간 가동현황 중 파종기의 오늘 작업 목록 확인",
+)
+def get_admin_dashboard_planter_today_work(
+    request: Request, planter_id: int, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+
+    planter = get_(db, planterModels.Planter, id=planter_id)
+    if not planter:
+        return JSONResponse(status_code=404, content=dict(msg="NOT_FOUNRD_PLANTER"))
+
+    target_timezone = timezone("Asia/Seoul")
+    target_date = datetime.now(tz=target_timezone).date()
+
+    pw = aliased(planterModels.PlanterWork)
+    pws = aliased(planterModels.PlanterWorkStatus)
+
+    last_pws_subq = (
+        db.query(
+            pws.planter_work_id,
+            func.max(pws.id).label("last_pws_id"),
+        )
+        .filter(
+            pws.is_del == False,
+            extract(
+                "year",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == target_date.year,
+            extract(
+                "month",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == target_date.month,
+            extract(
+                "day",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == target_date.day,
+        )
+        .group_by(pws.planter_work_id)
+        .subquery()
+    )
+
+    print("test : ", last_pws_subq)
+
+    working_pw_bq = (
+        db.query(
+            pw.id,
+            pws.status.label("last_pws_status"),
+            pws.created_at,
+            cropModels.Crop.name,
+            cropModels.Crop.image,
+            planterModels.PlanterOutput.output,
+            planterModels.PlanterOutput.updated_at,
+        )
+        .join(
+            last_pws_subq,
+            last_pws_subq.c.planter_work_id == pw.id,
+        )
+        .join(
+            pws,
+            (pws.planter_work_id == last_pws_subq.c.planter_work_id)
+            & (pws.id == last_pws_subq.c.last_pws_id),
+        )
+        .join(cropModels.Crop, cropModels.Crop.id == pw.crop_id)
+        .join(
+            planterModels.PlanterOutput,
+            planterModels.PlanterOutput.planter_work_id == pw.id,
+        )
+        .filter(
+            pw.is_del == False,
+            pw.planter_id == planter.id,
+            pws.status.in_(["WORKING", "DONE"]),
+        )
+        .order_by(
+            case(
+                (pws.status == "WORKING", 2), (pws.status == "DONE", 1), else_=0
+            ).desc(),
+            pws.created_at.desc(),
+        )
+        .all()
+    )
+
+    result = [
+        {
+            "pw_id": pw_id,
+            "last_pws_status": last_pws_status,
+            "last_pws_created_at": last_pws_created_at,
+            "crop_name": crop_name,
+            "crop_img": crop_img,
+            "output": output,
+            "output_updated_at": output_updated_at,
+        }
+        for pw_id, last_pws_status, last_pws_created_at, crop_name, crop_img, output, output_updated_at in working_pw_bq
+    ]
+
+    return result
 
 
 @router.get(
@@ -719,7 +821,9 @@ def search_planter_tray_total_for_admin(
 ):
     get_current_user("99", request.cookies, db)
 
-    planter_tray_total_query = db.query(planterModels.PlanterTray.total)
+    planter_tray_total_query = db.query(planterModels.PlanterTray.total).filter(
+        planterModels.PlanterTray.is_del == False
+    )
 
     if search:
         planter_tray_total_query = planter_tray_total_query.filter(
