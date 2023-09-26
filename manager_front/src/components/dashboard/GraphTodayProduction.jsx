@@ -4,7 +4,8 @@ import styled from "styled-components";
 import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
-import usePlanterCrop from "@src/hooks/queries/planter/usePlanterCrop";
+// import usePlanterCrop from "@src/hooks/queries/planter/usePlanterCrop";
+import theme from "@src/styles/theme";
 
 const S = {
   Wrap: styled.div`
@@ -46,33 +47,44 @@ const S = {
   `,
 };
 
-function GraphCropProductionMonth() {
-  const { data: planterCrops } = usePlanterCrop({
-    queryType: "month",
-    successFn: () => {},
-    errorFn: (err) => {
-      alert(err);
-    },
-  });
+function GraphCropProductionDay() {
+  // const { data: planterCrops } = usePlanterCrop({
+  //   queryType: "day",
+  //   successFn: () => {},
+  //   errorFn: (err) => {
+  //     alert(err);
+  //   },
+  // });
 
   //범례에서 사용할 배열
-  const nameColorArray =
-    !!planterCrops &&
-    Object.keys(planterCrops).map((key) => ({
-      name: key,
-      color: planterCrops[key][0].color,
-    }));
+  // const nameColorArray =
+  //   !!planterCrops &&
+  //   Object.keys(planterCrops).map((key) => ({
+  //     name: key,
+  //     color: planterCrops[key][0].color,
+  //   }));
 
   const graphRef = useRef(null);
   let graphInstance = null;
 
-  useEffect(() => {
-    if (!planterCrops) {
-      return;
-    }
+  const monthDay = [];
+  for (let i = 1; i <= 30; i++) {
+    monthDay.push(i);
+  }
 
-    // 라벨 배열을 생성
-    const labels = Array.from({ length: 12 }, (_, i) => i + 1);
+  useEffect(() => {
+    // if (!planterCrops) {
+    //   return;
+    // }
+
+    // 오늘 날짜를 얻습니다.
+    const today = new Date();
+
+    // 현재 월의 마지막 날짜를 얻습니다.
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+
+    // 라벨 배열을 생성합니다.
+    const labels = Array.from({ length: lastDayOfMonth }, (_, i) => i + 1);
 
     const graphCtx = graphRef.current?.getContext("2d");
 
@@ -100,16 +112,19 @@ function GraphCropProductionMonth() {
       graphInstance = new Chart(graphCtx, {
         type: "line",
         data: {
-          labels: labels,
+          labels: labels, // 오늘 날짜의 일수를 라벨로 사용
           datasets: Object.keys(planterCrops).map((key) => ({
             label: key,
-            data: labels.map((month) => {
-              // key에 해당하는 데이터를 라벨과 매칭
-              const dayData = planterCrops[key].find((item) => item.month === month);
-              return dayData ? dayData.output : 0;
-            }),
-            borderColor: planterCrops[key][0].color, // key에 해당하는 첫 번째 데이터의 color를 사용
-            pointBackgroundColor: planterCrops[key][0].color, // key에 해당하는 첫 번째 데이터의 color를 사용
+            data: [1, 2, 3, 4, 5, 66],
+            // labels.map((day) => {
+            //   // key에 해당하는 데이터를 라벨과 매칭
+            //   const dayData = planterCrops[key].find((item) => item.day === day);
+            //   return dayData ? dayData.output : 0;
+            // }),
+            // borderColor: planterCrops[key][0].color, // key에 해당하는 첫 번째 데이터의 color를 사용
+            // pointBackgroundColor: planterCrops[key][0].color, // key에 해당하는 첫 번째 데이터의 color를 사용
+            borderColor: "#FB97A3",
+            pointBackgroundColor: "#FB97A3",
             pointBorderColor: "#4F5B6C",
             borderWidth: 3,
             fill: false,
@@ -137,7 +152,7 @@ function GraphCropProductionMonth() {
               title: {
                 display: true,
                 align: "end",
-                text: "월",
+                text: "일",
               },
             },
             y: {
@@ -227,4 +242,4 @@ function GraphCropProductionMonth() {
   );
 }
 
-export default GraphCropProductionMonth;
+export default GraphCropProductionDay;

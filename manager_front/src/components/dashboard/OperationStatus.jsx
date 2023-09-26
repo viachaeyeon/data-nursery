@@ -7,6 +7,7 @@ import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries
 
 import { Tooltip } from "react-tooltip";
 import { NumberCommaFormatting, CountPlusFormatting } from "@src/utils/Formatting";
+import RealTimeDetailModal from "./RealTimeDetailModal";
 import BarIcon from "@images/dashboard/icon-bar.svg";
 import StatusOnIcon from "@images/dashboard/operation_status_on.svg";
 import StatusOffIcon from "@images/dashboard/operation_status_off.svg";
@@ -23,6 +24,16 @@ const S = {
     gap: 28px;
     display: flex;
     flex-direction: column;
+
+    .modal-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #00000040;
+      z-index: 1;
+    }
   `,
   TitleWrap: styled.div`
     display: flex;
@@ -219,6 +230,19 @@ function OperationStatus({ currentDate }) {
     }
   }, [planterOperationStatus, operationListPage, operationList]);
 
+  //실시간가동현황 모달 오픈
+  const [realTimeModalOpen, setRealTimeModalOpen] = useState({
+    open: false,
+    data: undefined,
+  });
+
+  const handelRealTimeDetailClick = useCallback((data) => {
+    // if (data.planter_status === "ON") {
+    console.log(data);
+    setRealTimeModalOpen({ open: true, data: data });
+    // }
+  }, []);
+
   return (
     <S.Wrap>
       <S.TitleWrap>
@@ -230,7 +254,10 @@ function OperationStatus({ currentDate }) {
         {planterOperationStatus?.planter?.map((data, index) => {
           return (
             <>
-              <S.StatusBlock key={`map${index}`} className={data?.planter_status === "ON" ? "statusOn" : "statusOff"}>
+              <S.StatusBlock
+                key={`map${index}`}
+                className={data?.planter_status === "ON" ? "statusOn" : "statusOff"}
+                onClick={() => handelRealTimeDetailClick(data)}>
                 {data?.planter_status === "ON" ? (
                   <StatusOnIcon width={68} height={68} />
                 ) : (
@@ -269,6 +296,11 @@ function OperationStatus({ currentDate }) {
         })}
         <div ref={ref} />
       </S.ContentWrap>
+      {realTimeModalOpen.open && (
+        <div className="modal-wrap">
+          <RealTimeDetailModal realTimeModalOpen={realTimeModalOpen} setRealTimeModalOpen={setRealTimeModalOpen} />
+        </div>
+      )}
     </S.Wrap>
   );
 }

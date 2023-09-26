@@ -475,7 +475,7 @@ function StatisticsStatus() {
     trayTotal: "",
     orderQuantityOrderType: 2,
     planterOutputOrderType: 2,
-    sowingDateOrderType: 1,
+    sowingDateOrderType: 0,
     isShipmentCompletedOrderType: 2,
   });
 
@@ -655,6 +655,9 @@ function StatisticsStatus() {
   // 통계현황 검색 조건 선택
   const handleSelectChange = useCallback(
     (isSelect, name, value) => {
+      setPage(1);
+      setStaticsList([]);
+
       if (isSelect === undefined) {
         setSelectData((prev) => ({
           // 정렬 값
