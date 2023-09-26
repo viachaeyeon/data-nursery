@@ -20,8 +20,8 @@ import EditPasswordModal from "./EditPasswordModal";
 import AddIcon from "@images/management/add-icon.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
 import CheckBoxOn from "@images/common/check-icon-on.svg";
-import UpArrow from "@images/common/order-by-up-icon.svg";
-import DownArrow from "@images/common/order-by-down-icon.svg";
+import DownArrow from "@images/common/order-by-up-icon.svg";
+import UpArrow from "@images/common/order-by-down-icon.svg";
 import OptionDot from "@images/common/option-dot-icon.svg";
 import FarmIcon from "@images/management/icon-farm.svg";
 import DeleteIcon from "@images/setting/icon-delete.svg";
@@ -358,7 +358,7 @@ const S = {
 function FarmList() {
   const invalidateQueries = useInvalidateQueries();
   const [isNameOrderBy, setIsNameOrderBy] = useState(0);
-  const [isStateOrderBy, setIsStateOrderBy] = useState(0);
+  const [isStateOrderBy, setIsStateOrderBy] = useState(1);
 
   // 페이지네이션
   const [page, setPage] = useState(1);
