@@ -5,13 +5,15 @@ import { useInView } from "react-intersection-observer";
 import { PlanterRealTimeKey } from "@src/utils/query-keys/PlanterQueryKeys";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 
+import usePlanterRealTime from "@src/hooks/queries/planter/usePlanterRealTime";
+import usePlanterRealTimeToday from "@src/hooks/queries/planter/usePlanterRealTimeToday";
+
 import { Tooltip } from "react-tooltip";
 import { NumberCommaFormatting, CountPlusFormatting } from "@src/utils/Formatting";
 import RealTimeDetailModal from "./RealTimeDetailModal";
 import BarIcon from "@images/dashboard/icon-bar.svg";
 import StatusOnIcon from "@images/dashboard/operation_status_on.svg";
 import StatusOffIcon from "@images/dashboard/operation_status_off.svg";
-import usePlanterRealTime from "@src/hooks/queries/planter/usePlanterRealTime";
 
 const S = {
   Wrap: styled.div`
@@ -188,6 +190,7 @@ function OperationStatus({ currentDate }) {
 
   const [operationListPage, setOperationListPage] = useState(1);
   const [operationList, setOperationList] = useState([]);
+  const [selectPlanterId, setSelectPlanterId] = useState("");
 
   // inView : 요소가 뷰포트에 진입했는지 여부
   const { ref, inView, entry } = useInView({
@@ -199,6 +202,25 @@ function OperationStatus({ currentDate }) {
     size: 20,
     successFn: (res) => {
       setOperationList((prev) => [...prev, ...res.planter]);
+    },
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  const handelRealTimeDetailClick = useCallback(
+    (data) => {
+      setRealTimeModalOpen({ open: true, data: data });
+      setSelectPlanterId(data.planter);
+    },
+    [selectPlanterId],
+  );
+
+  const { data: planterToday } = usePlanterRealTimeToday({
+    // planterId:33,
+    planterId: selectPlanterId,
+    successFn: (res) => {
+      // setOperationList((prev) => [...prev, ...res.planter]);
     },
     errorFn: (err) => {
       alert(err);
@@ -236,13 +258,6 @@ function OperationStatus({ currentDate }) {
     data: undefined,
   });
 
-  const handelRealTimeDetailClick = useCallback((data) => {
-    // if (data.planter_status === "ON") {
-    console.log(data);
-    setRealTimeModalOpen({ open: true, data: data });
-    // }
-  }, []);
-
   return (
     <S.Wrap>
       <S.TitleWrap>
@@ -257,7 +272,8 @@ function OperationStatus({ currentDate }) {
               <S.StatusBlock
                 key={`map${index}`}
                 className={data?.planter_status === "ON" ? "statusOn" : "statusOff"}
-                onClick={() => handelRealTimeDetailClick(data)}>
+                // onClick={() => handelRealTimeDetailClick(data)}
+              >
                 {data?.planter_status === "ON" ? (
                   <StatusOnIcon width={68} height={68} />
                 ) : (
@@ -298,7 +314,11 @@ function OperationStatus({ currentDate }) {
       </S.ContentWrap>
       {realTimeModalOpen.open && (
         <div className="modal-wrap">
-          <RealTimeDetailModal realTimeModalOpen={realTimeModalOpen} setRealTimeModalOpen={setRealTimeModalOpen} />
+          <RealTimeDetailModal
+            realTimeModalOpen={realTimeModalOpen}
+            setRealTimeModalOpen={setRealTimeModalOpen}
+            planterToday={planterToday}
+          />
         </div>
       )}
     </S.Wrap>
