@@ -253,3 +253,6 @@ def update_farm_house_info(
     db.refresh(farmhouse_user)
 
     return JSONResponse(status_code=200, content=dict(msg="UPDATE_SUCCESS"))
+
+
+# @router

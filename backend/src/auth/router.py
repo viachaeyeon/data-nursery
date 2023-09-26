@@ -403,9 +403,9 @@ async def create_farm_house(
 )
 def get_farm_house_list(
     request: Request,
-    farmhouse_id_order: int = 0,
-    name_order: int = 0,
-    status_order: int = 1,
+    farmhouse_id_order: int = None,
+    name_order: int = None,
+    status_order: int = None,
     db: Session = Depends(get_db),
     page: int = 1,  # 페이지 번호
     size: int = 8,  # 한 페이지에 보여줄 게시물 갯수
@@ -442,11 +442,11 @@ def get_farm_house_list(
 
     if farmhouse_id_order == 0:
         farm_houses = farm_houses.order_by(models.FarmHouse.farm_house_id.asc())
-    else:
+    elif farmhouse_id_order == 1:
         farm_houses = farm_houses.order_by(models.FarmHouse.farm_house_id.asc())
     if name_order == 0:
         farm_houses = farm_houses.order_by(models.FarmHouse.name.asc())
-    else:
+    elif name_order == 1:
         farm_houses = farm_houses.order_by(models.FarmHouse.name.desc())
     if status_order == 0:
         farm_houses = farm_houses.order_by(
@@ -457,7 +457,7 @@ def get_farm_house_list(
                 else_=3,
             ).asc()
         )
-    else:
+    elif status_order == 1:
         farm_houses = farm_houses.order_by(
             case(
                 (planterModels.PlanterStatus.status == "OFF", 0),
