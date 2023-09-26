@@ -160,7 +160,6 @@ function QrDownloadModal({ qrDownloadModalOpen, setQrDownloadModalOpen }) {
     //     // Blob 객체를 파일로 저장합니다.
     //     saveAs(blob, 'image.png'); // 두 번째 매개변수는 다운로드될 파일의 이름을 나타냅니다.
     //   });
-
   }, [qrImage]);
 
   return (
