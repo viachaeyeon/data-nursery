@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request, UploadFile, File, Form
 from starlette.responses import JSONResponse
+from sqlalchemy import case
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 import bcrypt
@@ -398,10 +399,11 @@ async def create_farm_house(
     "/farmhouse/list",
     status_code=200,
     response_model=schemas.PageFarmHouseResponse,
-    description="name_order == 0 : 농가이름 오름차순, name_order == 1 : 농가이름 내림차순<br/>status_order == 0 : 파종기 상태 오름차순 (OFF -> ON -> PUASE), status_order == 1 : 파종기 상태 내림차순 (PUASE -> ON -> OFF)<br/>page : 요청할 페이지 번호<br/>size : 한 페이지에 보여줄 갯수",
+    description="farmhouse_id_order == 0 : 농가ID 오름차순, farmhouse_id_order == 1 : 농가ID 내림차순<br/>name_order == 0 : 농가이름 오름차순, name_order == 1 : 농가이름 내림차순<br/>status_order == 0 : 파종기 상태 오름차순 (OFF -> PUASE -> ON), status_order == 1 : 파종기 상태 내림차순 (ON -> PAUSE -> OFF)<br/>page : 요청할 페이지 번호<br/>size : 한 페이지에 보여줄 갯수",
 )
 def get_farm_house_list(
     request: Request,
+    farmhouse_id_order: int = 0,
     name_order: int = 0,
     status_order: int = 1,
     db: Session = Depends(get_db),
@@ -436,15 +438,34 @@ def get_farm_house_list(
             subquery.c.max_status_id == planterModels.PlanterStatus.id,
         )
         .filter(models.FarmHouse.is_del == False)
-        .order_by(
-            planterModels.PlanterStatus.status.asc()
-            if status_order == 0
-            else planterModels.PlanterStatus.status.desc(),
-            models.FarmHouse.name.asc()
-            if name_order == 0
-            else models.FarmHouse.name.desc(),
-        )
     )
+
+    if farmhouse_id_order == 0:
+        farm_houses = farm_houses.order_by(models.FarmHouse.farm_house_id.asc())
+    else:
+        farm_houses = farm_houses.order_by(models.FarmHouse.farm_house_id.asc())
+    if name_order == 0:
+        farm_houses = farm_houses.order_by(models.FarmHouse.name.asc())
+    else:
+        farm_houses = farm_houses.order_by(models.FarmHouse.name.desc())
+    if status_order == 0:
+        farm_houses = farm_houses.order_by(
+            case(
+                (planterModels.PlanterStatus.status == "OFF", 0),
+                (planterModels.PlanterStatus.status == "PAUSE", 1),
+                (planterModels.PlanterStatus.status == "ON", 2),
+                else_=3,
+            ).asc()
+        )
+    else:
+        farm_houses = farm_houses.order_by(
+            case(
+                (planterModels.PlanterStatus.status == "OFF", 0),
+                (planterModels.PlanterStatus.status == "PAUSE", 1),
+                (planterModels.PlanterStatus.status == "ON", 2),
+                else_=3,
+            ).desc()
+        )
 
     total = farm_houses.count()
 
