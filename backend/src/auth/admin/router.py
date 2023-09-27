@@ -273,8 +273,6 @@ def download_farmhouse_list(request: Request, db: Session = Depends(get_db)):
         .all()
     )
 
-    for farmhouse in farmhouse_list:
-        print(farmhouse)
     df = pd.DataFrame(
         [
             [
