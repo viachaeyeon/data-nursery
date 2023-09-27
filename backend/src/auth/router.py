@@ -443,7 +443,7 @@ def get_farm_house_list(
     if farmhouse_id_order == 0:
         farm_houses = farm_houses.order_by(models.FarmHouse.farm_house_id.asc())
     elif farmhouse_id_order == 1:
-        farm_houses = farm_houses.order_by(models.FarmHouse.farm_house_id.asc())
+        farm_houses = farm_houses.order_by(models.FarmHouse.farm_house_id.desc())
     if name_order == 0:
         farm_houses = farm_houses.order_by(models.FarmHouse.name.asc())
     elif name_order == 1:
