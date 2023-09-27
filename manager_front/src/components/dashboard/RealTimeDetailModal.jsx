@@ -266,11 +266,7 @@ const S = {
   `,
 };
 
-function RealTimeDetailModal({
-  realTimeModalOpen,
-  setRealTimeModalOpen,
-  planterToday,
-}) {
+function RealTimeDetailModal({ realTimeModalOpen, setRealTimeModalOpen, planterToday }) {
   // const invalidateQueries = useInvalidateQueries();
   // const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
