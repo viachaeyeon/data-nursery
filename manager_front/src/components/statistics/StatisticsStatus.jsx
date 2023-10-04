@@ -1183,12 +1183,12 @@ function StatisticsStatus() {
             return (
               <S.ListBlock key={`statics${data.id}`} className={data.farmhouse.is_del && "delete"}>
                 <p className="list_id">{index + 1}</p>
-                <p className="farm_id">{data.farmhouse.farm_house_id}</p>
+                <p className="farm_id">{data.farmhouse.farm_house_id === null ? "-" : data.farmhouse.farm_house_id}</p>
                 <div className="farm_name_wrap">
                   <div className="farm-name-first" style={{ backgroundColor: colorArray[data.id % 20] }}>
-                    {data.farmhouse.name.slice(0, 1)}
+                    {data.farmhouse.name === null ? "-" : data.farmhouse.name.slice(0, 1)}
                   </div>
-                  <p className="farm_name">{data.farmhouse.name}</p>
+                  <p className="farm_name">{data.farmhouse.name === null ? "-" : data.farmhouse.name}</p>
                 </div>
                 <p className="farm_plant">{data.crop.name}</p>
                 <p className="plant_name">{data.crop_kind}</p>

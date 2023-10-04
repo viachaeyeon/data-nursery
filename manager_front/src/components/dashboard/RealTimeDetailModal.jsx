@@ -2,17 +2,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 
-// import useCreateTray from "@src/hooks/queries/planter/useCreateTray";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 import { NumberCommaFormatting } from "@src/utils/Formatting";
-import GraphTodayProduction from "@components/dashboard/GraphTodayProduction.jsx";
+// import GraphTodayProduction from "@components/dashboard/GraphTodayProduction.jsx";
 
 import XIcon from "@images/common/icon-x.svg";
 import StatusOnIcon from "@images/dashboard/operation_status_on.svg";
 import StatusOffIcon from "@images/dashboard/operation_status_off.svg";
 import BarIcon from "@images/dashboard/icon-bar.svg";
-// import { trayListKey } from "@src/utils/query-keys/PlanterQueryKeys";
-import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
+// import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 
 const S = {
   Wrap: styled.div`
@@ -25,10 +23,8 @@ const S = {
   WrapInner: styled.div`
     width: 1502px;
     height: 1004px;
-    /* padding: 56px 32px 40px 32px; */
     background-color: #fff;
     border-radius: 8px;
-    /* padding: 40px; */
     padding: 16px 16px 40px 32px;
     display: flex;
     flex-direction: column;
@@ -36,13 +32,7 @@ const S = {
   TitleWrap: styled.div`
     display: flex;
     justify-content: flex-end;
-    /* justify-content: space-between; */
 
-    /* .text-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-    } */
     .title {
       color: ${({ theme }) => theme.basic.gray60};
       ${({ theme }) => theme.textStyle.h3Bold}
@@ -255,15 +245,6 @@ const S = {
     p {
       color: ${({ theme }) => theme.basic.gray50} !important;
     }
-
-    /* .text-one{
-      ${({ theme }) => theme.textStyle.h6Bold};
-    }
-    .text-two{
-      color: ${({ theme }) => theme.basic.gray50};
-      ${({ theme }) => theme.textStyle.h7Bold};
-    } */
-
     .text-img-wrap {
       display: flex;
       align-items: center;
@@ -285,27 +266,21 @@ const S = {
   `,
 };
 
-function RealTimeDetailModal({
-  // setAddTrayModalOpen
-  realTimeModalOpen,
-  setRealTimeModalOpen,
-}) {
-  const invalidateQueries = useInvalidateQueries();
-  const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
+function RealTimeDetailModal({ realTimeModalOpen, setRealTimeModalOpen, planterToday }) {
+  // const invalidateQueries = useInvalidateQueries();
+  // const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
   const closeModal = useCallback(() => {
     setRealTimeModalOpen({ open: false, data: undefined });
   }, []);
 
   console.log("realTimeModalOpen", realTimeModalOpen);
+  console.log("!! planterToday", planterToday);
 
   return (
     <S.Wrap>
       <S.WrapInner>
         <S.TitleWrap>
-          {/* <div className="text-wrap">
-            <p className="title">제목</p>
-          </div> */}
           <div className="x-icon" onClick={closeModal}>
             <XIcon width={24} height={24} />
           </div>
@@ -367,60 +342,12 @@ function RealTimeDetailModal({
               <S.Line2 />
               <div className="list-wrap">
                 <div className="list-head">
-                  <p>시작시간</p>
+                  <p>완료시간</p>
                   <p>작물명</p>
                   <p>총 파종량</p>
                 </div>
                 <S.ListBlockWrap>
                   <div className="list-inner">
-                    <S.ListBlock>
-                      <p className="text-one">08:00</p>
-                      <div className="text-img-wrap">
-                        <div>이미지</div>
-                        <p className="text-two">수박</p>
-                      </div>
-                      <p className="text-three">3000</p>
-                    </S.ListBlock>
-                    <S.ListBlock>
-                      <p className="text-one">08:00</p>
-                      <div className="text-img-wrap">
-                        <div>이미지</div>
-                        <p className="text-two">수박</p>
-                      </div>
-                      <p className="text-three">3000</p>
-                    </S.ListBlock>
-                    <S.ListBlock>
-                      <p className="text-one">08:00</p>
-                      <div className="text-img-wrap">
-                        <div>이미지</div>
-                        <p className="text-two">수박</p>
-                      </div>
-                      <p className="text-three">3000</p>
-                    </S.ListBlock>
-                    <S.ListBlock>
-                      <p className="text-one">08:00</p>
-                      <div className="text-img-wrap">
-                        <div>이미지</div>
-                        <p className="text-two">수박</p>
-                      </div>
-                      <p className="text-three">3000</p>
-                    </S.ListBlock>
-                    <S.ListBlock>
-                      <p className="text-one">08:00</p>
-                      <div className="text-img-wrap">
-                        <div>이미지</div>
-                        <p className="text-two">수박</p>
-                      </div>
-                      <p className="text-three">3000</p>
-                    </S.ListBlock>
-                    <S.ListBlock>
-                      <p className="text-one">08:00</p>
-                      <div className="text-img-wrap">
-                        <div>이미지</div>
-                        <p className="text-two">수박</p>
-                      </div>
-                      <p className="text-three">3000</p>
-                    </S.ListBlock>
                     <S.ListBlock>
                       <p className="text-one">08:00</p>
                       <div className="text-img-wrap">
