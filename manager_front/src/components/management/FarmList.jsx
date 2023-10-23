@@ -5,6 +5,7 @@ import { Tooltip } from "react-tooltip";
 import useFarmAllList from "@src/hooks/queries/auth/useFarmAllList";
 import { farmAllListKey } from "@src/utils/query-keys/AuthQueryKeys";
 import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import useFarmAllListDownload from "@src/hooks/queries/auth/useFarmAllListDownload";
 
 import colorArray from "@components/common/ListColor";
 
@@ -16,7 +17,7 @@ import DeleteModal from "./DeleteModal";
 import EditFarmModal from "./EditFarmModal";
 import EditPasswordModal from "./EditPasswordModal";
 
-// import ExcelIcon from "@images/management/excel-icon.svg";
+import ExcelIcon from "@images/management/excel-icon.svg";
 import AddIcon from "@images/management/add-icon.svg";
 import CheckBoxOff from "@images/common/check-icon-off.svg";
 import CheckBoxOn from "@images/common/check-icon-on.svg";
@@ -75,31 +76,31 @@ const S = {
     }
   `,
 
-  // ExcelButton: styled.div`
-  //   cursor: pointer;
-  //   gap: 16px;
-  //   display: flex;
-  //   justify-content: center;
-  //   align-items: center;
-  //   padding: 16px 24px;
-  //   border: 1px solid #5899fb;
-  //   background-color: #fff;
-  //   border-radius: 8px;
-  //   box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+  ExcelButton: styled.div`
+    cursor: pointer;
+    gap: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 24px;
+    border: 1px solid #5899fb;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
 
-  //   p {
-  //     color: #5899fb;
-  //     ${({ theme }) => theme.textStyle.h6Bold}
-  //   }
+    p {
+      color: #5899fb;
+      ${({ theme }) => theme.textStyle.h6Bold}
+    }
 
-  //   &:hover {
-  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
-  //   }
-  //   &:active {
-  //     border: 1px solid ${({ theme }) => theme.basic.btnAction};
-  //     background-color: ${({ theme }) => theme.basic.lightSky};
-  //   }
-  // `,
+    &:hover {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+    }
+    &:active {
+      border: 1px solid ${({ theme }) => theme.basic.btnAction};
+      background-color: ${({ theme }) => theme.basic.lightSky};
+    }
+  `,
   AddButton: styled.div`
     cursor: pointer;
     gap: 16px;
@@ -181,22 +182,22 @@ const S = {
     }
 
     .header-table {
-      width: 128px;
+      width: 140px;
     }
     .header-table-third {
-      width: 153px;
+      width: 170px;
     }
     .header-table-fourth {
-      width: 232px;
+      width: 263px;
     }
     .header-table-fifth {
-      width: 127px;
+      width: 93px;
     }
     .header-table-sixth {
-      width: 196px;
+      width: 251px;
     }
     .header-table-eighth {
-      width: 141px;
+      width: 154px;
     }
 
     .table-first {
@@ -209,7 +210,7 @@ const S = {
       width: 200px;
     }
     .table-text {
-      width: 163px;
+      width: 167px;
     }
     .table-eighth {
       width: 59px;
@@ -242,7 +243,7 @@ const S = {
     }
 
     .farm_number {
-      width: 150px;
+      width: 187px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -399,6 +400,13 @@ function FarmList() {
     },
   });
 
+  const { data: farmhouseListDownload } = useFarmAllListDownload({
+    successFn: () => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
   // 농가추가시 작성하는 시리얼넘버
   const [addFarmSerialNumber, setAddFarmSerialNumber] = useState("");
   // 농가추가시 필요한 데이터
@@ -466,10 +474,22 @@ function FarmList() {
     setAddFarmModalOpen(true);
   }, [addFarmModalOpen]);
 
-  // // 엑셀 다운로드 버튼
-  // const handleExcelClick = useCallback(() => {
-  //   alert("엑셀 다운로드 클릭");
-  // }, []);
+  // 엑셀 다운로드 버튼
+  const handleExcelClick = useCallback(() => {
+    try {
+      if (farmhouseListDownload === undefined) {
+        return;
+      }
+      const url = window.URL.createObjectURL(new Blob([farmhouseListDownload.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "farmhouse_list.csv");
+      document.body.appendChild(link);
+      link.click();
+    } catch (err) {
+      alert("엑셀 내려받기에 실패하였습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }, [farmhouseListDownload]);
 
   const [checkArray, setCheckArray] = useState([]);
 
@@ -520,10 +540,10 @@ function FarmList() {
             <p className="info-sub">농가 목록 추가, 수정, 삭제, QR코드 관리</p>
           </div>
           <div className="button-wrap">
-            {/* <S.ExcelButton onClick={handleExcelClick}>
+            <S.ExcelButton onClick={handleExcelClick}>
               <ExcelIcon width={20} height={25} />
               <p>엑셀 내려받기</p>
-            </S.ExcelButton> */}
+            </S.ExcelButton>
             <S.AddButton onClick={handleAddFarmModalClick}>
               <AddIcon width={24} height={24} />
               <p>농가 추가</p>
@@ -732,7 +752,9 @@ function FarmList() {
                   <p className="farm_name">{data?.name}</p>
                 </div>
                 <p className="table-text name">{data?.producer_name}</p>
-                <p className="table-text farm_number">{data?.nursery_number}</p>
+                <p className="table-text farm_number">
+                  {data?.nursery_number === null || data?.nursery_number === "" ? <p>-</p> : data?.nursery_number}
+                </p>
                 <p className="table-text address" id={`address${index}`}>
                   {data?.address.split("||")[1] + " " + data?.address.split("||")[2]}
                 </p>

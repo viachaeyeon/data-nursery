@@ -1,15 +1,22 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 
-import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+// import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
 import { NumberCommaFormatting } from "@src/utils/Formatting";
-// import GraphTodayProduction from "@components/dashboard/GraphTodayProduction.jsx";
+import GraphTodayProductionNoWork from "./GraphTodayProductionNoWork";
+import GraphTodayProduction from "./GraphTodayProduction";
+import { YYYYMMDDSlash } from "@src/utils/Formatting";
+
+import DatePickerMain from "@components/statistics/DatePickerMain";
 
 import XIcon from "@images/common/icon-x.svg";
 import StatusOnIcon from "@images/dashboard/operation_status_on.svg";
 import StatusOffIcon from "@images/dashboard/operation_status_off.svg";
 import BarIcon from "@images/dashboard/icon-bar.svg";
+import PlantIcon from "@images/dashboard/plant-icon.svg";
+import CropsNoIcon from "@images/setting/crops-no-img.svg";
+import PickerIcon from "@images/statistics/date-picker-icon.svg";
 // import { isDefaultAlertShowState } from "@src/states/isDefaultAlertShowState";
 
 const S = {
@@ -21,8 +28,8 @@ const S = {
     display: flex;
   `,
   WrapInner: styled.div`
-    width: 1502px;
-    height: 1004px;
+    width: 1500px;
+    height: 1099px;
     background-color: #fff;
     border-radius: 8px;
     padding: 16px 16px 40px 32px;
@@ -48,6 +55,8 @@ const S = {
     padding: 20px 24px;
     align-items: center;
     justify-content: space-between;
+    margin-right: 16px;
+    margin-bottom: 48px;
 
     .left-inner {
       display: flex;
@@ -85,9 +94,37 @@ const S = {
       }
     }
   `,
+  WorkDateWrap: styled.div`
+    display: flex;
+    gap: 24px;
+    /* margin-top:48px; */
+    align-items: center;
+
+    p {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h5Bold};
+    }
+
+    .title-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .title-circle {
+      width: 7px;
+      height: 7px;
+      border-radius: 20px;
+      background-color: ${({ theme }) => theme.basic.gray30};
+    }
+  `,
+  BorderLine: styled.div`
+    /* width: 100%; */
+    height: 1px;
+    border: 2px solid ${({ theme }) => theme.basic.gray20};
+    margin: 20px 16px 48px 0px;
+  `,
   GraphWrap: styled.div`
     display: flex;
-    margin-top: 48px;
     width: 100%;
     height: 100%;
     justify-content: space-between;
@@ -97,6 +134,7 @@ const S = {
     }
     .graph-inner-right {
       width: 100%;
+      margin-right: 16px;
     }
     .graph-title {
       display: flex;
@@ -133,6 +171,12 @@ const S = {
       display: flex;
       gap: 10px;
       align-items: center;
+
+      .working-crop-img {
+        width: 84px;
+        height: 84px;
+        border-radius: 84px;
+      }
     }
     .create-ing-text {
       display: flex;
@@ -145,7 +189,7 @@ const S = {
       background-color: ${({ theme }) => theme.basic.whiteGray};
       border-radius: 8px;
       height: 24px;
-      width: 80px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -171,6 +215,22 @@ const S = {
       }
       .unit {
         ${({ theme }) => theme.textStyle.h5Reguler};
+      }
+    }
+
+    .work-none {
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      gap: 24px;
+      border-radius: 8px;
+      border: 3px solid ${({ theme }) => theme.basic.gray20};
+      justify-content: center;
+      align-items: center;
+
+      p {
+        ${({ theme }) => theme.textStyle.h5Reguler};
+        color: ${({ theme }) => theme.basic.gray50};
       }
     }
   `,
@@ -230,6 +290,21 @@ const S = {
       border-radius: 4px !important;
       background-color: #bfcad9 !important;
     }
+
+    .work-none {
+      margin-top: 31.58px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+
+      p {
+        ${({ theme }) => theme.textStyle.h5Reguler};
+        color: ${({ theme }) => theme.basic.gray50};
+      }
+    }
   `,
   ListBlock: styled.div`
     width: 100%;
@@ -250,6 +325,12 @@ const S = {
       align-items: center;
       gap: 16px;
     }
+
+    .done-crop-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 32px;
+    }
   `,
   Line: styled.div`
     background-color: ${({ theme }) => theme.basic.recOutline};
@@ -264,106 +345,229 @@ const S = {
     background-color: ${({ theme }) => theme.basic.recOutline};
     margin: 16px 0px;
   `,
+  ClickPicker: styled.div`
+    padding: 6px 12px 6px 16px;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    border-radius: 8px;
+    background-color: ${({ theme }) => theme.blackWhite.white};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 248px;
+    height: 36px;
+    cursor: pointer;
+
+    p {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h7Reguler}
+    }
+  `,
 };
 
 function RealTimeDetailModal({ realTimeModalOpen, setRealTimeModalOpen, planterToday }) {
+  useEffect(() => {
+    if (!planterToday) {
+      return;
+    }
+  }, [planterToday]);
+
   // const invalidateQueries = useInvalidateQueries();
   // const [isDefaultAlertShow, setIsDefaultAlertShowState] = useRecoilState(isDefaultAlertShowState);
 
   const closeModal = useCallback(() => {
     setRealTimeModalOpen({ open: false, data: undefined });
-  }, []);
+  }, [realTimeModalOpen]);
 
-  console.log("realTimeModalOpen", realTimeModalOpen);
-  console.log("!! planterToday", planterToday);
+  const workingArr = planterToday?.filter((item) => item.last_pws_status === "WORKING");
+  const doneArr = planterToday?.filter((item) => item.last_pws_status === "DONE");
+
+  planterToday?.sort((a, b) => new Date(a.output_updated_at) - new Date(b.output_updated_at));
+  workingArr?.sort((a, b) => new Date(a.output_updated_at) - new Date(b.output_updated_at));
+  doneArr?.sort((a, b) => new Date(a.output_updated_at) - new Date(b.output_updated_at));
+
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+  });
+
+  //달력 모달 오픈
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  //달력 클릭
+  const handlePickerClick = useCallback(() => {
+    setPickerOpen(true);
+  }, [pickerOpen]);
+
+  console.log("dateRange", dateRange);
 
   return (
-    <S.Wrap>
-      <S.WrapInner>
-        <S.TitleWrap>
-          <div className="x-icon" onClick={closeModal}>
-            <XIcon width={24} height={24} />
-          </div>
-        </S.TitleWrap>
-        <S.TitleBlock>
-          <div className="left-inner">
-            {realTimeModalOpen.data.planter_status === "ON" ? (
-              <StatusOnIcon width={68} height={68} />
-            ) : (
-              <StatusOffIcon width={68} height={68} />
-            )}
-            <p>{realTimeModalOpen.data.farm_house_name}</p>
-          </div>
-          <div className="right-inner">
-            <p className="detail-date">2023.08.18</p>
-            <p className="detail-count">
-              {NumberCommaFormatting(
-                realTimeModalOpen.data.planter_output === null ? 0 : realTimeModalOpen.data.planter_output,
+    !!planterToday && (
+      <S.Wrap>
+        <S.WrapInner>
+          <S.TitleWrap>
+            <div className="x-icon" onClick={closeModal}>
+              <XIcon width={24} height={24} />
+            </div>
+          </S.TitleWrap>
+          <S.TitleBlock>
+            <div className="left-inner">
+              {realTimeModalOpen.data.planter_status === "ON" ? (
+                <StatusOnIcon width={68} height={68} />
+              ) : (
+                <StatusOffIcon width={68} height={68} />
               )}
-              개
-            </p>
-            {realTimeModalOpen.data.planter_status === "ON" && <p className="detail-ing">진행중</p>}
-          </div>
-        </S.TitleBlock>
-        <S.GraphWrap>
-          <div className="graph-inner-left">
-            <div className="graph-title">
-              <BarIcon width={5} height={28} />
-              <p>오늘의 생산량</p>
+              <p>{realTimeModalOpen.data.farm_house_name}</p>
             </div>
-            {/* <GraphTodayProduction /> */}
-          </div>
-          <S.Line />
-          <div className="graph-inner-right">
-            <div className="graph-title">
-              <BarIcon width={5} height={28} />
-              <p>생산목록</p>
+            <div className="right-inner">
+              <p className="detail-date">2023.08.18</p>
+              <p className="detail-count">
+                {NumberCommaFormatting(
+                  realTimeModalOpen.data.planter_output === null ? 0 : realTimeModalOpen.data.planter_output,
+                )}
+                개
+              </p>
+              {realTimeModalOpen.data.planter_status === "ON" && <p className="detail-ing">진행중</p>}
             </div>
-            <S.Proceeding>
-              <p>진행중</p>
-              <div className="create-ing">
-                <div className="create-ing-product">
-                  <p>사진</p>
-                  <div className="create-ing-text">
-                    <div className="create-time">
-                      <p>17:30 ~</p>
-                    </div>
-                    <p>토마토</p>
-                  </div>
+          </S.TitleBlock>
+          {realTimeModalOpen.data.planter_status === "ON" && (
+            <>
+              <S.WorkDateWrap>
+                <div className="title-wrap">
+                  <div class="title-circle" />
+                  <p>작업기간 선택</p>
                 </div>
-                <div className="production-count">
-                  <p className="num">{NumberCommaFormatting(54000)}</p>
-                  <p className="unit">개</p>
+                <div className="date-wrap">
+                  <S.ClickPicker onClick={handlePickerClick}>
+                    <p>
+                      {YYYYMMDDSlash(dateRange.startDate)} ~ {YYYYMMDDSlash(dateRange.endDate)}
+                    </p>
+                    <PickerIcon width={19} height={19} />
+                  </S.ClickPicker>
                 </div>
+              </S.WorkDateWrap>
+              <S.BorderLine />
+            </>
+          )}
+
+          <S.GraphWrap>
+            <div className="graph-inner-left">
+              <div className="graph-title">
+                <BarIcon width={5} height={28} />
+                <p>생산량</p>
               </div>
-            </S.Proceeding>
-            <S.Complete>
-              <p className="complete-title">작업완료</p>
-              <S.Line2 />
-              <div className="list-wrap">
-                <div className="list-head">
-                  <p>완료시간</p>
-                  <p>작물명</p>
-                  <p>총 파종량</p>
-                </div>
-                <S.ListBlockWrap>
-                  <div className="list-inner">
-                    <S.ListBlock>
-                      <p className="text-one">08:00</p>
-                      <div className="text-img-wrap">
-                        <div>이미지</div>
-                        <p className="text-two">수박</p>
+              {realTimeModalOpen.data.planter_status === "ON" ? (
+                <>
+                  <GraphTodayProduction planterToday={planterToday} />
+                </>
+              ) : (
+                <>
+                  <GraphTodayProductionNoWork />
+                </>
+              )}
+            </div>
+            <S.Line />
+            <div className="graph-inner-right">
+              <div className="graph-title">
+                <BarIcon width={5} height={28} />
+                <p>생산목록</p>
+              </div>
+              <S.Proceeding>
+                <p>진행중</p>
+                {realTimeModalOpen.data.planter_status === "ON" && workingArr?.length !== 0 ? (
+                  <div className="create-ing">
+                    <div className="create-ing-product">
+                      {workingArr[0]?.crop_img === null ? (
+                        <CropsNoIcon width={84} height={84} />
+                      ) : (
+                        <img
+                          src={process.env.NEXT_PUBLIC_END_POINT + workingArr[0].crop_img}
+                          className="working-crop-img"
+                        />
+                      )}
+
+                      <div className="create-ing-text">
+                        <div className="create-time">
+                          <p>{workingArr[0].output_updated_at?.split("T")[1]?.slice(0, 5)}~</p>
+                        </div>
+                        <p>{workingArr[0].crop_name}</p>
                       </div>
-                      <p className="text-three">3000</p>
-                    </S.ListBlock>
+                    </div>
+                    <div className="production-count">
+                      {/* <p className="num">{NumberCommaFormatting(workingArr[0].output)}</p> */}
+                      <p className="num">{workingArr[0].output}</p>
+                      <p className="unit">개</p>
+                    </div>
                   </div>
-                </S.ListBlockWrap>
-              </div>
-            </S.Complete>
+                ) : (
+                  <div className="work-none">
+                    <PlantIcon width={41} height={43} />
+                    <p>현재 진행중인 작업이 없습니다.</p>
+                  </div>
+                )}
+              </S.Proceeding>
+              <S.Complete>
+                <p className="complete-title">작업완료</p>
+                <S.Line2 />
+                <div className="list-wrap">
+                  <div className="list-head">
+                    <p>완료시간</p>
+                    <p>작물명</p>
+                    <p>총 파종량</p>
+                  </div>
+                  <S.ListBlockWrap>
+                    <div className="list-inner">
+                      {realTimeModalOpen.data.planter_status === "ON" && doneArr?.length !== 0 ? (
+                        <>
+                          {doneArr?.map((data, index) => {
+                            return (
+                              <S.ListBlock key={`map${index}`}>
+                                <p className="text-one">{data.output_updated_at?.split("T")[1]?.slice(0, 5)}</p>
+                                <div className="text-img-wrap">
+                                  {data.crop_img === null ? (
+                                    <CropsNoIcon width={32} height={32} />
+                                  ) : (
+                                    <>
+                                      <img
+                                        src={process.env.NEXT_PUBLIC_END_POINT + data.crop_img}
+                                        className="done-crop-img"
+                                      />
+                                    </>
+                                  )}
+                                  <p className="text-two">{data.crop_name}</p>
+                                </div>
+                                <p className="text-three">{data.output}</p>
+                              </S.ListBlock>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <div className="work-none">
+                          <PlantIcon width={41} height={43} />
+                          <p>오늘 완료된 작업이 없습니다.</p>
+                        </div>
+                      )}
+                    </div>
+                  </S.ListBlockWrap>
+                </div>
+              </S.Complete>
+            </div>
+          </S.GraphWrap>
+        </S.WrapInner>
+        {pickerOpen && (
+          <div className="modal-wrap">
+            <DatePickerMain
+              pickerOpen={pickerOpen}
+              setPickerOpen={setPickerOpen}
+              setDateRange={(calendarStartDate, calendarEndDate) => {
+                setDateRange({ startDate: calendarStartDate, endDate: calendarEndDate });
+              }}
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+            />
           </div>
-        </S.GraphWrap>
-      </S.WrapInner>
-    </S.Wrap>
+        )}
+      </S.Wrap>
+    )
   );
 }
 
