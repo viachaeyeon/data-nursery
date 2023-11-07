@@ -1207,8 +1207,9 @@ def get_smart_farm_data(request: Request, check_date: str = None, db: Session = 
                         </soapenv:Envelope>"""
                         
                 result_data.append(xml)
-            
-                r = requests.post(url, data=xml, headers=headers)
+                
+                if planter_work_result.seed_quantity != 0 and planter_work_result.seed_quantity != None:
+                    r = requests.post(url, data=xml, headers=headers)
 
         return result_data
     except Exception as e:
