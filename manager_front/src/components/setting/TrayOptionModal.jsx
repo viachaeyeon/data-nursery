@@ -22,7 +22,6 @@ const S = {
       width: 111px;
       box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
       border: 1px solid ${({ theme }) => theme.basic.recOutline};
-
     }
     .line {
       background-color: #fff;
