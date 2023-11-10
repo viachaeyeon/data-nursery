@@ -10,6 +10,7 @@ const S = {
     justify-content: end;
     position: absolute;
     right: 60px;
+    /* right: -44px; */
     z-index: 1;
 
     .wrap-inner {
@@ -21,6 +22,7 @@ const S = {
       width: 111px;
       box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
       border: 1px solid ${({ theme }) => theme.basic.recOutline};
+
     }
     .line {
       background-color: #fff;
