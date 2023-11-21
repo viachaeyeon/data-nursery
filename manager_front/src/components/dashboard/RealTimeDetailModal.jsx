@@ -6,6 +6,9 @@ import GraphTodayProductionNoWork from "./GraphTodayProductionNoWork";
 import GraphTodayProduction from "./GraphTodayProduction";
 import { YYYYMMDDSlash } from "@src/utils/Formatting";
 
+import useInvalidateQueries from "@src/hooks/queries/common/useInvalidateQueries";
+import { PlanterRealTimeDateRangeKey } from "@src/utils/query-keys/PlanterQueryKeys";
+
 import DatePickerMain from "@components/statistics/DatePickerMain";
 
 import XIcon from "@images/common/icon-x.svg";
@@ -360,10 +363,17 @@ const S = {
 };
 
 function RealTimeDetailModal({ realTimeModalOpen, setRealTimeModalOpen, planterDateRange, dateRange, setDateRange }) {
+  const invalidateQueries = useInvalidateQueries();
   useEffect(() => {
     if (!planterDateRange) {
       return;
     }
+
+    const intervalId = setInterval(() => {
+      invalidateQueries([PlanterRealTimeDateRangeKey]);
+    }, 30000); // 30초마다 업데이트
+
+    return () => clearInterval(intervalId);
   }, [planterDateRange]);
 
   const closeModal = useCallback(() => {
@@ -397,7 +407,7 @@ function RealTimeDetailModal({ realTimeModalOpen, setRealTimeModalOpen, planterD
   // 완료시간 kst로 변환
   const kstDoneArr = doneArr?.map((item) => {
     const originalDate = new Date(item.output_updated_at);
-    
+
     // 9시간을 더함
     originalDate.setHours(originalDate.getHours() + 9);
 
