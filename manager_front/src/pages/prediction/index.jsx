@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import MainLayout from "../../components/layout/MainLayout";
 import MainHeader from "@components/layout/MainHeader";
-import StatisticsStatus from "@components/statistics/StatisticsStatus";
 
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
+import AiPredictionMain from "@components/prediction/AiPredictionMain";
+import BarGraphAiWrap from "@components/prediction/BarGraphAiWrap";
 
 const S = {
   Wrap: styled.div`
@@ -14,12 +15,16 @@ const S = {
   `,
 };
 
-function Statistics() {
+function Prediction() {
+  // 작물 선택 유무
+  const [planterClick, setPlanterClick] = useState(false);
+
   return (
     <MainLayout>
       <MainHeader />
       <S.Wrap>
-        <StatisticsStatus />
+        <AiPredictionMain setPlanterClick={setPlanterClick} />
+        <BarGraphAiWrap planterClick={planterClick} />
       </S.Wrap>
     </MainLayout>
   );
@@ -30,4 +35,4 @@ export const getServerSideProps = requireAuthentication((context) => {
   return { props: {} };
 });
 
-export default Statistics;
+export default Prediction;
