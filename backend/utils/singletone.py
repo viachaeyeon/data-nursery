@@ -4,6 +4,7 @@ import numpy as np
 from settings import BASE_DIR
 import os
 
+
 class SingletonInstane:
     __instance = None
 
@@ -21,16 +22,16 @@ class SingletonInstane:
 class ModelSingleTone(SingletonInstane):
     def __init__(self):
         self.lgb_model = []
-    
+
     def set_lgb_model(self):
         models = []
         for n in range(5):
             model_dir = os.path.join(BASE_DIR, "model")
             lgb_model = joblib.load(model_dir + "/lgb_kfold_%d.pkl" % (n))
             models.append(lgb_model)
-        
+
         self.lgb_model = models
-    
+
     def get_lgb_model(self):
         return self.lgb_model
     
@@ -42,20 +43,17 @@ class ModelSingleTone(SingletonInstane):
             list(zip(crop_id, area)),
             columns=["crop_id", "area"],
         )
-    
+
         n_split = 5
 
         pred = 0
 
         pred = np.zeros(len(X_test))
         models = self.get_lgb_model()
-        
+
         for lgb_model in models:
-            pred += np.exp(lgb_model.predict(X_test))    # kfold 평균값 산출
+            pred += np.exp(lgb_model.predict(X_test))  # kfold 평균값 산출
 
         pred = pred / n_split
-        
+
         return int(pred[0])
-
-
-    

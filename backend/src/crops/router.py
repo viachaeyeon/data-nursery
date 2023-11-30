@@ -43,6 +43,11 @@ async def crop_create(
 
 @router.get("/list", status_code=200, response_model=schemas.MultipleCropsResponse)
 def get_crop_list(db: Session = Depends(get_db)):
-    crops = db.query(models.Crop).filter_by(is_del=False).all()
+    crops = (
+        db.query(models.Crop)
+        .filter_by(is_del=False)
+        .order_by(models.Crop.created_at.desc())
+        .all()
+    )
 
     return {"crops": crops}
