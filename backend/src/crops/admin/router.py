@@ -257,11 +257,6 @@ def get_crop_predct_output(
         elif value[1] == "호박":
             sowing_area = 5
 
-        print("========================")
-        print("========================")
-        print("파종량 : ", value[4])
-        print("========================")
-        print("========================")
         # 파종량으로 파종면적(ha) 구하기
         # TODO: round(round(value[4] / 2.5, 0) / 3025, 0) -> round(round(value[4] / 2.5, 4) / 3025, 4)로 변경하기
         area_ha = round(round(int(value[4]) / sowing_area, 1) / 3025, 1)
