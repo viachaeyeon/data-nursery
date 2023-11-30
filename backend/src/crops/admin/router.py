@@ -123,7 +123,6 @@ def get_crop_predct_output(
     get_current_user("99", request.cookies, db)
 
     target_timezone = timezone("Asia/Seoul")
-    # target_date = datetime.now(tz=target_timezone).date()
     start_date, end_date = date_range.split("||")
     start_year, start_month, start_day = start_date.split("-")
     end_year, end_month, end_day = end_date.split("-")
@@ -258,6 +257,11 @@ def get_crop_predct_output(
         elif value[1] == "호박":
             sowing_area = 5
 
+        print("========================")
+        print("========================")
+        print("파종량 : ", value[4])
+        print("========================")
+        print("========================")
         # 파종량으로 파종면적(ha) 구하기
         # TODO: round(round(value[4] / 2.5, 0) / 3025, 0) -> round(round(value[4] / 2.5, 4) / 3025, 4)로 변경하기
         area_ha = round(round(int(value[4]) / sowing_area, 1) / 3025, 1)
@@ -277,4 +281,102 @@ def get_crop_predct_output(
                 "ai_predict": ai_predict,
             }
         )
+    return result
+
+
+@router.get(
+    "/predict/output/detail/{crop_id}/{date_range}",
+    description="기간 내 선택 작물 날짜별 파종량 및 총 파종량",
+    status_code=200,
+)
+def get_crop_predct_output(
+    request: Request, crop_id: int, date_range: str, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+
+    target_timezone = timezone("Asia/Seoul")
+    start_date, end_date = date_range.split("||")
+    start_year, start_month, start_day = start_date.split("-")
+    end_year, end_month, end_day = end_date.split("-")
+
+    target_start_date = datetime(
+        int(start_year), int(start_month), int(start_day), tzinfo=target_timezone
+    ).date()
+    target_end_date = datetime(
+        int(end_year), int(end_month), int(end_day), tzinfo=target_timezone
+    ).date()
+
+    pw = aliased(planterModels.PlanterWork)
+    pws = aliased(planterModels.PlanterWorkStatus)
+
+    last_pws_subq = db.query(
+        pws.planter_work_id,
+        func.max(pws.id).label("last_pws_id"),
+    )
+
+    if target_start_date == target_end_date:
+        last_pws_subq = last_pws_subq.filter(
+            pws.is_del == False,
+            extract(
+                "year",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == end_year,
+            extract(
+                "month",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == end_month,
+            extract(
+                "day",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == end_day,
+        )
+    else:
+        last_pws_subq = last_pws_subq.filter(
+            func.timezone("Asia/Seoul", pws.created_at) >= target_start_date,
+            func.timezone("Asia/Seoul", pws.created_at) <= target_end_date,
+        )
+
+    last_pws_subq = last_pws_subq.group_by(pws.planter_work_id).subquery()
+
+    crop_outputs = (
+        db.query(
+            func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at),
+            func.sum(planterModels.PlanterOutput.output),
+        )
+        .join(
+            pw,
+            pw.id == planterModels.PlanterOutput.planter_work_id,
+        )
+        .join(last_pws_subq, last_pws_subq.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == last_pws_subq.c.planter_work_id)
+            & (pws.id == last_pws_subq.c.last_pws_id),
+        )
+        .filter(
+            cropModels.Crop.is_del == False,
+            cropModels.Crop.id == crop_id,
+            pw.is_del == False,
+            pws.status.in_(["DONE"]),
+        )
+        .group_by(planterModels.PlanterOutput.updated_at)
+        .order_by(planterModels.PlanterOutput.updated_at.asc())
+        .all()
+    )
+
+    crop_output_per_date = []
+    total_output = 0
+
+    result = dict()
+
+    for value in crop_outputs:
+        crop_output_per_date.append({"sowing_date": value[0], "output": value[1]})
+        total_output += value[1]
+
+    result["crop_output"] = crop_output_per_date
+    result["total_output"] = total_output
+
     return result
