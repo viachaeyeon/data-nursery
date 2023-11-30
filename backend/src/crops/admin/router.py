@@ -8,6 +8,7 @@ from pytz import timezone
 from utils.database import get_db
 from utils.db_shortcuts import get_current_user, get_
 from utils.file_upload import single_file_uploader, delete_file
+from utils.singletone import ModelSingleTone
 
 import src.crops.models as cropModels
 import src.planter.models as planterModels
@@ -203,8 +204,6 @@ def get_crop_predct_output(
         .order_by(cropModels.Crop.id.asc())
     )
 
-    print("======================")
-    print("======================")
     ai_predict_crop_names = [
         "고추",
         "토마토",
@@ -229,19 +228,53 @@ def get_crop_predct_output(
         # 고추, 토마토, 수박, 가지, 오이, 메론, 참외, 양파, 대파, 상추, 양배추, 배추, 파프리카, 호박만 ai 예측정보 있음
         if not value[1] in ai_predict_crop_names:
             continue
+        ai_predict = 0
+        # INFO: 1ha = 3025평
+        # 작물별 1평당 파종량 = sowing_rea
+        if value[1] == "고추":
+            sowing_area = 10
+        elif value[1] == "토마토":
+            sowing_area = 9
+        elif value[1] == "수박":
+            sowing_area = 2.5
+        elif value[1] == "가지":
+            sowing_area = 8
+        elif value[1] == "메론":
+            sowing_area = 6.5
+        elif value[1] == "참외":
+            sowing_area = 3
+        elif value[1] == "양파":
+            sowing_area = 110
+        elif value[1] == "대파":
+            sowing_area = 35
+        elif value[1] == "상추":
+            sowing_area = 120
+        elif value[1] == "양배추":
+            sowing_area = 11
+        elif value[1] == "배추":
+            sowing_area = 11
+        elif value[1] == "파프리카":
+            sowing_area = 8
+        elif value[1] == "호박":
+            sowing_area = 5
+
+        # 파종량으로 파종면적(ha) 구하기
+        # TODO: round(round(value[4] / 2.5, 0) / 3025, 0) -> round(round(value[4] / 2.5, 4) / 3025, 4)로 변경하기
+        area_ha = round(round(int(value[4]) / sowing_area, 1) / 3025, 1)
+        # TODO: get_crop_production 함수 평 수 받는 파라미터값 float형으로 변경 후 사용
+        # if area_ha != 0:
+        #     # ha로 수확량 예측
+        #     ai_predict = ModelSingleTone.instance().get_crop_production(
+        #         value[0], area_ha
+        #     )
+
         result.append(
             {
                 "crop_id": value[0],
                 "crop_image": value[2],
                 "crop_name": value[1],
                 "crop_color": value[3],
-                "ai_predict": "여기 예측값 추가",
+                "ai_predict": ai_predict,
             }
         )
-        print(value)
-    # 고추, 토마토, 수박, 가지, 오이, 메론, 참외, 양파, 대파, 상추, 양배추, 배추, 파프리카, 호박
-    # output = db.query(cropModels.Crop.name)
-    # print(working_pw_bq)
-    print("======================")
-    print("======================")
     return result
