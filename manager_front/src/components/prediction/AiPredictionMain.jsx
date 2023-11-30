@@ -11,7 +11,7 @@ import PickerIcon from "@images/statistics/date-picker-icon.svg";
 const S = {
   Wrap: styled.div`
     background-color: #fff;
-    padding: 32px 32px 40px 56px;
+    padding: 32px 32px 27px 56px;
     display: flex;
     flex-direction: column;
     gap: 43px;
@@ -50,6 +50,9 @@ const S = {
   PlanterWrap: styled.div`
     display: flex;
     gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    overflow: auto;
+    display: grid;
 
     .img-inner {
       cursor: pointer;
@@ -80,6 +83,7 @@ const S = {
     gap: 12px;
     justify-content: center;
     align-items: center;
+    margin-bottom: 12px;
   `,
   PlanterText: styled.div`
     display: flex;
@@ -89,7 +93,6 @@ const S = {
 
     p {
       ${({ theme }) => theme.textStyle.h7Bold};
-      /* color: ${({ theme }) => theme.basic.gray50}; */
     }
   `,
   ClickPicker: styled.div`
@@ -156,6 +159,27 @@ function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, da
       crop_color: "#525252",
       ai_predict: 4321582,
     },
+    {
+      crop_id: 6,
+      crop_image: null,
+      crop_name: "딸기",
+      crop_color: "#525252",
+      ai_predict: 4321582,
+    },
+    {
+      crop_id: 7,
+      crop_image: null,
+      crop_name: "딸기",
+      crop_color: "#525252",
+      ai_predict: 4321582,
+    },
+    {
+      crop_id: 8,
+      crop_image: null,
+      crop_name: "딸기",
+      crop_color: "#525252",
+      ai_predict: 4321582,
+    },
   ];
 
   // 작물 클릭시
@@ -171,19 +195,12 @@ function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, da
           <p className="title">생산예측</p>
           <p className="sub-title">작물별 파종량 대비 생산량 AI 예측</p>
         </div>
-        {/* {dateRange.startDate === null || dateRange.endDate === null ? (
-                  <S.ClickPicker onClick={handlePickerClick}>
-                    <p>직접선택</p>
-                    <PickerIcon width={19} height={19} />
-                  </S.ClickPicker>
-                ) : ( */}
         <S.ClickPicker onClick={handlePickerClick}>
           <p>
             {YYYYMMDDSlash(dateRange.startDate)} ~ {YYYYMMDDSlash(dateRange.endDate)}
           </p>
           <PickerIcon width={19} height={19} />
         </S.ClickPicker>
-        {/* )} */}
       </S.TitleHeader>
       <S.PlanterWrap>
         {planterData?.map((data) => {
@@ -225,9 +242,6 @@ function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, da
             setPickerOpen={setPickerOpen}
             setDateRange={(calendarStartDate, calendarEndDate) => {
               setDateRange({ startDate: calendarStartDate, endDate: calendarEndDate });
-              // setSelectYear(0);
-              // setSelectMonth(0); // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
-              // invalidateQueries([staticsKey]);
             }}
             startDate={dateRange.startDate}
             endDate={dateRange.endDate}

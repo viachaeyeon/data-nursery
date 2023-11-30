@@ -27,7 +27,6 @@ const S = {
 };
 
 function BarGraphAiWrap({ planterClick, planterChoose, dateRange, setDateRange }) {
-  
   // 파종데이터(그래프,AI 예측에 사용)
   const sowingData = {
     crop_output: [
