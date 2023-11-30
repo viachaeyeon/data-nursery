@@ -1,9 +1,12 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
-import { NumberCommaFormatting } from "@src/utils/Formatting";
+import { NumberCommaFormatting, YYYYMMDDDash, YYYYMMDDSlash } from "@src/utils/Formatting";
+
+import DatePickerMain from "@components/statistics/DatePickerMain";
 
 import NoIcon from "@images/setting/crops-no-img.svg";
+import PickerIcon from "@images/statistics/date-picker-icon.svg";
 
 const S = {
   Wrap: styled.div`
@@ -12,10 +15,23 @@ const S = {
     display: flex;
     flex-direction: column;
     gap: 43px;
+
+    .modal-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #00000040;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+    }
   `,
   TitleHeader: styled.div`
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
     .title-text {
       display: flex;
@@ -51,7 +67,7 @@ const S = {
       height: 100%;
       object-fit: cover;
       border-radius: 100px;
-      background-color: gray;
+      background-color: #d1cccc;
       width: 184px;
       height: 184px;
     }
@@ -76,24 +92,75 @@ const S = {
       /* color: ${({ theme }) => theme.basic.gray50}; */
     }
   `,
+  ClickPicker: styled.div`
+    padding: 6px 12px 6px 16px;
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+    border-radius: 8px;
+    background-color: ${({ theme }) => theme.blackWhite.white};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 248px;
+    height: 36px;
+    cursor: pointer;
+
+    p {
+      color: ${({ theme }) => theme.basic.gray60};
+      ${({ theme }) => theme.textStyle.h7Reguler}
+    }
+  `,
 };
 
-function AiPredictionMain({ setPlanterClick }) {
-  const [planterChoose, setPlanterChoose] = useState("");
+function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, dateRange, setDateRange }) {
+  //달력 모달 오픈
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  //달력 클릭
+  const handlePickerClick = useCallback(() => {
+    setPickerOpen(true);
+  }, [pickerOpen]);
 
   const planterData = [
-    { id: 1, name: "토마토", count: "1234567", img: true },
-    { id: 2, name: "가지", count: "1234567", img: false },
-    { id: 3, name: "고추", count: "1234567", img: false },
-    { id: 4, name: "토마토", count: "1234567", img: true },
-    { id: 5, name: "토마토", count: "1234567", img: false },
-    { id: 6, name: "토마토", count: "1234567", img: true },
-    { id: 7, name: "토마토", count: "1234567", img: false },
+    {
+      crop_id: 1,
+      crop_image: null,
+      crop_name: "고추",
+      crop_color: "#4436d5",
+      ai_predict: 333333,
+    },
+    {
+      crop_id: 2,
+      crop_image: "/static/2023_11_30/528659_pepper.png",
+      crop_name: "토마토",
+      crop_color: "#b9da41",
+      ai_predict: 454545,
+    },
+    {
+      crop_id: 3,
+      crop_image: null,
+      crop_name: "가지",
+      crop_color: "#33d83e",
+      ai_predict: 154245,
+    },
+    {
+      crop_id: 4,
+      crop_image: "/static/2023_11_30/528659_pepper.png",
+      crop_name: "수박",
+      crop_color: "#a930ca",
+      ai_predict: 9845120,
+    },
+    {
+      crop_id: 5,
+      crop_image: null,
+      crop_name: "멜론",
+      crop_color: "#525252",
+      ai_predict: 4321582,
+    },
   ];
 
   // 작물 클릭시
   const handlePlanterChoose = useCallback((data) => {
-    setPlanterChoose(data.id);
+    setPlanterChoose(data);
     setPlanterClick(true);
   }, []);
 
@@ -104,35 +171,69 @@ function AiPredictionMain({ setPlanterClick }) {
           <p className="title">생산예측</p>
           <p className="sub-title">작물별 파종량 대비 생산량 AI 예측</p>
         </div>
+        {/* {dateRange.startDate === null || dateRange.endDate === null ? (
+                  <S.ClickPicker onClick={handlePickerClick}>
+                    <p>직접선택</p>
+                    <PickerIcon width={19} height={19} />
+                  </S.ClickPicker>
+                ) : ( */}
+        <S.ClickPicker onClick={handlePickerClick}>
+          <p>
+            {YYYYMMDDSlash(dateRange.startDate)} ~ {YYYYMMDDSlash(dateRange.endDate)}
+          </p>
+          <PickerIcon width={19} height={19} />
+        </S.ClickPicker>
+        {/* )} */}
       </S.TitleHeader>
       <S.PlanterWrap>
         {planterData?.map((data) => {
           return (
             <S.PlanterDetail>
-              {data.img ? (
+              {data.crop_image ? (
                 <S.PlanterImg
                   className="yes-image"
-                  style={{ border: planterChoose === data.id && "1px solid #5899fb" }}
+                  style={{
+                    border: planterChoose.crop_id === data.crop_id && "1px solid #5899fb",
+                    backgroundImage: process.env.NEXT_PUBLIC_END_POINT + data.crop_image,
+                  }}
                   onClick={() => handlePlanterChoose(data)}
                 />
               ) : (
                 <S.PlanterImg
                   className="img-inner"
-                  style={{ border: planterChoose === data.id && "1px solid #5899fb" }}
+                  style={{ border: planterChoose.crop_id === data.crop_id && "1px solid #5899fb" }}
                   onClick={() => handlePlanterChoose(data)}>
                   <NoIcon width={184} height={184} />
                 </S.PlanterImg>
               )}
               <S.PlanterText>
-                <p style={{ color: planterChoose === data.id ? "#5899FB" : "#737F8F" }}>{data.name}</p>
-                <p style={{ color: planterChoose === data.id ? "#5899FB" : "#737F8F" }}>
-                  {NumberCommaFormatting(data.count)}kg
+                <p style={{ color: planterChoose.crop_id === data.crop_id ? "#5899FB" : "#737F8F" }}>
+                  {data.crop_name}
+                </p>
+                <p style={{ color: planterChoose.crop_id === data.crop_id ? "#5899FB" : "#737F8F" }}>
+                  {NumberCommaFormatting(data.ai_predict)}kg
                 </p>
               </S.PlanterText>
             </S.PlanterDetail>
           );
         })}
       </S.PlanterWrap>
+      {pickerOpen && (
+        <div className="modal-wrap">
+          <DatePickerMain
+            pickerOpen={pickerOpen}
+            setPickerOpen={setPickerOpen}
+            setDateRange={(calendarStartDate, calendarEndDate) => {
+              setDateRange({ startDate: calendarStartDate, endDate: calendarEndDate });
+              // setSelectYear(0);
+              // setSelectMonth(0); // 통계현황 정보 다시 불러오기 위해 쿼리키 삭제
+              // invalidateQueries([staticsKey]);
+            }}
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+          />
+        </div>
+      )}
     </S.Wrap>
   );
 }

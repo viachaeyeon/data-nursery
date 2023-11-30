@@ -49,7 +49,7 @@ const S = {
   `,
 };
 
-function PrecitionBlock() {
+function PrecitionBlock({ sowingData }) {
   return (
     <S.Wrap>
       <S.TitleWrap>
@@ -59,11 +59,11 @@ function PrecitionBlock() {
       <S.ContentWrap>
         <S.Block>
           <p className="title">선택 기간 파종량</p>
-          <p className="content">{NumberCommaFormatting(3333333)}</p>
+          <p className="content">{NumberCommaFormatting(sowingData.total_output)}</p>
         </S.Block>
         <S.Block>
           <p className="title">AI 예측 파종량</p>
-          <p className="content">{NumberCommaFormatting(55561123)}</p>
+          <p className="content">{NumberCommaFormatting(sowingData.ai_predict)}</p>
         </S.Block>
       </S.ContentWrap>
     </S.Wrap>

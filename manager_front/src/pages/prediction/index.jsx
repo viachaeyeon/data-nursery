@@ -18,13 +18,31 @@ const S = {
 function Prediction() {
   // 작물 선택 유무
   const [planterClick, setPlanterClick] = useState(false);
+  // 어떤 작물 선택
+  const [planterChoose, setPlanterChoose] = useState("");
+  // 날짜 선택
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    endDate: new Date(),
+  });
 
   return (
     <MainLayout>
       <MainHeader />
       <S.Wrap>
-        <AiPredictionMain setPlanterClick={setPlanterClick} />
-        <BarGraphAiWrap planterClick={planterClick} />
+        <AiPredictionMain
+          setPlanterClick={setPlanterClick}
+          planterChoose={planterChoose}
+          setPlanterChoose={setPlanterChoose}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+        />
+        <BarGraphAiWrap
+          planterClick={planterClick}
+          planterChoose={planterChoose}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+        />
       </S.Wrap>
     </MainLayout>
   );
