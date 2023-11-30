@@ -1,12 +1,16 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form, Request
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
+from sqlalchemy import func, case, extract, desc, asc, cast, String
 from starlette.responses import JSONResponse
-
+from datetime import datetime
+from pytz import timezone
 
 from utils.database import get_db
 from utils.db_shortcuts import get_current_user, get_
 from utils.file_upload import single_file_uploader, delete_file
+
 import src.crops.models as cropModels
+import src.planter.models as planterModels
 
 
 router = APIRouter()
@@ -107,3 +111,137 @@ def delete_multiple_crops(
     db.commit()
 
     return JSONResponse(status_code=200, content=dict(msg="SUCCESS"))
+
+
+@router.get(
+    "/predict/output/{date_range}", description="기간 내 작물별 생산량 예측 값 조회", status_code=200
+)
+def get_crop_predct_output(
+    request: Request, date_range: str, db: Session = Depends(get_db)
+):
+    get_current_user("99", request.cookies, db)
+
+    target_timezone = timezone("Asia/Seoul")
+    # target_date = datetime.now(tz=target_timezone).date()
+    start_date, end_date = date_range.split("||")
+    start_year, start_month, start_day = start_date.split("-")
+    end_year, end_month, end_day = end_date.split("-")
+
+    target_start_date = datetime(
+        int(start_year), int(start_month), int(start_day), tzinfo=target_timezone
+    ).date()
+    target_end_date = datetime(
+        int(end_year), int(end_month), int(end_day), tzinfo=target_timezone
+    ).date()
+
+    pw = aliased(planterModels.PlanterWork)
+    pws = aliased(planterModels.PlanterWorkStatus)
+
+    last_pws_subq = db.query(
+        pws.planter_work_id,
+        func.max(pws.id).label("last_pws_id"),
+    )
+
+    if target_start_date == target_end_date:
+        last_pws_subq = last_pws_subq.filter(
+            pws.is_del == False,
+            extract(
+                "year",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == end_year,
+            extract(
+                "month",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == end_month,
+            extract(
+                "day",
+                func.timezone("Asia/Seoul", pws.created_at),
+            )
+            == end_day,
+        )
+    else:
+        last_pws_subq = last_pws_subq.filter(
+            func.timezone("Asia/Seoul", pws.created_at) >= target_start_date,
+            func.timezone("Asia/Seoul", pws.created_at) <= target_end_date,
+        )
+
+    last_pws_subq = last_pws_subq.group_by(pws.planter_work_id).subquery()
+
+    crop_outputs = (
+        db.query(
+            # cropModels.Crop,
+            cropModels.Crop.id,
+            cropModels.Crop.name,
+            cropModels.Crop.image,
+            cropModels.Crop.color,
+            func.sum(planterModels.PlanterOutput.output),
+        )
+        .join(pw, pw.crop_id == cropModels.Crop.id)
+        .join(
+            planterModels.PlanterOutput,
+            planterModels.PlanterOutput.planter_work_id == pw.id,
+        )
+        .join(last_pws_subq, last_pws_subq.c.planter_work_id == pw.id)
+        .join(
+            pws,
+            (pws.planter_work_id == last_pws_subq.c.planter_work_id)
+            & (pws.id == last_pws_subq.c.last_pws_id),
+        )
+        .filter(
+            cropModels.Crop.is_del == False,
+            pw.is_del == False,
+            pws.status.in_(["DONE"]),
+        )
+        .group_by(
+            cropModels.Crop.id,
+            cropModels.Crop.name,
+            cropModels.Crop.image,
+            cropModels.Crop.color,
+        )
+        .order_by(cropModels.Crop.id.asc())
+    )
+
+    print("======================")
+    print("======================")
+    ai_predict_crop_names = [
+        "고추",
+        "토마토",
+        "수박",
+        "가지",
+        "오이",
+        "메론",
+        "참외",
+        "양파",
+        "대파",
+        "상추",
+        "양배추",
+        "배추",
+        "파프리카",
+        "호박",
+    ]
+
+    result = []
+
+    for value in crop_outputs:
+        # value 예시: (2, '고추', '/static/2023_08_30/792437_경로 설정 화면.jpeg', '#898989', Decimal('1000'))
+        # 고추, 토마토, 수박, 가지, 오이, 메론, 참외, 양파, 대파, 상추, 양배추, 배추, 파프리카, 호박만 ai 예측정보 있음
+        if not value[1] in ai_predict_crop_names:
+            continue
+        result.append(
+            {
+                "crop_id": value[0],
+                "crop_image": value[2],
+                "crop_name": value[1],
+                "crop_color": value[3],
+                "ai_predict": "여기 예측값 추가",
+            }
+        )
+        print(value)
+    # 고추, 토마토, 수박, 가지, 오이, 메론, 참외, 양파, 대파, 상추, 양배추, 배추, 파프리카, 호박
+    # output = db.query(cropModels.Crop.name)
+    # print(working_pw_bq)
+    print("======================")
+    print("======================")
+    return result
