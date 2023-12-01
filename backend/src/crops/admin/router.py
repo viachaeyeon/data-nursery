@@ -258,14 +258,12 @@ def get_crop_predct_output(
             sowing_area = 5
 
         # 파종량으로 파종면적(ha) 구하기
-        # TODO: round(round(value[4] / 2.5, 0) / 3025, 0) -> round(round(value[4] / 2.5, 4) / 3025, 4)로 변경하기
-        area_ha = round(round(int(value[4]) / sowing_area, 1) / 3025, 1)
-        # TODO: get_crop_production 함수 평 수 받는 파라미터값 float형으로 변경 후 사용
-        # if area_ha != 0:
-        #     # ha로 수확량 예측
-        #     ai_predict = ModelSingleTone.instance().get_crop_production(
-        #         value[0], area_ha
-        #     )
+        area_ha = round(round(int(value[4]) / sowing_area, 4) / 3025, 4)
+        if area_ha != 0:
+            # ha로 수확량 예측
+            ai_predict = ModelSingleTone.instance().get_crop_production(
+                value[0], area_ha
+            )
 
         result.append(
             {
