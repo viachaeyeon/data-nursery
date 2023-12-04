@@ -25,6 +25,10 @@ function Prediction() {
   const [planterClick, setPlanterClick] = useState(false);
   // 어떤 작물 선택
   const [planterChoose, setPlanterChoose] = useState("");
+
+  // 오늘
+  // const today = new Date();
+  
   // 날짜 선택
   const [dateRange, setDateRange] = useState({
     startDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
@@ -34,7 +38,6 @@ function Prediction() {
   // 기간내 작물별 생산량 예측값 조회
   const { data: planterData } = useCropPredict({
     dateRange: YYYYMMDDDash(dateRange.startDate) + "||" + YYYYMMDDDash(dateRange.endDate),
-    // dateRange: "2023-01-01||2023-11-03",
     successFn: (res) => {},
     errorFn: (err) => {
       alert(err);
