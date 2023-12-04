@@ -66,7 +66,7 @@ function MainHeader() {
     errorFn: () => {},
   });
 
-  const [dateTime, setDateTime] = useState();
+  // const [dateTime, setDateTime] = useState();
 
   // useEffect(() => {
   //   // 웹 워커 생성
@@ -85,13 +85,23 @@ function MainHeader() {
   //   };
   // }, [dateTime]);
 
+  const now = new Date();
+
+  let year = now.getFullYear();
+  let month = (now.getMonth() + 1).toString().padStart(2, "0"); // 월은 0부터 시작하므로 +1 해줌
+  let day = now.getDate().toString().padStart(2, "0");
+
+  const dateTime = `${year}.${month}.${day}`;
+
   const handleLogoutClick = useCallback(() => {
     setIsLogOut(true);
   }, [isLogOut]);
 
   return (
     <S.Wrap>
-      <S.DateWrap>{/* <p>{dateTime}</p> */}</S.DateWrap>
+      <S.DateWrap>
+        <p>{dateTime}</p>
+      </S.DateWrap>
       <S.profileWrap>
         <ProfileIcon width={21} height={22} />
         <p>안녕하세요, {userInfo?.user?.name}님</p>

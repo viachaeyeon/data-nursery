@@ -28,7 +28,7 @@ function Prediction() {
 
   // 오늘
   // const today = new Date();
-  
+
   // 날짜 선택
   const [dateRange, setDateRange] = useState({
     startDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
