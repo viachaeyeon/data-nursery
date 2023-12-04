@@ -35,7 +35,7 @@ class ModelSingleTone(SingletonInstane):
     def get_lgb_model(self):
         return self.lgb_model
     
-    def get_crop_production(self, crop_id:float, area:float):
+    def get_crop_production(self, crop_id:int, area:float):
         y_column = ["output"]
         crop_id = [crop_id]
         area = [area]
