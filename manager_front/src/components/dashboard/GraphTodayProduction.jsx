@@ -41,7 +41,9 @@ function GraphTodayProduction({ planterDateRange }) {
   // 생산량 시간 배열
   const timeGraphArr = [];
   for (const item of planterDateRange) {
-    timeGraphArr.push(item.output_updated_at);
+    const originalDate = new Date(item.output_updated_at);
+    originalDate.setHours(originalDate.getHours() + 9);
+    timeGraphArr.push(originalDate.toISOString());
   }
 
   // 생산량 + 시간 배열
