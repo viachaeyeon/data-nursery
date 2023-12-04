@@ -4,9 +4,14 @@ import styled from "styled-components";
 import MainLayout from "../../components/layout/MainLayout";
 import MainHeader from "@components/layout/MainHeader";
 
+import useCropPredict from "@src/hooks/queries/crop/useCropPredict";
+
+import { YYYYMMDDDash } from "@src/utils/Formatting";
+
 import { requireAuthentication } from "@src/utils/LoginCheckAuthentication";
 import AiPredictionMain from "@components/prediction/AiPredictionMain";
 import BarGraphAiWrap from "@components/prediction/BarGraphAiWrap";
+import useCropIdDetail from "@src/hooks/queries/crop/useCropIdDetail";
 
 const S = {
   Wrap: styled.div`
@@ -26,6 +31,26 @@ function Prediction() {
     endDate: new Date(),
   });
 
+  // 기간내 작물별 생산량 예측값 조회
+  const { data: planterData } = useCropPredict({
+    dateRange: YYYYMMDDDash(dateRange.startDate) + "||" + YYYYMMDDDash(dateRange.endDate),
+    // dateRange: "2023-01-01||2023-11-03",
+    successFn: (res) => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
+  // 기간 내 선택 작물 날짜별 파종량 및 총 파종량
+  const { data: sowingData } = useCropIdDetail({
+    cropId: 1,
+    dateRange: YYYYMMDDDash(dateRange.startDate) + "||" + YYYYMMDDDash(dateRange.endDate),
+    successFn: (res) => {},
+    errorFn: (err) => {
+      alert(err);
+    },
+  });
+
   return (
     <MainLayout>
       <MainHeader />
@@ -36,12 +61,15 @@ function Prediction() {
           setPlanterChoose={setPlanterChoose}
           dateRange={dateRange}
           setDateRange={setDateRange}
+          planterData={planterData}
         />
         <BarGraphAiWrap
           planterClick={planterClick}
           planterChoose={planterChoose}
           dateRange={dateRange}
           setDateRange={setDateRange}
+          planterData={planterData}
+          sowingData={sowingData}
         />
       </S.Wrap>
     </MainLayout>

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
-import { NumberCommaFormatting, YYYYMMDDDash, YYYYMMDDSlash } from "@src/utils/Formatting";
+import { NumberCommaFormatting, YYYYMMDDSlash } from "@src/utils/Formatting";
 
 import DatePickerMain from "@components/statistics/DatePickerMain";
 
@@ -65,17 +65,21 @@ const S = {
     }
 
     .yes-image {
+      border-radius: 100px;
+    }
+  `,
+  PlanterImg: styled.div`
+    display: flex;
+    img {
       cursor: pointer;
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-radius: 100px;
-      background-color: #d1cccc;
       width: 184px;
       height: 184px;
     }
   `,
-  PlanterImg: styled.div``,
 
   PlanterDetail: styled.div`
     display: flex;
@@ -114,7 +118,7 @@ const S = {
   `,
 };
 
-function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, dateRange, setDateRange }) {
+function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, dateRange, setDateRange, planterData }) {
   //달력 모달 오픈
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -122,65 +126,6 @@ function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, da
   const handlePickerClick = useCallback(() => {
     setPickerOpen(true);
   }, [pickerOpen]);
-
-  const planterData = [
-    {
-      crop_id: 1,
-      crop_image: null,
-      crop_name: "고추",
-      crop_color: "#4436d5",
-      ai_predict: 333333,
-    },
-    {
-      crop_id: 2,
-      crop_image: "/static/2023_11_30/528659_pepper.png",
-      crop_name: "토마토",
-      crop_color: "#b9da41",
-      ai_predict: 454545,
-    },
-    {
-      crop_id: 3,
-      crop_image: null,
-      crop_name: "가지",
-      crop_color: "#33d83e",
-      ai_predict: 154245,
-    },
-    {
-      crop_id: 4,
-      crop_image: "/static/2023_11_30/528659_pepper.png",
-      crop_name: "수박",
-      crop_color: "#a930ca",
-      ai_predict: 9845120,
-    },
-    {
-      crop_id: 5,
-      crop_image: null,
-      crop_name: "멜론",
-      crop_color: "#525252",
-      ai_predict: 4321582,
-    },
-    {
-      crop_id: 6,
-      crop_image: null,
-      crop_name: "딸기",
-      crop_color: "#525252",
-      ai_predict: 4321582,
-    },
-    {
-      crop_id: 7,
-      crop_image: null,
-      crop_name: "딸기",
-      crop_color: "#525252",
-      ai_predict: 4321582,
-    },
-    {
-      crop_id: 8,
-      crop_image: null,
-      crop_name: "딸기",
-      crop_color: "#525252",
-      ai_predict: 4321582,
-    },
-  ];
 
   // 작물 클릭시
   const handlePlanterChoose = useCallback((data) => {
@@ -203,18 +148,18 @@ function AiPredictionMain({ setPlanterClick, planterChoose, setPlanterChoose, da
         </S.ClickPicker>
       </S.TitleHeader>
       <S.PlanterWrap>
-        {planterData?.map((data) => {
+        {planterData?.map((data, index) => {
           return (
-            <S.PlanterDetail>
+            <S.PlanterDetail key={`map${index}`}>
               {data.crop_image ? (
                 <S.PlanterImg
                   className="yes-image"
                   style={{
                     border: planterChoose.crop_id === data.crop_id && "1px solid #5899fb",
-                    backgroundImage: process.env.NEXT_PUBLIC_END_POINT + data.crop_image,
                   }}
-                  onClick={() => handlePlanterChoose(data)}
-                />
+                  onClick={() => handlePlanterChoose(data)}>
+                  <img src={process.env.NEXT_PUBLIC_END_POINT + data.crop_image} />
+                </S.PlanterImg>
               ) : (
                 <S.PlanterImg
                   className="img-inner"
