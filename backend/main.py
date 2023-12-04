@@ -138,7 +138,7 @@ app.add_middleware(
 @app.on_event("startup")
 def startup_event():
     ModelSingleTone.instance().set_lgb_model()
-    # print(ModelSingleTone.instance().get_crop_production(6, 1000))
+    print(ModelSingleTone.instance().get_crop_production(6.0, 1000.231))
 
 # 미들웨어
 @app.middleware("http")
