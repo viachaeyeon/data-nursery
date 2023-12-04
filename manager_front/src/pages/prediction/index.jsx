@@ -67,7 +67,6 @@ function Prediction() {
           planterClick={planterClick}
           planterChoose={planterChoose}
           dateRange={dateRange}
-          setDateRange={setDateRange}
           planterData={planterData}
           sowingData={sowingData}
         />
