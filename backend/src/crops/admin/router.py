@@ -355,7 +355,10 @@ def get_crop_predct_output(
         )
         .join(
             pw,
-            pw.id == planterModels.PlanterOutput.planter_work_id,
+            (
+                (pw.id == planterModels.PlanterOutput.planter_work_id)
+                & (pw.crop_id == crop_id)
+            ),
         )
         .join(last_pws_subq, last_pws_subq.c.planter_work_id == pw.id)
         .join(
@@ -363,6 +366,7 @@ def get_crop_predct_output(
             (pws.planter_work_id == last_pws_subq.c.planter_work_id)
             & (pws.id == last_pws_subq.c.last_pws_id),
         )
+        # .join(cropModels.Crop, cropModels.Crop.id == crop_id)
         .filter(
             cropModels.Crop.is_del == False,
             cropModels.Crop.id == crop_id,
@@ -384,7 +388,7 @@ def get_crop_predct_output(
         crop_output_per_date.append(
             {"sowing_date": f"{value[0]}-{value[1]}", "output": value[2]}
         )
-        total_output += value[1]
+        total_output += value[2]
 
     result["crop_output"] = crop_output_per_date
     result["total_output"] = total_output
