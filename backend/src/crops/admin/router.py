@@ -370,6 +370,11 @@ def get_crop_predct_output(
         .filter(
             cropModels.Crop.is_del == False,
             cropModels.Crop.id == crop_id,
+            # "day" == 3,
+            func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
+            >= target_start_date,
+            func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
+            <= target_end_date,
             pw.is_del == False,
             pws.status.in_(["DONE"]),
         )
