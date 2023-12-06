@@ -384,7 +384,7 @@ def get_crop_predct_output(
         crop_output_per_date.append(
             {"sowing_date": f"{value[0]}-{value[1]}", "output": value[2]}
         )
-        total_output += value[1]
+        total_output += value[2]
 
     result["crop_output"] = crop_output_per_date
     result["total_output"] = total_output
