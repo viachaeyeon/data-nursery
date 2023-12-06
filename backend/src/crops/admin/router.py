@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form, Request
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy import func, case, extract, desc, asc, cast, String
+from sqlalchemy import func, case, extract, desc, asc, cast, String, and_
 from starlette.responses import JSONResponse
 from datetime import datetime
 from pytz import timezone
@@ -122,17 +122,37 @@ def get_crop_predct_output(
 ):
     get_current_user("99", request.cookies, db)
 
-    target_timezone = timezone("Asia/Seoul")
+    # target_timezone = timezone("Asia/Seoul")
     start_date, end_date = date_range.split("||")
     start_year, start_month, start_day = start_date.split("-")
     end_year, end_month, end_day = end_date.split("-")
 
+    # target_start_date = datetime(
+    #     int(start_year), int(start_month), int(start_day), tzinfo=target_timezone
+    # ).date()
+    # target_end_date = datetime(
+    #     int(end_year), int(end_month), int(end_day), tzinfo=target_timezone
+    # ).date()
     target_start_date = datetime(
-        int(start_year), int(start_month), int(start_day), tzinfo=target_timezone
-    ).date()
+        int(start_year),
+        int(start_month),
+        int(start_day),
+        0,
+        0,
+        0,
+        # tzinfo=target_timezone,
+    )
+    # .date()
     target_end_date = datetime(
-        int(end_year), int(end_month), int(end_day), tzinfo=target_timezone
-    ).date()
+        int(end_year),
+        int(end_month),
+        int(end_day),
+        23,
+        59,
+        59,
+        # tzinfo=target_timezone
+    )
+    # .date()
 
     pw = aliased(planterModels.PlanterWork)
     pws = aliased(planterModels.PlanterWorkStatus)
@@ -163,8 +183,10 @@ def get_crop_predct_output(
         )
     else:
         last_pws_subq = last_pws_subq.filter(
-            func.timezone("Asia/Seoul", pws.created_at) >= target_start_date,
-            func.timezone("Asia/Seoul", pws.created_at) <= target_end_date,
+            and_(
+                func.timezone("Asia/Seoul", pws.created_at) >= target_start_date,
+                func.timezone("Asia/Seoul", pws.created_at) <= target_end_date,
+            )
         )
 
     last_pws_subq = last_pws_subq.group_by(pws.planter_work_id).subquery()
@@ -193,6 +215,12 @@ def get_crop_predct_output(
             cropModels.Crop.is_del == False,
             pw.is_del == False,
             pws.status.in_(["DONE"]),
+            and_(
+                func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
+                >= target_start_date,
+                func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
+                <= target_end_date,
+            ),
         )
         .group_by(
             cropModels.Crop.id,
@@ -293,17 +321,31 @@ def get_crop_predct_output(
 ):
     get_current_user("99", request.cookies, db)
 
-    target_timezone = timezone("Asia/Seoul")
+    # target_timezone = timezone("Asia/Seoul")
     start_date, end_date = date_range.split("||")
     start_year, start_month, start_day = start_date.split("-")
     end_year, end_month, end_day = end_date.split("-")
 
     target_start_date = datetime(
-        int(start_year), int(start_month), int(start_day), tzinfo=target_timezone
-    ).date()
+        int(start_year),
+        int(start_month),
+        int(start_day),
+        0,
+        0,
+        0,
+        # tzinfo=target_timezone,
+    )
+    # .date()
     target_end_date = datetime(
-        int(end_year), int(end_month), int(end_day), tzinfo=target_timezone
-    ).date()
+        int(end_year),
+        int(end_month),
+        int(end_day),
+        23,
+        59,
+        59,
+        # tzinfo=target_timezone
+    )
+    # .date()
 
     pw = aliased(planterModels.PlanterWork)
     pws = aliased(planterModels.PlanterWorkStatus)
@@ -334,8 +376,10 @@ def get_crop_predct_output(
         )
     else:
         last_pws_subq = last_pws_subq.filter(
-            func.timezone("Asia/Seoul", pws.created_at) >= target_start_date,
-            func.timezone("Asia/Seoul", pws.created_at) <= target_end_date,
+            and_(
+                func.timezone("Asia/Seoul", pws.created_at) >= target_start_date,
+                func.timezone("Asia/Seoul", pws.created_at) <= target_end_date,
+            )
         )
 
     last_pws_subq = last_pws_subq.group_by(pws.planter_work_id).subquery()
@@ -370,11 +414,12 @@ def get_crop_predct_output(
         .filter(
             cropModels.Crop.is_del == False,
             cropModels.Crop.id == crop_id,
-            # "day" == 3,
-            func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
-            >= target_start_date,
-            func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
-            <= target_end_date,
+            and_(
+                func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
+                >= target_start_date,
+                func.timezone("Asia/Seoul", planterModels.PlanterOutput.updated_at)
+                <= target_end_date,
+            ),
             pw.is_del == False,
             pws.status.in_(["DONE"]),
         )
