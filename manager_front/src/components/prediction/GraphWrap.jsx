@@ -5,7 +5,6 @@ import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
 import BarIcon from "@images/dashboard/icon-bar.svg";
-import { TenThousandUnits } from "@src/utils/Formatting";
 
 const S = {
   Wrap: styled.div`
@@ -47,7 +46,7 @@ function GraphWrap({ planterChoose, sowingData, dateRange }) {
     for (let i = 0; i < outputDateArray?.length; i++) {
       arr.push({
         x: new Date(sowingDateArray[i]).toISOString().split("T")[0],
-        y: TenThousandUnits(outputDateArray[i]),
+        y: outputDateArray[i],
       });
     }
     return arr;
@@ -154,14 +153,14 @@ function GraphWrap({ planterChoose, sowingData, dateRange }) {
                 drawOnChartArea: false,
               },
               position: "left",
-              title: {
-                display: true,
-                align: "end",
-                text: "개 (단위 : 만)",
-              },
-              ticks: {
-                stepSize: 10,
-              },
+              // title: {
+              //   display: true,
+              //   align: "end",
+              //   text: "개 (단위 : 만)",
+              // },
+              // ticks: {
+              //   stepSize: 10,
+              // },
             },
           },
           interaction: {

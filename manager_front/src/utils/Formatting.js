@@ -24,16 +24,6 @@ export function NumberUnitFormatting(number) {
   }
 }
 
-// 만단위
-export function TenThousandUnits(number) {
-  let format_number = number;
-
-  // 10000이상 1.00
-  format_number = Math.floor(number * 0.001 * 10) / 100;
-
-  return format_number;
-}
-
 //99999 넘으면 +표시 , 3자리수마다 comma 표시
 export function CountPlusFormatting(number) {
   if (number > 99999) {
