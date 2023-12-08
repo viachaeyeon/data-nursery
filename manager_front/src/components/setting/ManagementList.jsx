@@ -106,13 +106,17 @@ const S = {
     }
 
     .header-table-first {
-      width: 250px;
+      /* width: 250px; */
+      width: 151px;
+      margin-left: 38px;
     }
     .header-table {
-      width: 160px;
+      /* width: 160px; */
+      width: 122px;
     }
     .header-table-fin {
-      width: 100px;
+      /* width: 100px; */
+      width: 72px;
     }
     .check-img {
       width: 24px;
