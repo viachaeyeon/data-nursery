@@ -20,7 +20,8 @@ import { trayListKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
-    width: 70%;
+    /* width: 70%; */
+    width: 65%;
 
     .modal-wrap {
       position: fixed;
@@ -37,6 +38,7 @@ const S = {
     justify-content: space-between;
     padding: 36px 0px;
     border-bottom: 1px solid ${({ theme }) => theme.basic.recOutline};
+    margin-right: 63px;
   `,
   Title: styled.div`
     display: flex;
@@ -78,6 +80,7 @@ const S = {
     }
   `,
   ContentList: styled.div`
+  /* position: relative; */
     .table-header {
       padding: 6px 32px 6px 24px;
       margin-top: 16px;
@@ -86,6 +89,7 @@ const S = {
       justify-content: space-between;
       align-items: center;
       height: 52px;
+      margin-right: 45px;
 
       p {
         color: ${({ theme }) => theme.basic.gray60};
@@ -127,8 +131,14 @@ const S = {
   `,
   ListBlockWrap: styled.div`
     height: 368px;
-    overflow-y: auto;
-    padding-right: 24px;
+    overflow-y: scroll;
+    /* padding-right: 24px; */
+    padding-right: 63px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* position: relative; */
 
     &::-webkit-scrollbar {
       display: block !important;
@@ -153,9 +163,10 @@ const S = {
     }
 
     .list-inner {
-      display: flex;
+      /* display: flex;
       flex-direction: column;
       gap: 10px;
+      position: relative; */
     }
     .option-modal-wrap {
       position: relative;
@@ -413,12 +424,13 @@ function TrayList({ userInfo }) {
               )}
             </div>
             <S.ListBlockWrap>
-              <div className="list-inner">
+              {/* <div className="list-inner"> */}
                 {trayList?.planter_trays.map((tray, index) => {
                   return (
                     <S.ListBlock
                       key={`tray${tray.id}`}
                       className={`table-row ${checkArray.includes(tray.id) ? "selected" : ""}`}>
+                        
                       {checkArray.includes(tray.id) ? (
                         <div className="check-img">
                           {userInfo?.admin_user_info?.is_top_admin === true && (
@@ -440,6 +452,7 @@ function TrayList({ userInfo }) {
                       <p className="table-text-thir">{tray.width}</p>
                       <p className="table-text-four">{tray.height}</p>
                       <div className="table-text-fiv option-modal-wrap">
+                        <div>
                         {userInfo?.admin_user_info?.is_top_admin === true && (
                           <div
                             className="option-dot"
@@ -458,10 +471,12 @@ function TrayList({ userInfo }) {
                           setDeleteTrayModalOpen={setDeleteTrayModalOpen}
                         />
                       )}
+                      </div>
+                      
                     </S.ListBlock>
                   );
                 })}
-              </div>
+              {/* </div> */}
             </S.ListBlockWrap>
           </>
         )}

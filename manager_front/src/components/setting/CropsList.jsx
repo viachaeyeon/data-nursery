@@ -20,7 +20,8 @@ import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
 
 const S = {
   Wrap: styled.div`
-    width: 30%;
+    /* width: 30%; */
+    width: 35%;
     position: relative;
 
     .modal-wrap {
@@ -38,6 +39,7 @@ const S = {
     justify-content: space-between;
     padding: 36px 0px;
     border-bottom: 1px solid ${({ theme }) => theme.basic.recOutline};
+    margin-right: 74px;
   `,
   Title: styled.div`
     display: flex;
@@ -87,6 +89,7 @@ const S = {
       justify-content: space-between;
       align-items: center;
       height: 52px;
+      margin-right: 63px;
 
       p {
         color: ${({ theme }) => theme.basic.gray60};
@@ -121,8 +124,13 @@ const S = {
   `,
   ListBlockWrap: styled.div`
     height: 368px;
-    overflow-y: auto;
-    padding-right: 24px;
+    overflow-y: scroll;
+    /* padding-right: 24px; */
+    padding-right: 74px;
+
+    display: flex;
+      flex-direction: column;
+      gap: 10px;
 
     &::-webkit-scrollbar {
       display: block !important;
@@ -142,9 +150,9 @@ const S = {
     }
 
     .list-inner {
-      display: flex;
+      /* display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 10px; */
     }
     .option-modal-wrap {
       position: relative;
@@ -402,7 +410,7 @@ function CropsList({ userInfo }) {
               )}
             </div>
             <S.ListBlockWrap>
-              <div className="list-inner">
+              {/* <div className="list-inner"> */}
                 {cropList?.crops.map((crop, index) => {
                   return (
                     <S.ListBlock
@@ -426,8 +434,8 @@ function CropsList({ userInfo }) {
                         <div className="crops_color" style={{ backgroundColor: crop.color }} />
                         <p className="table-text-first crop_name">{crop.name}</p>
                       </div>
-
                       <div className="table-text-fin option-modal-wrap">
+                        <div >
                         {userInfo?.admin_user_info?.is_top_admin === true && (
                           <div
                             className="option-dot"
@@ -446,10 +454,12 @@ function CropsList({ userInfo }) {
                           setEditCropsModalOpen={setEditCropsModalOpen}
                         />
                       )}
+                      </div>
+                      
                     </S.ListBlock>
                   );
                 })}
-              </div>
+              {/* </div> */}
             </S.ListBlockWrap>
           </>
         )}

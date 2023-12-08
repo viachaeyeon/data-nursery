@@ -7,22 +7,23 @@ import DeleteIcon from "@images/common/delete-icon.svg";
 const S = {
   Wrap: styled.div`
     display: flex;
+    flex-direction: column;
     justify-content: end;
     position: absolute;
-    right: 60px;
-    /* right: -44px; */
+    top: 20px;
+    right: -94px;
     z-index: 1;
 
-    .wrap-inner {
-      align-items: center;
-      position: absolute;
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 8px;
-      width: 111px;
-      box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
-      border: 1px solid ${({ theme }) => theme.basic.recOutline};
-    }
+    /* align-items: center; */
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 8px;
+    width: 111px;
+    box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
+    border: 1px solid ${({ theme }) => theme.basic.recOutline};
+
+    /* .wrap-inner {
+    } */
     .line {
       background-color: #fff;
       border-radius: 4px;
@@ -80,7 +81,7 @@ function TrayOptionModal({ optionModalOpen, setOptionModalOpen, setEditTrayModal
 
   return (
     <S.Wrap>
-      <div className="wrap-inner">
+      {/* <div className="wrap-inner"> */}
         <div className="line" onClick={handelEditClick}>
           <div className="icon">
             <EditIcon width={16} height={16} />
@@ -93,7 +94,7 @@ function TrayOptionModal({ optionModalOpen, setOptionModalOpen, setEditTrayModal
           </div>
           <p>삭제</p>
         </div>
-      </div>
+      {/* </div> */}
     </S.Wrap>
   );
 }

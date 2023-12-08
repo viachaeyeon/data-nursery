@@ -36,6 +36,7 @@ const S = {
     justify-content: space-between;
     padding: 24px 0px;
     border-bottom: 1px solid ${({ theme }) => theme.basic.recOutline};
+    margin-right: 63px;
   `,
   Title: styled.div`
     display: flex;
@@ -85,6 +86,7 @@ const S = {
       justify-content: space-between;
       align-items: center;
       height: 52px;
+      margin-right: 51px;
 
       p {
         color: ${({ theme }) => theme.basic.gray60};
@@ -119,8 +121,9 @@ const S = {
   `,
   ListBlockWrap: styled.div`
     max-height: 444px;
-    overflow-y: auto;
-    padding-right: 24px;
+    overflow-y: scroll;
+    /* padding-right: 24px; */
+    padding-right: 63px;
 
     &::-webkit-scrollbar {
       display: block !important;
@@ -438,6 +441,7 @@ function ManagementList({ userInfo }) {
                   <p className="table-text">{data.user.name}</p>
                   <p className="table-text">{data.admin_user_info.phone}</p>
                   <div className="option-modal-wrap table-thir">
+                    <div >
                     {userInfo?.admin_user_info?.is_top_admin === true && (
                       <div
                         className="option-dot"
@@ -456,6 +460,8 @@ function ManagementList({ userInfo }) {
                       setDeleteManagerModalOpen={setDeleteManagerModalOpen}
                     />
                   )}
+                  </div>
+                  
                 </S.ListBlock>
               );
             })}
