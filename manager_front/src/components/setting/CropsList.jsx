@@ -20,7 +20,6 @@ import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
 
 const S = {
   Wrap: styled.div`
-    /* width: 30%; */
     width: 35%;
     position: relative;
 
@@ -125,7 +124,6 @@ const S = {
   ListBlockWrap: styled.div`
     height: 368px;
     overflow-y: scroll;
-    /* padding-right: 24px; */
     padding-right: 74px;
 
     display: flex;
@@ -149,11 +147,6 @@ const S = {
       border: 1px solid ${({ theme }) => theme.primery.primery};
     }
 
-    .list-inner {
-      /* display: flex;
-      flex-direction: column;
-      gap: 10px; */
-    }
     .option-modal-wrap {
       position: relative;
     }
@@ -410,7 +403,6 @@ function CropsList({ userInfo }) {
               )}
             </div>
             <S.ListBlockWrap>
-              {/* <div className="list-inner"> */}
                 {cropList?.crops.map((crop, index) => {
                   return (
                     <S.ListBlock
@@ -459,7 +451,6 @@ function CropsList({ userInfo }) {
                     </S.ListBlock>
                   );
                 })}
-              {/* </div> */}
             </S.ListBlockWrap>
           </>
         )}

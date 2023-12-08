@@ -122,7 +122,6 @@ const S = {
   ListBlockWrap: styled.div`
     max-height: 444px;
     overflow-y: scroll;
-    /* padding-right: 24px; */
     padding-right: 63px;
 
     &::-webkit-scrollbar {

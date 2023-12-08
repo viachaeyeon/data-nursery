@@ -20,7 +20,6 @@ import { trayListKey } from "@src/utils/query-keys/PlanterQueryKeys";
 
 const S = {
   Wrap: styled.div`
-    /* width: 70%; */
     width: 65%;
 
     .modal-wrap {
@@ -80,7 +79,6 @@ const S = {
     }
   `,
   ContentList: styled.div`
-  /* position: relative; */
     .table-header {
       padding: 6px 32px 6px 24px;
       margin-top: 16px;
@@ -132,13 +130,11 @@ const S = {
   ListBlockWrap: styled.div`
     height: 368px;
     overflow-y: scroll;
-    /* padding-right: 24px; */
     padding-right: 63px;
 
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* position: relative; */
 
     &::-webkit-scrollbar {
       display: block !important;
@@ -162,12 +158,6 @@ const S = {
       align-items: center;
     }
 
-    .list-inner {
-      /* display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative; */
-    }
     .option-modal-wrap {
       position: relative;
     }
@@ -197,7 +187,6 @@ const S = {
     background-color: ${({ theme }) => theme.blackWhite.white};
     border-radius: 8px;
     height: 64px;
-    /* position: relative; */
 
     p {
       color: ${({ theme }) => theme.basic.gray50};
@@ -424,7 +413,6 @@ function TrayList({ userInfo }) {
               )}
             </div>
             <S.ListBlockWrap>
-              {/* <div className="list-inner"> */}
                 {trayList?.planter_trays.map((tray, index) => {
                   return (
                     <S.ListBlock
@@ -476,7 +464,6 @@ function TrayList({ userInfo }) {
                     </S.ListBlock>
                   );
                 })}
-              {/* </div> */}
             </S.ListBlockWrap>
           </>
         )}

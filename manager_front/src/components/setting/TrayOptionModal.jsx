@@ -14,7 +14,6 @@ const S = {
     right: -94px;
     z-index: 1;
 
-    /* align-items: center; */
     background-color: #fff;
     border-radius: 8px;
     padding: 8px;
@@ -22,8 +21,6 @@ const S = {
     box-shadow: 4px 4px 16px 0px rgba(89, 93, 107, 0.1);
     border: 1px solid ${({ theme }) => theme.basic.recOutline};
 
-    /* .wrap-inner {
-    } */
     .line {
       background-color: #fff;
       border-radius: 4px;
@@ -81,7 +78,6 @@ function TrayOptionModal({ optionModalOpen, setOptionModalOpen, setEditTrayModal
 
   return (
     <S.Wrap>
-      {/* <div className="wrap-inner"> */}
         <div className="line" onClick={handelEditClick}>
           <div className="icon">
             <EditIcon width={16} height={16} />
@@ -94,7 +90,6 @@ function TrayOptionModal({ optionModalOpen, setOptionModalOpen, setEditTrayModal
           </div>
           <p>삭제</p>
         </div>
-      {/* </div> */}
     </S.Wrap>
   );
 }
