@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import useCropList from "@src/hooks/queries/crop/useCropList";
@@ -21,7 +21,6 @@ import { cropListKey } from "@src/utils/query-keys/CropQueryKeys";
 const S = {
   Wrap: styled.div`
     width: 35%;
-    position: relative;
 
     .modal-wrap {
       position: fixed;
@@ -38,7 +37,6 @@ const S = {
     justify-content: space-between;
     padding: 36px 0px;
     border-bottom: 1px solid ${({ theme }) => theme.basic.recOutline};
-    margin-right: 74px;
   `,
   Title: styled.div`
     display: flex;
@@ -88,7 +86,6 @@ const S = {
       justify-content: space-between;
       align-items: center;
       height: 52px;
-      margin-right: 63px;
 
       p {
         color: ${({ theme }) => theme.basic.gray60};
@@ -123,12 +120,12 @@ const S = {
   `,
   ListBlockWrap: styled.div`
     height: 368px;
-    overflow-y: scroll;
-    padding-right: 74px;
+    overflow-y: auto;
+    padding-right: 24px;
 
     display: flex;
-      flex-direction: column;
-      gap: 10px;
+    flex-direction: column;
+    gap: 10px;
 
     &::-webkit-scrollbar {
       display: block !important;
@@ -145,10 +142,6 @@ const S = {
 
     .selected {
       border: 1px solid ${({ theme }) => theme.primery.primery};
-    }
-
-    .option-modal-wrap {
-      position: relative;
     }
   `,
   ListBlock: styled.div`
@@ -324,6 +317,26 @@ function CropsList({ userInfo }) {
     [checkArray],
   );
 
+  // 옵션모달 위치 지정하기 위해
+  const [boxTop, setBoxTop] = useState("");
+  const [topData, setTopData] = useState("");
+
+  // 모달 클릭 위치잡기 : id는 컴포넌트의 id값
+  const boxClick = useCallback((id) => {
+    const box = document.getElementById(id);
+    const top = box.getBoundingClientRect().bottom;
+    setTopData(window.scrollY);
+    setBoxTop(top);
+  }, []);
+
+  // 옵션모달 켜져있을때 overflow 스크롤 되면 옵션모달 끄기
+  useEffect(() => {
+    const wrap = document.getElementById("crop-wrap");
+    wrap.addEventListener("scroll", () => {
+      setOptionModalOpen({ open: false, index: undefined, data: undefined });
+    });
+  }, []);
+
   return (
     <S.Wrap>
       <S.TitleWrap>
@@ -402,37 +415,39 @@ function CropsList({ userInfo }) {
                 </>
               )}
             </div>
-            <S.ListBlockWrap>
-                {cropList?.crops.map((crop, index) => {
-                  return (
-                    <S.ListBlock
-                      key={`crop${crop.id}`}
-                      className={`table-row ${checkArray.includes(crop.id) ? "selected" : ""}`}>
-                      {checkArray.includes(crop.id) ? (
-                        <div className="check-img">
-                          {userInfo?.admin_user_info?.is_top_admin === true && (
-                            <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, crop.id)} />
-                          )}
-                        </div>
-                      ) : (
-                        <div className="check-img">
-                          {userInfo?.admin_user_info?.is_top_admin === true && (
-                            <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, crop.id)} />
-                          )}
-                        </div>
-                      )}
-                      <p className="table-text-first">{index + 1}</p>
-                      <div className="first-wrap">
-                        <div className="crops_color" style={{ backgroundColor: crop.color }} />
-                        <p className="table-text-first crop_name">{crop.name}</p>
+            <S.ListBlockWrap id="crop-wrap">
+              {cropList?.crops.map((crop, index) => {
+                return (
+                  <S.ListBlock
+                    key={`crop${crop.id}`}
+                    className={`table-row ${checkArray.includes(crop.id) ? "selected" : ""}`}>
+                    {checkArray.includes(crop.id) ? (
+                      <div className="check-img">
+                        {userInfo?.admin_user_info?.is_top_admin === true && (
+                          <CheckBoxOn width={24} height={24} onClick={() => toggleItem(true, crop.id)} />
+                        )}
                       </div>
-                      <div className="table-text-fin option-modal-wrap">
-                        <div >
+                    ) : (
+                      <div className="check-img">
+                        {userInfo?.admin_user_info?.is_top_admin === true && (
+                          <CheckBoxOff width={24} height={24} onClick={() => toggleItem(false, crop.id)} />
+                        )}
+                      </div>
+                    )}
+                    <p className="table-text-first">{index + 1}</p>
+                    <div className="first-wrap">
+                      <div className="crops_color" style={{ backgroundColor: crop.color }} />
+                      <p className="table-text-first crop_name">{crop.name}</p>
+                    </div>
+                    <div className="table-text-fin">
+                      <div>
                         {userInfo?.admin_user_info?.is_top_admin === true && (
                           <div
                             className="option-dot"
+                            id={`crop${index}`}
                             onClick={() => {
                               handleCropsOptionModalClick(index, crop);
+                              boxClick(`crop${index}`);
                             }}>
                             <OptionDot width={32} height={32} />
                           </div>
@@ -444,13 +459,14 @@ function CropsList({ userInfo }) {
                           setOptionModalOpen={setOptionModalOpen}
                           setDeleteCropsModalOpen={setDeleteCropsModalOpen}
                           setEditCropsModalOpen={setEditCropsModalOpen}
+                          boxTop={boxTop}
+                          topData={topData}
                         />
                       )}
-                      </div>
-                      
-                    </S.ListBlock>
-                  );
-                })}
+                    </div>
+                  </S.ListBlock>
+                );
+              })}
             </S.ListBlockWrap>
           </>
         )}

@@ -10,11 +10,7 @@ const S = {
     flex-direction: column;
     justify-content: end;
     position: absolute;
-    right: -93px;
-    z-index: 1;
-    top: 20px;
-
-    align-items: center;
+    right: 1018px;
     background-color: #fff;
     border-radius: 8px;
     padding: 8px;
@@ -64,7 +60,14 @@ const S = {
   `,
 };
 
-function CropsOptionModal({ optionModalOpen, setOptionModalOpen, setDeleteCropsModalOpen, setEditCropsModalOpen }) {
+function CropsOptionModal({
+  optionModalOpen,
+  setOptionModalOpen,
+  setDeleteCropsModalOpen,
+  setEditCropsModalOpen,
+  boxTop,
+  topData,
+}) {
   // 수정
   const handelEditClick = useCallback(() => {
     setOptionModalOpen({ open: false, index: undefined, data: undefined });
@@ -78,19 +81,19 @@ function CropsOptionModal({ optionModalOpen, setOptionModalOpen, setDeleteCropsM
   });
 
   return (
-    <S.Wrap>
-        <div className="line" onClick={handelEditClick}>
-          <div className="icon">
-            <EditIcon width={16} height={16} />
-          </div>
-          <p>수정</p>
+    <S.Wrap style={{ top: boxTop + topData - 10 }}>
+      <div className="line" onClick={handelEditClick}>
+        <div className="icon">
+          <EditIcon width={16} height={16} />
         </div>
-        <div className="line" onClick={handleDeleteClick}>
-          <div className="icon">
-            <DeleteIcon width={16} height={16} />
-          </div>
-          <p>삭제</p>
+        <p>수정</p>
+      </div>
+      <div className="line" onClick={handleDeleteClick}>
+        <div className="icon">
+          <DeleteIcon width={16} height={16} />
         </div>
+        <p>삭제</p>
+      </div>
     </S.Wrap>
   );
 }

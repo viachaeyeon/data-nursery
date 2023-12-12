@@ -10,10 +10,7 @@ const S = {
     flex-direction: column;
     justify-content: end;
     position: absolute;
-    right: -83px;
-    z-index: 1;
-    top: 18px;
-
+    right: 53px;
     background-color: #fff;
     border-radius: 8px;
     padding: 8px;
@@ -68,6 +65,8 @@ function ManagerOptionModal({
   setOptionModalOpen,
   setEditManagerModalOpen,
   setDeleteManagerModalOpen,
+  boxTop,
+  topData,
 }) {
   // 관리자 수정
   const handelEditClick = useCallback(() => {
@@ -82,21 +81,21 @@ function ManagerOptionModal({
   });
 
   return (
-    <S.Wrap>
-        <div className="line" onClick={handelEditClick}>
-          <div className="icon">
-            <EditIcon width={16} height={16} />
-          </div>
-          <p>수정</p>
+    <S.Wrap style={{ top: boxTop + topData - 10 }}>
+      <div className="line" onClick={handelEditClick}>
+        <div className="icon">
+          <EditIcon width={16} height={16} />
         </div>
-        {optionModalOpen.data.admin_user_info.is_top_admin === false && (
-          <div className="line" onClick={handleDeleteClick}>
-            <div className="icon">
-              <DeleteIcon width={16} height={16} />
-            </div>
-            <p>삭제</p>
+        <p>수정</p>
+      </div>
+      {optionModalOpen.data.admin_user_info.is_top_admin === false && (
+        <div className="line" onClick={handleDeleteClick}>
+          <div className="icon">
+            <DeleteIcon width={16} height={16} />
           </div>
-        )}
+          <p>삭제</p>
+        </div>
+      )}
     </S.Wrap>
   );
 }
