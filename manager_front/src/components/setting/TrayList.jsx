@@ -348,7 +348,7 @@ function TrayList({ userInfo }) {
     });
   }, [optionModalOpen]);
 
-
+  
   return (
     <S.Wrap>
       <S.TitleWrap>
