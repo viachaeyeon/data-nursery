@@ -90,7 +90,6 @@ function MainHeader() {
     <S.Wrap>
       <S.DateWrap>
         <p>{currentTime}</p>
-        {/* <p>{dateTime}</p> */}
       </S.DateWrap>
       <S.profileWrap>
         <ProfileIcon width={21} height={22} />
