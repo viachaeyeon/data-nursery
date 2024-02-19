@@ -5,7 +5,7 @@ import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
 import usePlanterOperatingTime from "@src/hooks/queries/planter/usePlanterOperatingTime";
-import { OperationTime } from "@src/utils/Formatting";
+import { OperationTime, OperationTimeGraph } from "@src/utils/Formatting";
 
 const S = {
   Wrap: styled.div`
@@ -97,7 +97,7 @@ function GraphOperateTimeMonth() {
         ctx.fillStyle = "#405F8D";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(Math.floor(planterOperation?.total_avg / 3600) + "h", width / 2, height / 2 + top + 13);
+        ctx.fillText(OperationTime(planterOperation?.total_avg), width / 2, height / 2 + top + 13);
       },
     };
 
@@ -109,9 +109,10 @@ function GraphOperateTimeMonth() {
           datasets: [
             {
               data: [
-                Math.floor(planterOperation?.total_avg / 3600),
-                24 - Math.floor(planterOperation?.total_avg / 3600),
-              ], // 여기서 첫 번째 데이터는 강조하고자 하는 값, 두 번째 데이터는 나머지 비율
+                Math.floor(OperationTimeGraph(planterOperation?.total_avg) / 60),
+                1440 - Math.floor(OperationTimeGraph(planterOperation?.total_avg) / 60),
+              ],
+              // 여기서 첫 번째 데이터는 강조하고자 하는 값, 두 번째 데이터는 나머지 비율
               backgroundColor: ["#8DBAEF", "#F7F7FA"],
               borderColor: ["#8DBAEF", "#F7F7FA"],
               hoverBackgroundColor: ["#8DBAEF", "#F7F7FA"],

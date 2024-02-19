@@ -115,3 +115,15 @@ export function OperationTime(seconds) {
     return Math.floor(hours) + "h";
   }
 }
+// 개요 : 파종기 가동시간 시간 도넛그래프 사용
+export function OperationTimeGraph(seconds) {
+  if (seconds < 1) {
+    return 0;
+  } else if (seconds > 0 && seconds < 3600) {
+    // 1시간 미만 : 1시간 그래프를 표현
+    return (seconds = 3600);
+  } else if (seconds >= 3600) {
+    // 1시간 이상
+    return seconds;
+  }
+}
