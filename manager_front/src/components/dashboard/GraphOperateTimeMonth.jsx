@@ -5,6 +5,7 @@ import Chart from "chart.js/auto";
 import { registerables } from "chart.js";
 
 import usePlanterOperatingTime from "@src/hooks/queries/planter/usePlanterOperatingTime";
+import { OperationTime } from "@src/utils/Formatting";
 
 const S = {
   Wrap: styled.div`
@@ -162,12 +163,12 @@ function GraphOperateTimeMonth() {
       <S.InfoBlockWrap>
         <S.InfoBlock>
           <p className="info-title">최대 가동 시간</p>
-          <p className="info-hour">{Math.floor(planterOperation?.max?.operating_time / 3600)}h</p>
+          <p className="info-hour">{OperationTime(planterOperation?.max?.operating_time)}</p>
           <p className="info-name">{planterOperation?.max?.farmhouse_name}</p>
         </S.InfoBlock>
         <S.InfoBlock>
           <p className="info-title">최소 가동 시간</p>
-          <p className="info-hour">{Math.floor(planterOperation?.min?.operating_time / 3600)}h</p>
+          <p className="info-hour">{OperationTime(planterOperation?.min?.operating_time)}</p>
           <p className="info-name">{planterOperation?.min?.farmhouse_name}</p>
         </S.InfoBlock>
       </S.InfoBlockWrap>
